@@ -5,361 +5,229 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Apex - Global Entertainment</title>
   <style>
-    :root { --bg:#050505; --card-bg:rgba(15,15,15,0.9); --red:#e63946; --gold:#d4af37; --text:#ffffff; --text-muted:#888888; --border:#333333; }
-    * { box-sizing:border-box; margin:0; padding:0; }
+    :root { --bg:#050505; --card-bg:rgba(15,15,15,0.9); --gold:#d4af37; --text:#ffffff; --text-muted:#888888; --border:#333333; --green:#4ade80; }
+    * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color: transparent; }
     body { font-family:'Inter',system-ui,-apple-system,sans-serif; background-color:var(--bg); color:var(--text); display:flex; flex-direction:column; min-height:100vh; }
-    
     .container { max-width:480px; margin:0 auto; padding:16px; width:100%; }
-    
-    /* 顶部导航 */
     .header { display:flex; justify-content:space-between; align-items:center; padding:8px 0 16px 0; }
     .brand { display:flex; align-items:center; gap:10px; }
     .brand .logo-img { width:40px; height:40px; object-fit:contain; }
     .brand-text { display:flex; flex-direction:column; }
     .brand-text .en { font-size:20px; font-weight:900; letter-spacing:3px; background:linear-gradient(135deg, #ffffff 0%, #d4af37 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; line-height:1.1; }
     .brand-text .sub { font-size:9px; color:var(--text-muted); letter-spacing:1.5px; margin-top:2px; }
-    
-    /* 语言切换器 */
     .lang-selector { position: relative; }
-    .lang-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 4px 10px; border-radius: 20px; display: flex; align-items: center; gap: 4px; cursor: pointer; font-size: 11px; transition: 0.3s; }
-    .lang-btn:hover { border-color: #fff; color: #fff; }
-    .lang-btn .arrow { font-size: 8px; margin-left: 2px; }
-    .lang-menu { display: none; position: absolute; right: 0; top: calc(100% + 6px); width: 150px; max-height: 220px; overflow-y: auto; background: #0a0a0a; border: 1px solid var(--border); border-radius: 8px; z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.8); }
+    .lang-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 4px 10px; border-radius: 20px; display: flex; align-items: center; gap: 4px; cursor: pointer; font-size: 11px; }
+    .lang-menu { display: none; position: absolute; right: 0; top: calc(100% + 6px); width: 150px; max-height: 220px; overflow-y: auto; background: #0a0a0a; border: 1px solid var(--border); border-radius: 8px; z-index: 100; }
     .lang-menu.show { display: block; }
-    .lang-item { padding: 10px 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12px; color: var(--text-muted); transition: 0.2s; border-bottom: 1px solid #1a1a1a; }
-    .lang-item:last-child { border-bottom: none; }
-    .lang-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
-    .lang-item.active { color: var(--gold); }
-    
-    /* 顶部文案 */
+    .lang-item { padding: 10px 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12px; color: var(--text-muted); border-bottom: 1px solid #1a1a1a; }
     .banner-text { text-align:center; margin-bottom:8px; }
-    .banner-text .main-title { font-size:14px; font-weight:bold; color:#fff; letter-spacing:1px; margin-bottom:4px; }
-    .banner-text .sub-title { font-size:10px; color:var(--text-muted); letter-spacing:0.5px; }
-    
-    /* 小广告 Banner */
-    .banner { width:100%; height:110px; background:url('https://images.unsplash.com/photo-1596838132731-3301c3fd4317?auto=format&fit=crop&w=800&q=80') no-repeat center center/cover; border-radius:10px; border:1px solid var(--border); margin-bottom:16px; position:relative; overflow:hidden; }
-    .banner::after { content:''; position:absolute; top:0; left:0; width:100%; height:100%; background:linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%); }
-    
-    /* 登录卡片（已精简） */
-    .auth-card { background:var(--card-bg); border:1px solid var(--border); border-radius:12px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,0.8); backdrop-filter:blur(12px); margin-bottom:20px; }
+    .banner-text .main-title { font-size:14px; font-weight:bold; }
+    .banner-text .sub-title { font-size:10px; color:var(--text-muted); }
+    .banner { width:100%; height:110px; background:url('https://images.unsplash.com/photo-1596838132731-3301c3fd4317?auto=format&fit=crop&w=800&q=80') center/cover; border-radius:10px; border:1px solid var(--border); margin-bottom:16px; }
+    .auth-card { background:var(--card-bg); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:20px; }
     .tabs { display:flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-bottom:16px; }
-    .tab { flex:1; padding:10px; text-align:center; cursor:pointer; font-weight:bold; transition:0.3s; color:var(--text-muted); background:transparent; border:none; font-size:14px; }
+    .tab { flex:1; padding:10px; text-align:center; cursor:pointer; font-weight:bold; color:var(--text-muted); background:transparent; border:none; font-size:14px; }
     .tab.active { background:#fff; color:#000; }
     .input-group { margin-bottom:12px; }
     .input-group label { display:block; font-size:11px; color:var(--text-muted); margin-bottom:4px; }
-    .input-group input { width:100%; padding:12px; background:#0a0a0a; border:1px solid var(--border); border-radius:6px; color:#fff; font-size:13px; outline:none; transition:0.3s; }
+    .input-group input { width:100%; padding:12px; background:#0a0a0a; border:1px solid var(--border); border-radius:6px; color:#fff; font-size:13px; outline:none; }
     .input-group input:focus { border-color:#fff; }
-    
-    .checkbox-group { display:flex; align-items:center; gap:6px; margin:14px 0; font-size:11px; color:var(--text-muted); }
-    .checkbox-group input { accent-color: var(--gold); width: 16px; height: 16px; cursor: pointer; }
-    .checkbox-group a { color:#fff; text-decoration:none; }
-    .btn-primary { width:100%; padding:12px; background:#fff; color:#000; font-weight:700; font-size:14px; border:none; border-radius:8px; cursor:pointer; transition:0.3s; letter-spacing:1px; }
-    .btn-primary:hover { background:#e0e0e0; transform:translateY(-2px); box-shadow:0 5px 15px rgba(255,255,255,0.1); }
-    
-    /* 核心优势区（保留小尺寸） */
-    .features-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px 12px; margin-top:16px; padding:0 8px; }
-    .feature-card { display:flex; align-items:center; gap:8px; text-align:left; }
-    .feature-card .icon { width:28px; height:28px; flex-shrink:0; border-radius:50%; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; color:#fff; }
-    .feature-card .icon svg { width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
-    .feature-card .text-group { display:flex; flex-direction:column; }
-    .feature-card .zh { color:#fff; font-size:11px; font-weight:bold; margin-bottom:2px; }
-    .feature-card .desc { color:var(--text-muted); font-size:9px; line-height:1.2; }
-    
-    .footer { text-align:center; color:var(--text-muted); font-size:11px; margin-top:20px; padding-bottom:16px; }
-      .form-tip { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
-    .red-tip { color: #e63946; }
+    .pwd-wrap { position: relative; width: 100%; }
+    .pwd-wrap input { padding-right: 75px !important; }
+    .pwd-actions { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); display: flex; gap: 18px; color: var(--text-muted); font-size: 14px; cursor: pointer; visibility: hidden; opacity: 0; transition: opacity 0.2s, visibility 0.2s; z-index: 10; }
+    .pwd-actions span { padding: 12px; margin: -12px; -webkit-tap-highlight-color: transparent !important; outline: none !important; user-select: none !important; }
     .form-tip { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
     .red-tip { color: #e63946; }
-</style>
-
-    <style id="apex-captcha-style">
-    .apex-captcha-box { background: #1a1a1e; border: 1px solid #333; border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; margin: 12px 0; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: all 0.3s; position: relative; }
-    .apex-captcha-box:hover { border-color: #555; }
+    .checkbox-group { display:flex; align-items:center; gap:6px; margin:14px 0; font-size:11px; color:var(--text-muted); }
+    .checkbox-group input { accent-color:var(--gold); width:16px; height:16px; }
+    .checkbox-group a { color:#fff; text-decoration:none; }
+    .btn-primary { width:100%; padding:12px; background:#fff; color:#000; font-weight:700; font-size:14px; border:none; border-radius:8px; cursor:pointer; }
+    .apex-captcha-box { background: #1a1a1e; border: 1px solid #333; border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; margin: 12px 0; cursor: pointer; position: relative; }
     .apex-captcha-content { display: flex; align-items: center; gap: 10px; }
-    .apex-captcha-checkbox { width: 20px; height: 20px; border: 2px solid #555; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.3s; flex-shrink: 0; }
-    .apex-captcha-box.verifying .apex-captcha-checkbox { border-color: #4ade80; }
-    .apex-captcha-box.success .apex-captcha-checkbox { background: #4ade80; border-color: #4ade80; }
+    .apex-captcha-checkbox { width: 20px; height: 20px; border: 2px solid #555; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .apex-captcha-box.verifying .apex-captcha-checkbox { border-color: var(--green); }
+    .apex-captcha-box.success .apex-captcha-checkbox { background: var(--green); border-color: var(--green); }
     .apex-checkmark { width: 10px; height: 10px; stroke: #000; stroke-width: 3; fill: none; display: none; }
     .apex-captcha-box.success .apex-checkmark { display: block; }
-    .apex-captcha-text { font-size: 12px; color: #ccc; transition: color 0.3s; }
-    .apex-captcha-percent { font-size: 12px; color: #4ade80; font-weight: bold; display: none; }
+    .apex-captcha-text { font-size: 12px; color: #ccc; }
+    .apex-captcha-percent { font-size: 12px; color: var(--green); font-weight: bold; display: none; }
     .apex-captcha-box.verifying .apex-captcha-text, .apex-captcha-box.success .apex-captcha-text { display: none; }
     .apex-captcha-box.verifying .apex-captcha-percent, .apex-captcha-box.success .apex-captcha-percent { display: block; }
     .apex-captcha-footer { font-size: 9px; color: #555; position: absolute; right: 12px; bottom: 6px; }
-    .apex-captcha-box.verifying { border-color: #4ade80; box-shadow: 0 0 10px rgba(74, 222, 128, 0.1); }
-    .apex-captcha-box.success { border-color: #4ade80; box-shadow: 0 0 10px rgba(74, 222, 128, 0.2); }
-    </style>
+    .features-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px 12px; margin-top:16px; padding:0 8px; }
+    .feature-card { display:flex; align-items:center; gap:8px; }
+    .feature-card .icon { width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; color:#fff; }
+    .feature-card .icon svg { width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.8; }
+    .feature-card .zh { color:#fff; font-size:11px; font-weight:bold; }
+    .feature-card .desc { color:var(--text-muted); font-size:9px; }
+    .footer { text-align:center; color:var(--text-muted); font-size:11px; margin-top:20px; padding-bottom:16px; }
+  </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
       <div class="brand">
         <img src="./logo.jpeg" alt="Apex Logo" class="logo-img">
-        <div class="brand-text">
-          <span class="en">APEX</span>
-          <span class="sub">全球娱乐游戏平台</span>
-        </div>
+        <div class="brand-text"><span class="en">APEX</span><span class="sub">全球娱乐游戏平台</span></div>
       </div>
-      
-      <!-- 语言切换下拉菜单 -->
       <div class="lang-selector" id="lang-selector">
-        <button class="lang-btn" id="lang-btn">
-          <span id="current-flag">🇨🇳</span>
-          <span id="current-lang">简体中文</span>
-          <span class="arrow">▼</span>
-        </button>
+        <button class="lang-btn" id="lang-btn"><span id="current-flag">🇨🇳</span><span id="current-lang">简体中文</span><span class="arrow">▼</span></button>
         <div class="lang-menu" id="lang-menu"></div>
       </div>
     </div>
-    
-    <div class="banner-text">
-      <div class="main-title">全球游戏娱乐平台</div>
-      <div class="sub-title">一站式体验·玩法丰富·公平公正·极速存取</div>
-    </div>
-    
+    <div class="banner-text"><div class="main-title">全球游戏娱乐平台</div><div class="sub-title">一站式体验·玩法丰富·公平公正·极速存取</div></div>
     <div class="banner"></div>
-    
     <div class="auth-card">
       <div class="tabs">
-    <div id="login-form">
-    <div id="login-form">
         <button class="tab active" id="tab-login">登录</button>
         <button class="tab" id="tab-register">注册</button>
       </div>
       
-      <!-- 纯账号密码表单 -->
+      <!-- 登录表单 -->
       <div id="login-form">
-      <div class="input-group">
-        <label>账号</label>
-        <input type="text" placeholder="请输入账号">
-      </div>
-      <div class="input-group">
-        <label>登录密码</label>
-        <input type="password" placeholder="请输入密码">
-      </div>
-      
-      <div class="checkbox-group">
-        <input type="checkbox" id="agreement" checked>
-        <label for="agreement">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label>
-      </div>
-      
-    <div id="apex-captcha" class="apex-captcha-box" data-status="idle">
-      <div class="apex-captcha-content">
-        <div class="apex-captcha-checkbox">
-          <svg class="apex-checkmark" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+        <div class="input-group">
+          <label>账号</label>
+          <input type="text" placeholder="请输入账号">
         </div>
-        <div class="apex-captcha-text">点击进行人机验证</div>
-        <div class="apex-captcha-percent">0%</div>
-      </div>
-      <div class="apex-captcha-footer">Apex 安全防护</div>
-    </div>
+        <div class="input-group">
+          <label>登录密码</label>
+          <div class="pwd-wrap">
+            <input type="password" placeholder="请输入密码" oninput="this.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.nextElementSibling.style.opacity = this.value ? '1' : '0';">
+            <div class="pwd-actions">
+              <span class="btn-clear" onpointerdown="event.preventDefault(); this.parentElement.previousElementSibling.value=''; this.parentElement.style.visibility='hidden'; this.parentElement.style.opacity='0';">✕</span>
+              <span class="btn-toggle" onpointerdown="event.preventDefault(); togglePwd(this)"></span>
+            </div>
+          </div>
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="agreement" checked>
+          <label for="agreement">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label>
+        </div>
+        
+        <!-- 登录区域的人机验证 -->
+        <div class="apex-captcha-box" data-status="idle" onclick="startCaptcha(this)">
+          <div class="apex-captcha-content">
+            <div class="apex-captcha-checkbox"><svg class="apex-checkmark" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+            <div class="apex-captcha-text">点击进行人机验证</div>
+            <div class="apex-captcha-percent">0%</div>
+          </div>
+          <div class="apex-captcha-footer">Apex 安全防护</div>
+        </div>
+        
         <button class="btn-primary">登 录</button>
-</div>
-<div id="register-form" style="display:none;">
-  <div class="input-group">
-    <label>账号</label>
-    <input type="text" placeholder="请输入账号">
-    <div class="form-tip">6-20位字符，支持字母、数字、下划线</div>
-  </div>
-  <div class="input-group">
-    <label>邮箱</label>
-    <input type="email" placeholder="请输入邮箱">
-    <div class="form-tip red-tip">⚠️：必须填写真实邮箱且自己长期使用的邮箱，以便于密码找回使用</div>
-  </div>
-  <div class="input-group">
-    <label>密码</label>
-    <input type="password" placeholder="请输入密码">
-    <div class="form-tip">至少8位，包含大小写字母和数字</div>
-  </div>
-  <div class="input-group">
-    <label>确认密码</label>
-    <input type="password" placeholder="请再次输入密码">
-  </div>
-  
-    <div id="apex-captcha" class="apex-captcha-box" data-status="idle">
-      <div class="apex-captcha-content">
-        <div class="apex-captcha-checkbox">
-          <svg class="apex-checkmark" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
-        </div>
-        <div class="apex-captcha-text">点击进行人机验证</div>
-        <div class="apex-captcha-percent">0%</div>
       </div>
-      <div class="apex-captcha-footer">Apex 安全防护</div>
-    </div>
-        <button class="btn-primary">注 册</button>
-</div>
-</div>
-<div id="register-form" style="display:none;">
-  <div class="input-group">
-    <label>账号</label>
-    <input type="text" placeholder="请输入账号">
-    <div class="form-tip">6-20位字符，支持字母、数字、下划线</div>
-  </div>
-  <div class="input-group">
-    <label>邮箱</label>
-    <input type="email" placeholder="请输入邮箱">
-    <div class="form-tip red-tip">⚠️：必须填写真实邮箱且自己长期使用的邮箱，以便于密码找回使用</div>
-  </div>
-  <div class="input-group">
-    <label>密码</label>
-    <input type="password" placeholder="请输入密码">
-    <div class="form-tip">至少8位，包含大小写字母和数字</div>
-  </div>
-  <div class="input-group">
-    <label>确认密码</label>
-    <input type="password" placeholder="请再次输入密码">
-  </div>
-  <button class="btn-primary">注 册</button>
-</div>
-      </div>
+      <!-- 注册表单 -->
       <div id="register-form" style="display:none;">
-  <div class="input-group">
-    <label>账号</label>
-    <input type="text" placeholder="请输入账号">
-    <div class="form-tip">6-20位字符，支持字母、数字、下划线</div>
-  </div>
-  <div class="input-group">
-    <label>邮箱</label>
-    <input type="email" placeholder="请输入邮箱">
-    <div class="form-tip red-tip">⚠️：必须填写真实邮箱且自己长期使用的邮箱，以便于密码找回使用</div>
-  </div>
-  <div class="input-group">
-    <label>密码</label>
-    <input type="password" placeholder="请输入密码">
-    <div class="form-tip">至少8位，包含大小写字母和数字</div>
-  </div>
-  <div class="input-group">
-    <label>确认密码</label>
-    <input type="password" placeholder="请再次输入密码">
-  </div>
-  <button class="btn-primary">注 册</button>
-</div>
-
+        <div class="input-group">
+          <label>账号</label>
+          <input type="text" placeholder="请输入账号">
+          <div class="form-tip">6-20位字符，支持字母、数字、下划线</div>
+        </div>
+        <div class="input-group">
+          <label>邮箱</label>
+          <input type="email" placeholder="请输入邮箱">
+          <div class="form-tip red-tip">⚠️：必须填写真实邮箱且自己长期使用的邮箱，以便于密码找回使用</div>
+        </div>
+        <div class="input-group">
+          <label>密码</label>
+          <div class="pwd-wrap">
+            <input type="password" placeholder="请输入密码" oninput="this.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.nextElementSibling.style.opacity = this.value ? '1' : '0';">
+            <div class="pwd-actions">
+              <span class="btn-clear" onpointerdown="event.preventDefault(); this.parentElement.previousElementSibling.value=''; this.parentElement.style.visibility='hidden'; this.parentElement.style.opacity='0';">✕</span>
+              <span class="btn-toggle" onpointerdown="event.preventDefault(); togglePwd(this)"></span>
+            </div>
+          </div>
+          <div class="form-tip">至少8位，包含大小写字母和数字</div>
+        </div>
+        <div class="input-group">
+          <label>确认密码</label>
+          <div class="pwd-wrap">
+            <input type="password" placeholder="请再次输入密码" oninput="this.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.nextElementSibling.style.opacity = this.value ? '1' : '0';">
+            <div class="pwd-actions">
+              <span class="btn-clear" onpointerdown="event.preventDefault(); this.parentElement.previousElementSibling.value=''; this.parentElement.style.visibility='hidden'; this.parentElement.style.opacity='0';">✕</span>
+              <span class="btn-toggle" onpointerdown="event.preventDefault(); togglePwd(this)"></span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 注册区域的人机验证 -->
+        <div class="apex-captcha-box" data-status="idle" onclick="startCaptcha(this)">
+          <div class="apex-captcha-content">
+            <div class="apex-captcha-checkbox"><svg class="apex-checkmark" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+            <div class="apex-captcha-text">点击进行人机验证</div>
+            <div class="apex-captcha-percent">0%</div>
+          </div>
+          <div class="apex-captcha-footer">Apex 安全防护</div>
+        </div>
+        
+        <button class="btn-primary">注 册</button>
+      </div>
     </div>
     
-    <!-- 核心优势区 -->
     <div class="features-grid">
-      <div class="feature-card">
-        <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div>
-        <div class="text-group"><div class="zh">安全可靠</div><div class="desc">顶级加密 资金保障</div></div>
-      </div>
-      <div class="feature-card">
-        <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M4 7h16"/><path d="M6 7l-3 6h6z"/><path d="M18 7l-3 6h6z"/><path d="M12 21h6"/></svg></div>
-        <div class="text-group"><div class="zh">公平公正</div><div class="desc">全球监管 透明公开</div></div>
-      </div>
-      <div class="feature-card">
-        <div class="icon"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
-        <div class="text-group"><div class="zh">极速开户</div><div class="desc">简单便捷 快速畅玩</div></div>
-      </div>
-      <div class="feature-card">
-        <div class="icon"><svg viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></div>
-        <div class="text-group"><div class="zh">24/7客服</div><div class="desc">专业团队 随时在线</div></div>
-      </div>
+      <div class="feature-card"><div class="icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div><div class="text-group"><div class="zh">安全可靠</div><div class="desc">顶级加密 资金保障</div></div></div>
+      <div class="feature-card"><div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M4 7h16"/><path d="M6 7l-3 6h6z"/><path d="M18 7l-3 6h6z"/><path d="M12 21h6"/></svg></div><div class="text-group"><div class="zh">公平公正</div><div class="desc">全球监管 透明公开</div></div></div>
+      <div class="feature-card"><div class="icon"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><div class="text-group"><div class="zh">极速开户</div><div class="desc">简单便捷 快速畅玩</div></div></div>
+      <div class="feature-card"><div class="icon"><svg viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></div><div class="text-group"><div class="zh">24/7客服</div><div class="desc">专业团队 随时在线</div></div></div>
     </div>
-    
     <div class="footer">© 2026 Apex Global Entertainment. All rights reserved.</div>
   </div>
   
   <script>
-    // 全球使用人数前 30 的语言数据
-    const languages = [
-      { code: 'zh-CN', flag: '🇨🇳', name: '简体中文' },
-      { code: 'en-US', flag: '🇺🇸', name: 'English' },
-      { code: 'es-ES', flag: '🇪🇸', name: 'Español' },
-      { code: 'hi-IN', flag: '🇮🇳', name: 'हिन्दी' },
-      { code: 'ar-SA', flag: '🇸🇦', name: 'العربية' },
-      { code: 'fr-FR', flag: '🇫🇷', name: 'Français' },
-      { code: 'bn-BD', flag: '🇧🇩', name: 'বাংলা' },
-      { code: 'pt-BR', flag: '🇧🇷', name: 'Português' },
-      { code: 'ru-RU', flag: '🇷🇺', name: 'Русский' },
-      { code: 'ur-PK', flag: '🇵🇰', name: 'اردو' },
-      { code: 'id-ID', flag: '🇮🇩', name: 'Bahasa Indonesia' },
-      { code: 'de-DE', flag: '🇩🇪', name: 'Deutsch' },
-      { code: 'ja-JP', flag: '🇯🇵', name: '日本語' },
-      { code: 'sw-KE', flag: '🇰🇪', name: 'Kiswahili' },
-      { code: 'mr-IN', flag: '🇮🇳', name: 'मराठी' },
-      { code: 'te-IN', flag: '🇮🇳', name: 'తెలుగు' },
-      { code: 'tr-TR', flag: '🇹🇷', name: 'Türkçe' },
-      { code: 'ta-IN', flag: '🇮🇳', name: 'தமிழ்' },
-      { code: 'vi-VN', flag: '🇻🇳', name: 'Tiếng Việt' },
-      { code: 'ko-KR', flag: '🇰🇷', name: '한국어' },
-      { code: 'it-IT', flag: '🇮🇹', name: 'Italiano' },
-      { code: 'th-TH', flag: '🇹🇭', name: 'ไทย' },
-      { code: 'gu-IN', flag: '🇮🇳', name: 'ગુજરાતી' },
-      { code: 'pl-PL', flag: '🇵🇱', name: 'Polski' },
-      { code: 'uk-UA', flag: '🇺🇦', name: 'Українська' },
-      { code: 'fa-IR', flag: '🇮🇷', name: 'فارسی' },
-      { code: 'ms-MY', flag: '🇲🇾', name: 'Bahasa Melayu' },
-      { code: 'nl-NL', flag: '🇳🇱', name: 'Nederlands' },
-      { code: 'my-MM', flag: '🇲🇲', name: 'မြန်မာဘာသာ' },
-      { code: 'ro-RO', flag: '🇷🇴', name: 'Română' }
-    ];
-
-    const langBtn = document.getElementById('lang-btn');
-    const langMenu = document.getElementById('lang-menu');
-    const currentFlag = document.getElementById('current-flag');
-    const currentLang = document.getElementById('current-lang');
-
-    function initLangMenu() {
-      langMenu.innerHTML = '';
-      languages.forEach(lang => {
-        const item = document.createElement('div');
-        item.className = 'lang-item';
-        item.innerHTML = `<span>${lang.flag}</span><span>${lang.name}</span>`;
-        item.onclick = (e) => { e.stopPropagation(); selectLanguage(lang); };
-        langMenu.appendChild(item);
-      });
+    const EYE_OPEN = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+    const EYE_CLOSED = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+    
+    function togglePwd(el) {
+      const p = el.parentElement.previousElementSibling;
+      p.type = p.type === 'password' ? 'text' : 'password';
+      el.innerHTML = p.type === 'password' ? EYE_OPEN : EYE_CLOSED;
     }
-
-    function selectLanguage(lang) {
-      currentFlag.textContent = lang.flag;
-      currentLang.textContent = lang.name;
-      langMenu.classList.remove('show');
-      localStorage.setItem('apexLang', JSON.stringify(lang));
-    }
-
-    langBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      langMenu.classList.toggle('show');
-    });
-
-    document.addEventListener('click', () => { langMenu.classList.remove('show'); });
-
-    document.addEventListener('DOMContentLoaded', () => {
-      initLangMenu();
-      const saved = localStorage.getItem('apexLang');
-      if (saved) {
-        try { const lang = JSON.parse(saved); currentFlag.textContent = lang.flag; currentLang.textContent = lang.name; } catch (e) {}
-      }
-    });
-  </script>
-
-    <script id="apex-captcha-script">
-    document.querySelectorAll('.apex-captcha-box').forEach(box => {
-      const text = box.querySelector('.apex-captcha-text');
+    
+    function startCaptcha(box) {
+      if (box.dataset.status === 'success' || box.dataset.status === 'verifying') return;
+      box.dataset.status = 'verifying';
+      box.classList.add('verifying');
+      let progress = 0;
       const percent = box.querySelector('.apex-captcha-percent');
-      box.addEventListener('click', (e) => {
-        if (box.dataset.status === 'success' || box.dataset.status === 'verifying') return;
-        box.dataset.status = 'verifying';
-        box.classList.add('verifying');
-        let progress = 0;
-        percent.textContent = '0%';
-        const interval = setInterval(() => {
-          progress += Math.floor(Math.random() * 15) + 5;
-          if (progress > 100) progress = 100;
-          percent.textContent = progress + '%';
-          if (progress === 100) {
-            clearInterval(interval);
-            setTimeout(() => {
-              box.classList.remove('verifying');
-              box.classList.add('success');
-              box.dataset.status = 'success';
-              text.textContent = '验证通过';
-            }, 300);
-          }
-        }, 100);
+      percent.textContent = '0%';
+      const interval = setInterval(() => {
+        progress += Math.floor(Math.random() * 15) + 5;
+        if (progress > 100) progress = 100;
+        percent.textContent = progress + '%';
+        if (progress === 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            box.classList.remove('verifying');
+            box.classList.add('success');
+            box.dataset.status = 'success';
+          }, 300);
+        }
+      }, 100);
+    }
+    
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        document.getElementById('login-form').style.display = (this.id === 'tab-login') ? 'block' : 'none';
+        document.getElementById('register-form').style.display = (this.id === 'tab-register') ? 'block' : 'none';
       });
     });
-    </script>
+
+    document.addEventListener('DOMContentLoaded', () => { document.querySelectorAll('.btn-toggle').forEach(el => { el.innerHTML = EYE_OPEN; }); });
+    
+    // 语言切换逻辑
+    const languages = [{ code: 'zh-CN', flag: '🇨🇳', name: '简体中文' }, { code: 'en-US', flag: '🇺🇸', name: 'English' }];
+    const langBtn = document.getElementById('lang-btn'), langMenu = document.getElementById('lang-menu'), currentFlag = document.getElementById('current-flag'), currentLang = document.getElementById('current-lang');
+    languages.forEach(lang => {
+      const item = document.createElement('div');
+      item.className = 'lang-item';
+      item.innerHTML = `<span>${lang.flag}</span><span>${lang.name}</span>`;
+      item.onclick = (e) => { e.stopPropagation(); currentFlag.textContent = lang.flag; currentLang.textContent = lang.name; langMenu.classList.remove('show'); };
+      langMenu.appendChild(item);
+    });
+    langBtn.addEventListener('click', (e) => { e.stopPropagation(); langMenu.classList.toggle('show'); });
+    document.addEventListener('click', () => langMenu.classList.remove('show'));
+  </script>
 </body>
 </html>
