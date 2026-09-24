@@ -10,14 +10,15 @@
     body { font-family:'Inter',system-ui,-apple-system,sans-serif; background-color:var(--bg); color:var(--text); display:flex; flex-direction:column; min-height:100vh; }
     .container { max-width:480px; margin:0 auto; padding:20px; width:100%; }
     
-    /* 顶部导航：品牌左上，语言右上 */
-    .header { display:flex; justify-content:space-between; align-items:flex-end; padding:10px 0 24px 0; }
-    .brand { display:flex; flex-direction:column; position:relative; }
-    .brand .en { font-size:32px; font-weight:900; letter-spacing:4px; text-transform:uppercase; color:#fff; line-height:1; }
-    .brand .sub { font-size:9px; color:var(--gold); letter-spacing:2px; text-transform:uppercase; margin-top:6px; }
-    /* 品牌名下方的渐变金线，类似图一Nexora的横线设计 */
-    .brand::after { content:''; position:absolute; bottom:-10px; left:0; width:100%; height:2px; background:linear-gradient(90deg, var(--gold) 0%, transparent 100%); border-radius:2px; }
-    .lang-switch { color:var(--text-muted); font-size:12px; cursor:pointer; display:flex; align-items:center; gap:6px; border:1px solid #333; padding:6px 12px; border-radius:20px; transition:0.3s; margin-bottom:6px; }
+    /* 顶部导航：品牌左，语言右 */
+    .header { display:flex; justify-content:space-between; align-items:center; padding:10px 0 20px 0; }
+    
+    /* 品牌名：两侧带横线（参考图二 Nexora） */
+    .brand { display:flex; align-items:center; gap:10px; }
+    .brand .en { font-size:24px; font-weight:900; letter-spacing:4px; text-transform:uppercase; color:#fff; line-height:1; }
+    .brand::before, .brand::after { content:''; height:1px; background:linear-gradient(90deg, transparent, var(--gold), transparent); flex:1; min-width:15px; }
+    
+    .lang-switch { color:var(--text-muted); font-size:12px; cursor:pointer; display:flex; align-items:center; gap:6px; border:1px solid #333; padding:6px 12px; border-radius:20px; transition:0.3s; }
     .lang-switch:hover { border-color:var(--gold); color:var(--gold); }
     
     /* 小广告 Banner */
@@ -47,17 +48,16 @@
     .social-btn { width:44px; height:44px; border-radius:50%; background:#1a1a1e; border:1px solid #333; display:flex; align-items:center; justify-content:center; color:white; cursor:pointer; font-size:14px; font-weight:bold; transition:0.3s; }
     .social-btn:hover { border-color:var(--gold); color:var(--gold); }
     
-    /* 核心优势区 - 参考图一的高级干净排版 */
-    .features-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px 10px; margin-top:30px; }
-    .feature-card { display:flex; flex-direction:column; align-items:center; text-align:center; padding:10px; }
-    /* 图一风格：圆形浅色底 + 居中图标 */
-    .feature-card .icon { width:52px; height:52px; border-radius:50%; background:rgba(244,208,63,0.1); display:flex; align-items:center; justify-content:center; margin-bottom:14px; color:var(--gold); }
-    .feature-card .icon svg { width:26px; height:26px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-    .feature-card .en { font-weight:bold; font-size:13px; margin-bottom:4px; letter-spacing:0.5px; color:#fff; }
-    .feature-card .zh { color:var(--gold); font-size:12px; opacity:0.9; margin-bottom:4px; }
-    .feature-card .desc { color:var(--text-muted); font-size:11px; line-height:1.4; }
+    /* 核心优势区 - 紧凑、小图标、纯中文 */
+    .features-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px 16px; margin-top:20px; padding:0 10px; }
+    .feature-card { display:flex; align-items:center; gap:10px; text-align:left; }
+    .feature-card .icon { width:32px; height:32px; flex-shrink:0; border-radius:50%; background:rgba(244,208,63,0.1); display:flex; align-items:center; justify-content:center; color:var(--gold); }
+    .feature-card .icon svg { width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+    .feature-card .text-group { display:flex; flex-direction:column; }
+    .feature-card .zh { color:#fff; font-size:12px; font-weight:bold; margin-bottom:2px; }
+    .feature-card .desc { color:var(--text-muted); font-size:10px; line-height:1.3; }
     
-    .footer { text-align:center; color:var(--text-muted); font-size:12px; margin-top:40px; padding-bottom:20px; }
+    .footer { text-align:center; color:var(--text-muted); font-size:12px; margin-top:30px; padding-bottom:20px; }
   </style>
 </head>
 <body>
@@ -66,7 +66,6 @@
     <div class="header">
       <div class="brand">
         <div class="en">Apex</div>
-        <div class="sub">Global Entertainment</div>
       </div>
       <div class="lang-switch">🌐 EN / 中文</div>
     </div>
@@ -81,15 +80,15 @@
         <button class="tab">注册</button>
       </div>
       <div class="input-group">
-        <label>邮箱 / 手机号 Email / Phone</label>
+        <label>邮箱 / 手机号</label>
         <input type="text" placeholder="请输入邮箱或手机号">
       </div>
       <div class="input-group">
-        <label>登录密码 Password</label>
+        <label>登录密码</label>
         <input type="password" placeholder="请输入密码">
       </div>
       <div class="input-group">
-        <label>验证码 Captcha</label>
+        <label>验证码</label>
         <div class="captcha-row">
           <input type="text" placeholder="图形验证码">
           <div class="captcha-img">A7KD</div>
@@ -99,7 +98,7 @@
         <input type="checkbox" id="agreement" checked>
         <label for="agreement">我已阅读并同意 <a href="#" style="color:var(--gold)">《用户协议》</a> 与 <a href="#" style="color:var(--gold)">《隐私政策》</a></label>
       </div>
-      <button class="btn-primary">登 录 Login</button>
+      <button class="btn-primary">登 录</button>
       <div class="divider">或使用第三方账号登录</div>
       <div class="social-login">
         <div class="social-btn">G</div>
@@ -108,31 +107,35 @@
       </div>
     </div>
     
-    <!-- 核心优势区（无边框，圆形底色图标） -->
+    <!-- 核心优势区（紧凑小图标，纯中文） -->
     <div class="features-grid">
       <div class="feature-card">
         <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-        <div class="en">Secure & Reliable</div>
-        <div class="zh">安全可靠</div>
-        <div class="desc">顶级加密 资金保障</div>
+        <div class="text-group">
+          <div class="zh">安全可靠</div>
+          <div class="desc">顶级加密 资金保障</div>
+        </div>
       </div>
       <div class="feature-card">
         <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3a1 1 0 0 1 1 1v1.58l7.3 2.92-1.5 1.5L12 7.6l-6.8 2.4-1.5-1.5 7.3-2.92V4a1 1 0 0 1 1-1zm-7 7v2h4v-2H5zm10 0v2h4v-2h-4z"/></svg></div>
-        <div class="en">Fair & Transparent</div>
-        <div class="zh">公平公正</div>
-        <div class="desc">全球监管 透明公开</div>
+        <div class="text-group">
+          <div class="zh">公平公正</div>
+          <div class="desc">全球监管 透明公开</div>
+        </div>
       </div>
       <div class="feature-card">
         <div class="icon"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
-        <div class="en">Fast Registration</div>
-        <div class="zh">极速开户</div>
-        <div class="desc">简单便捷 快速畅玩</div>
+        <div class="text-group">
+          <div class="zh">极速开户</div>
+          <div class="desc">简单便捷 快速畅玩</div>
+        </div>
       </div>
       <div class="feature-card">
         <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 2a9 9 0 0 0-9 9v6a2 2 0 0 0 2 2h2a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1H5v-1a7 7 0 0 1 14 0v1h-2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h2a2 2 0 0 0 2-2v-6a9 9 0 0 0-9-9z"/></svg></div>
-        <div class="en">24/7 Support</div>
-        <div class="zh">24/7客服</div>
-        <div class="desc">专业团队 随时在线</div>
+        <div class="text-group">
+          <div class="zh">24/7客服</div>
+          <div class="desc">专业团队 随时在线</div>
+        </div>
       </div>
     </div>
     
