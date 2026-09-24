@@ -11,11 +11,13 @@
     .container { max-width:480px; margin:0 auto; padding:20px; width:100%; }
     
     /* 顶部导航：品牌左上，语言右上 */
-    .header { display:flex; justify-content:space-between; align-items:center; padding:10px 0 24px 0; }
-    .brand { display:flex; flex-direction:column; }
-    .brand .en { font-size:32px; font-weight:900; letter-spacing:4px; background:linear-gradient(135deg, #ffffff 0%, #f4d03f 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 4px 10px rgba(244,208,63,0.3)); }
-    .brand .sub { font-size:10px; color:var(--gold); letter-spacing:2px; text-transform:uppercase; margin-top:4px; }
-    .lang-switch { color:var(--text-muted); font-size:13px; cursor:pointer; display:flex; align-items:center; gap:6px; border:1px solid #333; padding:6px 12px; border-radius:20px; transition:0.3s; }
+    .header { display:flex; justify-content:space-between; align-items:flex-end; padding:10px 0 24px 0; }
+    .brand { display:flex; flex-direction:column; position:relative; }
+    .brand .en { font-size:32px; font-weight:900; letter-spacing:4px; text-transform:uppercase; color:#fff; line-height:1; }
+    .brand .sub { font-size:9px; color:var(--gold); letter-spacing:2px; text-transform:uppercase; margin-top:6px; }
+    /* 品牌名下方的渐变金线，类似图一Nexora的横线设计 */
+    .brand::after { content:''; position:absolute; bottom:-10px; left:0; width:100%; height:2px; background:linear-gradient(90deg, var(--gold) 0%, transparent 100%); border-radius:2px; }
+    .lang-switch { color:var(--text-muted); font-size:12px; cursor:pointer; display:flex; align-items:center; gap:6px; border:1px solid #333; padding:6px 12px; border-radius:20px; transition:0.3s; margin-bottom:6px; }
     .lang-switch:hover { border-color:var(--gold); color:var(--gold); }
     
     /* 小广告 Banner */
@@ -27,39 +29,33 @@
     .tabs { display:flex; border:1px solid #333; border-radius:10px; overflow:hidden; margin-bottom:24px; }
     .tab { flex:1; padding:14px; text-align:center; cursor:pointer; font-weight:bold; transition:0.3s; color:var(--text-muted); background:transparent; border:none; font-size:16px; }
     .tab.active { background:var(--red); color:white; }
-    
     .input-group { margin-bottom:16px; }
     .input-group label { display:block; font-size:13px; color:var(--text-muted); margin-bottom:6px; }
     .input-group input { width:100%; padding:14px; background:#121216; border:1px solid #333; border-radius:8px; color:white; font-size:15px; outline:none; transition:0.3s; }
     .input-group input:focus { border-color:var(--gold); }
-    
     .captcha-row { display:flex; gap:10px; }
     .captcha-row input { flex:1; }
     .captcha-img { width:100px; background:#1a1a1e; border:1px solid var(--gold); display:flex; align-items:center; justify-content:center; border-radius:8px; font-family:serif; font-style:italic; color:var(--gold); letter-spacing:2px; font-size:20px; cursor:pointer; }
-    
     .checkbox-group { display:flex; align-items:center; gap:8px; margin:20px 0; font-size:12px; color:var(--text-muted); }
     .checkbox-group input { accent-color:var(--gold); }
-    
     .btn-primary { width:100%; padding:16px; background:linear-gradient(135deg, #f4d03f 0%, #d4af37 100%); color:#000; font-weight:700; font-size:16px; border:none; border-radius:10px; cursor:pointer; transition:0.3s; letter-spacing:1px; }
     .btn-primary:hover { transform:translateY(-2px); box-shadow:0 10px 20px rgba(244,208,63,0.3); }
-    
     .divider { text-align:center; position:relative; margin:24px 0; color:var(--text-muted); font-size:12px; }
     .divider::before, .divider::after { content:''; position:absolute; top:50%; width:30%; height:1px; background:#333; }
     .divider::before { left:0; } .divider::after { right:0; }
-    
     .social-login { display:flex; justify-content:center; gap:20px; }
     .social-btn { width:44px; height:44px; border-radius:50%; background:#1a1a1e; border:1px solid #333; display:flex; align-items:center; justify-content:center; color:white; cursor:pointer; font-size:14px; font-weight:bold; transition:0.3s; }
     .social-btn:hover { border-color:var(--gold); color:var(--gold); }
     
-    /* 核心优势区 - 高级 SVG 图标 */
-    .features-grid { display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:40px; }
-    .feature-card { background:rgba(20,20,25,0.6); border:1px solid rgba(244,208,63,0.1); border-radius:12px; padding:20px; text-align:center; backdrop-filter:blur(8px); transition:0.3s; }
-    .feature-card:hover { border-color:rgba(244,208,63,0.3); transform:translateY(-3px); }
-    .feature-card .icon { width:32px; height:32px; margin:0 auto 12px auto; color:var(--gold); }
-    .feature-card .icon svg { width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-    .feature-card .en { font-weight:bold; font-size:13px; margin-bottom:4px; letter-spacing:0.5px; }
+    /* 核心优势区 - 参考图一的高级干净排版 */
+    .features-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px 10px; margin-top:30px; }
+    .feature-card { display:flex; flex-direction:column; align-items:center; text-align:center; padding:10px; }
+    /* 图一风格：圆形浅色底 + 居中图标 */
+    .feature-card .icon { width:52px; height:52px; border-radius:50%; background:rgba(244,208,63,0.1); display:flex; align-items:center; justify-content:center; margin-bottom:14px; color:var(--gold); }
+    .feature-card .icon svg { width:26px; height:26px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+    .feature-card .en { font-weight:bold; font-size:13px; margin-bottom:4px; letter-spacing:0.5px; color:#fff; }
     .feature-card .zh { color:var(--gold); font-size:12px; opacity:0.9; margin-bottom:4px; }
-    .feature-card .desc { color:var(--text-muted); font-size:11px; }
+    .feature-card .desc { color:var(--text-muted); font-size:11px; line-height:1.4; }
     
     .footer { text-align:center; color:var(--text-muted); font-size:12px; margin-top:40px; padding-bottom:20px; }
   </style>
@@ -112,36 +108,28 @@
       </div>
     </div>
     
-    <!-- 核心优势区（替换了 Emoji，使用高级 SVG） -->
+    <!-- 核心优势区（无边框，圆形底色图标） -->
     <div class="features-grid">
       <div class="feature-card">
-        <div class="icon">
-          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        </div>
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
         <div class="en">Secure & Reliable</div>
         <div class="zh">安全可靠</div>
         <div class="desc">顶级加密 资金保障</div>
       </div>
       <div class="feature-card">
-        <div class="icon">
-          <svg viewBox="0 0 24 24"><path d="M12 3a1 1 0 0 1 1 1v1.58l7.3 2.92-1.5 1.5L12 7.6l-6.8 2.4-1.5-1.5 7.3-2.92V4a1 1 0 0 1 1-1zm-7 7v2h4v-2H5zm10 0v2h4v-2h-4z"/></svg>
-        </div>
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3a1 1 0 0 1 1 1v1.58l7.3 2.92-1.5 1.5L12 7.6l-6.8 2.4-1.5-1.5 7.3-2.92V4a1 1 0 0 1 1-1zm-7 7v2h4v-2H5zm10 0v2h4v-2h-4z"/></svg></div>
         <div class="en">Fair & Transparent</div>
         <div class="zh">公平公正</div>
         <div class="desc">全球监管 透明公开</div>
       </div>
       <div class="feature-card">
-        <div class="icon">
-          <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        </div>
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
         <div class="en">Fast Registration</div>
         <div class="zh">极速开户</div>
         <div class="desc">简单便捷 快速畅玩</div>
       </div>
       <div class="feature-card">
-        <div class="icon">
-          <svg viewBox="0 0 24 24"><path d="M12 2a9 9 0 0 0-9 9v6a2 2 0 0 0 2 2h2a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1H5v-1a7 7 0 0 1 14 0v1h-2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h2a2 2 0 0 0 2-2v-6a9 9 0 0 0-9-9z"/></svg>
-        </div>
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 2a9 9 0 0 0-9 9v6a2 2 0 0 0 2 2h2a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1H5v-1a7 7 0 0 1 14 0v1h-2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h2a2 2 0 0 0 2-2v-6a9 9 0 0 0-9-9z"/></svg></div>
         <div class="en">24/7 Support</div>
         <div class="zh">24/7客服</div>
         <div class="desc">专业团队 随时在线</div>
