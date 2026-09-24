@@ -71,6 +71,24 @@
     .form-tip { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
     .red-tip { color: #e63946; }
 </style>
+
+    <style id="apex-captcha-style">
+    .apex-captcha-box { background: #1a1a1e; border: 1px solid #333; border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; margin: 12px 0; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: all 0.3s; position: relative; }
+    .apex-captcha-box:hover { border-color: #555; }
+    .apex-captcha-content { display: flex; align-items: center; gap: 10px; }
+    .apex-captcha-checkbox { width: 20px; height: 20px; border: 2px solid #555; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.3s; flex-shrink: 0; }
+    .apex-captcha-box.verifying .apex-captcha-checkbox { border-color: #4ade80; }
+    .apex-captcha-box.success .apex-captcha-checkbox { background: #4ade80; border-color: #4ade80; }
+    .apex-checkmark { width: 10px; height: 10px; stroke: #000; stroke-width: 3; fill: none; display: none; }
+    .apex-captcha-box.success .apex-checkmark { display: block; }
+    .apex-captcha-text { font-size: 12px; color: #ccc; transition: color 0.3s; }
+    .apex-captcha-percent { font-size: 12px; color: #4ade80; font-weight: bold; display: none; }
+    .apex-captcha-box.verifying .apex-captcha-text, .apex-captcha-box.success .apex-captcha-text { display: none; }
+    .apex-captcha-box.verifying .apex-captcha-percent, .apex-captcha-box.success .apex-captcha-percent { display: block; }
+    .apex-captcha-footer { font-size: 9px; color: #555; position: absolute; right: 12px; bottom: 6px; }
+    .apex-captcha-box.verifying { border-color: #4ade80; box-shadow: 0 0 10px rgba(74, 222, 128, 0.1); }
+    .apex-captcha-box.success { border-color: #4ade80; box-shadow: 0 0 10px rgba(74, 222, 128, 0.2); }
+    </style>
 </head>
 <body>
   <div class="container">
@@ -124,7 +142,18 @@
         <input type="checkbox" id="agreement" checked>
         <label for="agreement">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label>
       </div>
-      <button class="btn-primary">登 录</button>
+      
+    <div id="apex-captcha" class="apex-captcha-box" data-status="idle">
+      <div class="apex-captcha-content">
+        <div class="apex-captcha-checkbox">
+          <svg class="apex-checkmark" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <div class="apex-captcha-text">点击进行人机验证</div>
+        <div class="apex-captcha-percent">0%</div>
+      </div>
+      <div class="apex-captcha-footer">Apex 安全防护</div>
+    </div>
+        <button class="btn-primary">登 录</button>
 </div>
 <div id="register-form" style="display:none;">
   <div class="input-group">
@@ -146,7 +175,18 @@
     <label>确认密码</label>
     <input type="password" placeholder="请再次输入密码">
   </div>
-  <button class="btn-primary">注 册</button>
+  
+    <div id="apex-captcha" class="apex-captcha-box" data-status="idle">
+      <div class="apex-captcha-content">
+        <div class="apex-captcha-checkbox">
+          <svg class="apex-checkmark" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <div class="apex-captcha-text">点击进行人机验证</div>
+        <div class="apex-captcha-percent">0%</div>
+      </div>
+      <div class="apex-captcha-footer">Apex 安全防护</div>
+    </div>
+        <button class="btn-primary">注 册</button>
 </div>
 </div>
 <div id="register-form" style="display:none;">
@@ -293,5 +333,33 @@
       }
     });
   </script>
+
+    <script id="apex-captcha-script">
+    document.querySelectorAll('.apex-captcha-box').forEach(box => {
+      const text = box.querySelector('.apex-captcha-text');
+      const percent = box.querySelector('.apex-captcha-percent');
+      box.addEventListener('click', (e) => {
+        if (box.dataset.status === 'success' || box.dataset.status === 'verifying') return;
+        box.dataset.status = 'verifying';
+        box.classList.add('verifying');
+        let progress = 0;
+        percent.textContent = '0%';
+        const interval = setInterval(() => {
+          progress += Math.floor(Math.random() * 15) + 5;
+          if (progress > 100) progress = 100;
+          percent.textContent = progress + '%';
+          if (progress === 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+              box.classList.remove('verifying');
+              box.classList.add('success');
+              box.dataset.status = 'success';
+              text.textContent = '验证通过';
+            }, 300);
+          }
+        }, 100);
+      });
+    });
+    </script>
 </body>
 </html>
