@@ -68,6 +68,8 @@
     .footer { text-align:center; color:var(--text-muted); font-size:11px; margin-top:20px; padding-bottom:16px; }
       .form-tip { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
     .red-tip { color: #e63946; }
+    .form-tip { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+    .red-tip { color: #e63946; }
 </style>
 </head>
 <body>
@@ -101,6 +103,8 @@
     
     <div class="auth-card">
       <div class="tabs">
+    <div id="login-form">
+    <div id="login-form">
         <button class="tab active" id="tab-login">登录</button>
         <button class="tab" id="tab-register">注册</button>
       </div>
@@ -121,6 +125,52 @@
         <label for="agreement">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label>
       </div>
       <button class="btn-primary">登 录</button>
+</div>
+<div id="register-form" style="display:none;">
+  <div class="input-group">
+    <label>账号</label>
+    <input type="text" placeholder="请输入账号">
+    <div class="form-tip">6-20位字符，支持字母、数字、下划线</div>
+  </div>
+  <div class="input-group">
+    <label>邮箱</label>
+    <input type="email" placeholder="请输入邮箱">
+    <div class="form-tip red-tip">⚠️：必须填写真实邮箱且自己长期使用的邮箱，以便于密码找回使用</div>
+  </div>
+  <div class="input-group">
+    <label>密码</label>
+    <input type="password" placeholder="请输入密码">
+    <div class="form-tip">至少8位，包含大小写字母和数字</div>
+  </div>
+  <div class="input-group">
+    <label>确认密码</label>
+    <input type="password" placeholder="请再次输入密码">
+  </div>
+  <button class="btn-primary">注 册</button>
+</div>
+</div>
+<div id="register-form" style="display:none;">
+  <div class="input-group">
+    <label>账号</label>
+    <input type="text" placeholder="请输入账号">
+    <div class="form-tip">6-20位字符，支持字母、数字、下划线</div>
+  </div>
+  <div class="input-group">
+    <label>邮箱</label>
+    <input type="email" placeholder="请输入邮箱">
+    <div class="form-tip red-tip">⚠️：必须填写真实邮箱且自己长期使用的邮箱，以便于密码找回使用</div>
+  </div>
+  <div class="input-group">
+    <label>密码</label>
+    <input type="password" placeholder="请输入密码">
+    <div class="form-tip">至少8位，包含大小写字母和数字</div>
+  </div>
+  <div class="input-group">
+    <label>确认密码</label>
+    <input type="password" placeholder="请再次输入密码">
+  </div>
+  <button class="btn-primary">注 册</button>
+</div>
       </div>
       <div id="register-form" style="display:none;">
   <div class="input-group">
