@@ -3,17 +3,181 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Apex</title>
+  <title>Apex - Global Entertainment</title>
   <style>
-    body { font-family: system-ui, sans-serif; display: grid; place-items: center; min-height: 100vh; margin: 0; background: #0a0a0a; color: #e0e0e0; }
-    h1 { font-size: 2.5rem; }
-    p { color: #888; }
+    :root {
+      --bg: #0a0a0c;
+      --card-bg: rgba(20, 20, 25, 0.85);
+      --red: #e63946;
+      --gold: #f4d03f;
+      --text: #ffffff;
+      --text-muted: #a0a0a0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .container { max-width: 480px; margin: 0 auto; padding: 20px; width: 100%; }
+    
+    /* 顶部导航及品牌 */
+    .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 20px 0; }
+    .lang-switch { color: var(--text-muted); font-size: 13px; cursor: pointer; }
+    .brand { text-align: center; margin-bottom: 20px; }
+    .brand .en { font-size: 28px; font-weight: 800; letter-spacing: 2px; }
+    .brand .sub { font-size: 13px; color: var(--gold); letter-spacing: 1px; margin-top: 4px; }
+    
+    /* 小广告 Banner */
+    .banner {
+      width: 100%; height: 140px;
+      background: url('https://images.unsplash.com/photo-1596838132731-3301c3fd4317?auto=format&fit=crop&w=800&q=80') no-repeat center center/cover;
+      border-radius: 12px;
+      border: 1px solid rgba(244, 208, 63, 0.3);
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .banner::after {
+      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(180deg, rgba(10,10,12,0.1) 0%, rgba(10,10,12,0.8) 100%);
+    }
+    
+    /* 登录卡片 */
+    .auth-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(244, 208, 63, 0.2);
+      border-radius: 16px;
+      padding: 24px 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 0 20px rgba(244, 208, 63, 0.05);
+      backdrop-filter: blur(12px);
+      margin-bottom: 30px;
+    }
+    .tabs { display: flex; border: 1px solid #333; border-radius: 10px; overflow: hidden; margin-bottom: 24px; }
+    .tab { flex: 1; padding: 14px; text-align: center; cursor: pointer; font-weight: bold; transition: 0.3s; color: var(--text-muted); background: transparent; border: none; font-size: 16px; }
+    .tab.active { background: var(--red); color: white; }
+    
+    .input-group { margin-bottom: 16px; }
+    .input-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+    .input-group input { width: 100%; padding: 14px; background: #121216; border: 1px solid #333; border-radius: 8px; color: white; font-size: 15px; outline: none; transition: 0.3s; }
+    .input-group input:focus { border-color: var(--gold); }
+    
+    .captcha-row { display: flex; gap: 10px; }
+    .captcha-row input { flex: 1; }
+    .captcha-img { width: 100px; background: #1a1a1e; border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; border-radius: 8px; font-family: serif; font-style: italic; color: var(--gold); letter-spacing: 2px; font-size: 20px; cursor: pointer; }
+    
+    .checkbox-group { display: flex; align-items: center; gap: 8px; margin: 20px 0; font-size: 12px; color: var(--text-muted); }
+    .checkbox-group input { accent-color: var(--gold); }
+    
+    .btn-primary { width: 100%; padding: 16px; background: linear-gradient(135deg, #f4d03f 0%, #d4af37 100%); color: #000; font-weight: 700; font-size: 16px; border: none; border-radius: 10px; cursor: pointer; transition: 0.3s; letter-spacing: 1px; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(244, 208, 63, 0.3); }
+    
+    .divider { text-align: center; position: relative; margin: 24px 0; color: var(--text-muted); font-size: 12px; }
+    .divider::before, .divider::after { content: ''; position: absolute; top: 50%; width: 30%; height: 1px; background: #333; }
+    .divider::before { left: 0; } .divider::after { right: 0; }
+    
+    .social-login { display: flex; justify-content: center; gap: 20px; }
+    .social-btn { width: 44px; height: 44px; border-radius: 50%; background: #1a1a1e; border: 1px solid #333; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; font-size: 18px; transition: 0.3s; }
+    .social-btn:hover { border-color: var(--gold); color: var(--gold); }
+    
+    .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 40px; }
+    .feature-card { background: rgba(20, 20, 25, 0.6); border: 1px solid rgba(244, 208, 63, 0.1); border-radius: 12px; padding: 20px; text-align: center; backdrop-filter: blur(8px); }
+    .feature-card .icon { font-size: 28px; margin-bottom: 10px; }
+    .feature-card .en { font-weight: bold; font-size: 14px; margin-bottom: 4px; }
+    .feature-card .zh { color: var(--gold); font-size: 12px; opacity: 0.9; }
+    .feature-card .desc { color: var(--text-muted); font-size: 11px; margin-top: 6px; }
+    
+    .footer { text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 40px; padding-bottom: 20px; }
   </style>
 </head>
 <body>
-  <div style="text-align:center">
-    <h1>✅ Apex GitHub Actions 全自动部署上线</h1>
-    <p>部署于 Cloudflare 全球边缘网络</p>
+  <div class="container">
+    <div class="header">
+      <div class="lang-switch">🌐 EN / 中文</div>
+    </div>
+    <div class="brand">
+      <div class="en">Apex</div>
+      <div class="sub">Global Entertainment</div>
+    </div>
+    <div class="banner"></div>
+    <div class="auth-card">
+      <div class="tabs">
+        <button class="tab active">登录</button>
+        <button class="tab">注册</button>
+      </div>
+      
+      <div class="input-group">
+        <label>邮箱 / 手机号 Email / Phone</label>
+        <input type="text" placeholder="请输入邮箱或手机号">
+      </div>
+      <div class="input-group">
+        <label>登录密码 Password</label>
+        <input type="password" placeholder="请输入密码">
+      </div>
+      <div class="input-group">
+        <label>验证码 Captcha</label>
+        <div class="captcha-row">
+          <input type="text" placeholder="图形验证码">
+          <div class="captcha-img">A7KD</div>
+        </div>
+      </div>
+      
+      <div class="checkbox-group">
+        <input type="checkbox" id="agreement" checked>
+        <label for="agreement">我已阅读并同意 <a href="#" style="color:var(--gold)">《用户协议》</a> 与 <a href="#" style="color:var(--gold)">《隐私政策》</a></label>
+      </div>
+      
+      <button class="btn-primary">登 录 Login</button>
+      
+      <div class="divider">或使用第三方账号登录</div>
+      <div class="social-login">
+        <div class="social-btn">G</div>
+        <div class="social-btn">T</div>
+        <div class="social-btn">A</div>
+      </div>
+    </div>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="icon">🔒</div>
+        <div class="en">Secure & Reliable</div>
+        <div class="zh">安全可靠</div>
+        <div class="desc">顶级加密 资金保障</div>
+      </div>
+      <div class="feature-card">
+        <div class="icon">⚖️</div>
+        <div class="en">Fair & Transparent</div>
+        <div class="zh">公平公正</div>
+        <div class="desc">全球监管 透明公开</div>
+      </div>
+      <div class="feature-card">
+        <div class="icon">⚡</div>
+        <div class="en">Fast Registration</div>
+        <div class="zh">极速开户</div>
+        <div class="desc">简单便捷 快速畅玩</div>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🎧</div>
+        <div class="en">24/7 Support</div>
+        <div class="zh">24/7客服</div>
+        <div class="desc">专业团队 随时在线</div>
+      </div>
+    </div>
+    
+    <div class="footer">
+      © 2026 Apex Global Entertainment. All rights reserved.
+    </div>
   </div>
+  <script>
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  </script>
 </body>
 </html>
