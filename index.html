@@ -9,19 +9,17 @@
     * { box-sizing:border-box; margin:0; padding:0; }
     body { font-family:'Inter',system-ui,-apple-system,sans-serif; background-color:var(--bg); color:var(--text); display:flex; flex-direction:column; min-height:100vh; }
     
-    /* 缩小整体容器内边距 */
     .container { max-width:480px; margin:0 auto; padding:16px; width:100%; }
     
-    /* 顶部导航（适当缩小） */
+    /* 顶部导航 */
     .header { display:flex; justify-content:space-between; align-items:center; padding:8px 0 16px 0; }
     .brand { display:flex; align-items:center; gap:10px; }
-    /* Logo 适当缩小 */
     .brand .logo-img { width:40px; height:40px; object-fit:contain; }
     .brand-text { display:flex; flex-direction:column; }
     .brand-text .en { font-size:20px; font-weight:900; letter-spacing:3px; background:linear-gradient(135deg, #ffffff 0%, #d4af37 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; line-height:1.1; }
     .brand-text .sub { font-size:9px; color:var(--text-muted); letter-spacing:1.5px; margin-top:2px; }
     
-    /* 语言切换器（整体缩小） */
+    /* 语言切换器 */
     .lang-selector { position: relative; }
     .lang-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 4px 10px; border-radius: 20px; display: flex; align-items: center; gap: 4px; cursor: pointer; font-size: 11px; transition: 0.3s; }
     .lang-btn:hover { border-color: #fff; color: #fff; }
@@ -33,40 +31,32 @@
     .lang-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
     .lang-item.active { color: var(--gold); }
     
-    /* 顶部文案（缩小字号与间距） */
+    /* 顶部文案 */
     .banner-text { text-align:center; margin-bottom:8px; }
     .banner-text .main-title { font-size:14px; font-weight:bold; color:#fff; letter-spacing:1px; margin-bottom:4px; }
     .banner-text .sub-title { font-size:10px; color:var(--text-muted); letter-spacing:0.5px; }
     
-    /* 小广告 Banner（高度缩小，最大程度还原目标图） */
+    /* 小广告 Banner */
     .banner { width:100%; height:110px; background:url('https://images.unsplash.com/photo-1596838132731-3301c3fd4317?auto=format&fit=crop&w=800&q=80') no-repeat center center/cover; border-radius:10px; border:1px solid var(--border); margin-bottom:16px; position:relative; overflow:hidden; }
     .banner::after { content:''; position:absolute; top:0; left:0; width:100%; height:100%; background:linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%); }
     
-    /* 登录卡片（整体缩小 padding、圆角、间距） */
+    /* 登录卡片（已精简） */
     .auth-card { background:var(--card-bg); border:1px solid var(--border); border-radius:12px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,0.8); backdrop-filter:blur(12px); margin-bottom:20px; }
     .tabs { display:flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-bottom:16px; }
     .tab { flex:1; padding:10px; text-align:center; cursor:pointer; font-weight:bold; transition:0.3s; color:var(--text-muted); background:transparent; border:none; font-size:14px; }
     .tab.active { background:#fff; color:#000; }
     .input-group { margin-bottom:12px; }
     .input-group label { display:block; font-size:11px; color:var(--text-muted); margin-bottom:4px; }
-    .input-group input { width:100%; padding:10px; background:#0a0a0a; border:1px solid var(--border); border-radius:6px; color:#fff; font-size:13px; outline:none; transition:0.3s; }
+    .input-group input { width:100%; padding:12px; background:#0a0a0a; border:1px solid var(--border); border-radius:6px; color:#fff; font-size:13px; outline:none; transition:0.3s; }
     .input-group input:focus { border-color:#fff; }
-    .captcha-row { display:flex; gap:8px; }
-    .captcha-row input { flex:1; }
-    .captcha-img { width:80px; background:#0a0a0a; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; border-radius:6px; font-family:serif; font-style:italic; color:var(--gold); letter-spacing:1px; font-size:16px; cursor:pointer; }
+    
     .checkbox-group { display:flex; align-items:center; gap:6px; margin:14px 0; font-size:11px; color:var(--text-muted); }
     .checkbox-group input { accent-color:#fff; }
     .checkbox-group a { color:#fff; text-decoration:none; }
     .btn-primary { width:100%; padding:12px; background:#fff; color:#000; font-weight:700; font-size:14px; border:none; border-radius:8px; cursor:pointer; transition:0.3s; letter-spacing:1px; }
     .btn-primary:hover { background:#e0e0e0; transform:translateY(-2px); box-shadow:0 5px 15px rgba(255,255,255,0.1); }
-    .divider { text-align:center; position:relative; margin:16px 0; color:var(--text-muted); font-size:11px; }
-    .divider::before, .divider::after { content:''; position:absolute; top:50%; width:30%; height:1px; background:var(--border); }
-    .divider::before { left:0; } .divider::after { right:0; }
-    .social-login { display:flex; justify-content:center; gap:16px; }
-    .social-btn { width:36px; height:36px; border-radius:50%; background:#0a0a0a; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:#fff; cursor:pointer; font-size:12px; font-weight:bold; transition:0.3s; }
-    .social-btn:hover { border-color:#fff; }
     
-    /* 核心优势区（图标变小，间距变小，高度变小） */
+    /* 核心优势区（保留小尺寸） */
     .features-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px 12px; margin-top:16px; padding:0 8px; }
     .feature-card { display:flex; align-items:center; gap:8px; text-align:left; }
     .feature-card .icon { width:28px; height:28px; flex-shrink:0; border-radius:50%; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; color:#fff; }
@@ -112,6 +102,8 @@
         <button class="tab active">登录</button>
         <button class="tab">注册</button>
       </div>
+      
+      <!-- 纯账号密码表单 -->
       <div class="input-group">
         <label>邮箱 / 手机号</label>
         <input type="text" placeholder="请输入邮箱或手机号">
@@ -120,24 +112,12 @@
         <label>登录密码</label>
         <input type="password" placeholder="请输入密码">
       </div>
-      <div class="input-group">
-        <label>验证码</label>
-        <div class="captcha-row">
-          <input type="text" placeholder="图形验证码">
-          <div class="captcha-img">A7KD</div>
-        </div>
-      </div>
+      
       <div class="checkbox-group">
         <input type="checkbox" id="agreement" checked>
         <label for="agreement">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label>
       </div>
       <button class="btn-primary">登 录</button>
-      <div class="divider">或使用第三方账号登录</div>
-      <div class="social-login">
-        <div class="social-btn">G</div>
-        <div class="social-btn">T</div>
-        <div class="social-btn">A</div>
-      </div>
     </div>
     
     <!-- 核心优势区 -->
