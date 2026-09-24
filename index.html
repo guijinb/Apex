@@ -17,8 +17,18 @@
     .brand-text { display:flex; flex-direction:column; }
     .brand-text .en { font-size:24px; font-weight:900; letter-spacing:4px; background:linear-gradient(135deg, #ffffff 0%, #d4af37 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; line-height:1.1; }
     .brand-text .sub { font-size:10px; color:var(--text-muted); letter-spacing:2px; margin-top:4px; }
-    .lang-switch { color:var(--text-muted); font-size:12px; cursor:pointer; display:flex; align-items:center; gap:6px; border:1px solid var(--border); padding:6px 12px; border-radius:20px; transition:0.3s; }
-    .lang-switch:hover { border-color:#fff; color:#fff; }
+    
+    /* 语言切换器 */
+    .lang-selector { position: relative; }
+    .lang-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; transition: 0.3s; }
+    .lang-btn:hover { border-color: #fff; color: #fff; }
+    .lang-btn .arrow { font-size: 10px; margin-left: 2px; }
+    .lang-menu { display: none; position: absolute; right: 0; top: calc(100% + 8px); width: 160px; max-height: 260px; overflow-y: auto; background: #0a0a0a; border: 1px solid var(--border); border-radius: 10px; z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.8); }
+    .lang-menu.show { display: block; }
+    .lang-item { padding: 12px 15px; display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 13px; color: var(--text-muted); transition: 0.2s; border-bottom: 1px solid #1a1a1a; }
+    .lang-item:last-child { border-bottom: none; }
+    .lang-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+    .lang-item.active { color: var(--gold); }
     
     .banner-text { text-align:center; margin-bottom:12px; }
     .banner-text .main-title { font-size:16px; font-weight:bold; color:#fff; letter-spacing:1px; margin-bottom:6px; }
@@ -50,10 +60,9 @@
     .social-btn { width:44px; height:44px; border-radius:50%; background:#0a0a0a; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:#fff; cursor:pointer; font-size:14px; font-weight:bold; transition:0.3s; }
     .social-btn:hover { border-color:#fff; }
     
-    /* 核心优势区（图标改回白色样式） */
+    /* 核心优势区（白色图标） */
     .features-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px 16px; margin-top:20px; padding:0 10px; }
     .feature-card { display:flex; align-items:center; gap:10px; text-align:left; }
-    /* 图标底色改回淡淡的白色，图标颜色改回白色 */
     .feature-card .icon { width:36px; height:36px; flex-shrink:0; border-radius:50%; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; color:#fff; }
     .feature-card .icon svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
     .feature-card .text-group { display:flex; flex-direction:column; }
@@ -73,7 +82,16 @@
           <span class="sub">全球娱乐游戏平台</span>
         </div>
       </div>
-      <div class="lang-switch">🌐 EN / 中文</div>
+      
+      <!-- 语言切换下拉菜单 -->
+      <div class="lang-selector" id="lang-selector">
+        <button class="lang-btn" id="lang-btn">
+          <span id="current-flag">🇨🇳</span>
+          <span id="current-lang">简体中文</span>
+          <span class="arrow">▼</span>
+        </button>
+        <div class="lang-menu" id="lang-menu"></div>
+      </div>
     </div>
     
     <div class="banner-text">
@@ -116,58 +134,115 @@
       </div>
     </div>
     
-    <!-- 核心优势区（白色SVG图标） -->
+    <!-- 核心优势区 -->
     <div class="features-grid">
       <div class="feature-card">
-        <div class="icon">
-          <!-- 1. 安全可靠：盾牌 + 对勾 -->
-          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-        </div>
-        <div class="text-group">
-          <div class="zh">安全可靠</div>
-          <div class="desc">顶级加密 资金保障</div>
-        </div>
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div>
+        <div class="text-group"><div class="zh">安全可靠</div><div class="desc">顶级加密 资金保障</div></div>
       </div>
       <div class="feature-card">
-        <div class="icon">
-          <!-- 2. 公平公正：全新简洁天平图标 -->
-          <svg viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M4 7h16"/><path d="M6 7l-3 6h6z"/><path d="M18 7l-3 6h6z"/><path d="M12 21h6"/></svg>
-        </div>
-        <div class="text-group">
-          <div class="zh">公平公正</div>
-          <div class="desc">全球监管 透明公开</div>
-        </div>
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M4 7h16"/><path d="M6 7l-3 6h6z"/><path d="M18 7l-3 6h6z"/><path d="M12 21h6"/></svg></div>
+        <div class="text-group"><div class="zh">公平公正</div><div class="desc">全球监管 透明公开</div></div>
       </div>
       <div class="feature-card">
-        <div class="icon">
-          <!-- 3. 极速开户：闪电图标 -->
-          <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        </div>
-        <div class="text-group">
-          <div class="zh">极速开户</div>
-          <div class="desc">简单便捷 快速畅玩</div>
-        </div>
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        <div class="text-group"><div class="zh">极速开户</div><div class="desc">简单便捷 快速畅玩</div></div>
       </div>
       <div class="feature-card">
-        <div class="icon">
-          <!-- 4. 24/7客服：带麦克风的耳机 -->
-          <svg viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
-        </div>
-        <div class="text-group">
-          <div class="zh">24/7客服</div>
-          <div class="desc">专业团队 随时在线</div>
-        </div>
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></div>
+        <div class="text-group"><div class="zh">24/7客服</div><div class="desc">专业团队 随时在线</div></div>
       </div>
     </div>
     
     <div class="footer">© 2026 Apex Global Entertainment. All rights reserved.</div>
   </div>
+  
   <script>
-    document.querySelectorAll('.tab').forEach(tab => {
-      tab.addEventListener('click', function() {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        this.classList.add('active');
+    // 全球使用人数前 30 的语言数据
+    const languages = [
+      { code: 'zh-CN', flag: '🇨🇳', name: '简体中文' },
+      { code: 'en-US', flag: '🇺🇸', name: 'English' },
+      { code: 'es-ES', flag: '🇪🇸', name: 'Español' },
+      { code: 'hi-IN', flag: '🇮🇳', name: 'हिन्दी' },
+      { code: 'ar-SA', flag: '🇸🇦', name: 'العربية' },
+      { code: 'fr-FR', flag: '🇫🇷', name: 'Français' },
+      { code: 'bn-BD', flag: '🇧🇩', name: 'বাংলা' },
+      { code: 'pt-BR', flag: '🇧🇷', name: 'Português' },
+      { code: 'ru-RU', flag: '🇷🇺', name: 'Русский' },
+      { code: 'ur-PK', flag: '🇵🇰', name: 'اردو' },
+      { code: 'id-ID', flag: '🇮🇩', name: 'Bahasa Indonesia' },
+      { code: 'de-DE', flag: '🇩🇪', name: 'Deutsch' },
+      { code: 'ja-JP', flag: '🇯🇵', name: '日本語' },
+      { code: 'sw-KE', flag: '🇰🇪', name: 'Kiswahili' },
+      { code: 'mr-IN', flag: '🇮🇳', name: 'मराठी' },
+      { code: 'te-IN', flag: '🇮🇳', name: 'తెలుగు' },
+      { code: 'tr-TR', flag: '🇹🇷', name: 'Türkçe' },
+      { code: 'ta-IN', flag: '🇮🇳', name: 'தமிழ்' },
+      { code: 'vi-VN', flag: '🇻🇳', name: 'Tiếng Việt' },
+      { code: 'ko-KR', flag: '🇰🇷', name: '한국어' },
+      { code: 'it-IT', flag: '🇮🇹', name: 'Italiano' },
+      { code: 'th-TH', flag: '🇹🇭', name: 'ไทย' },
+      { code: 'gu-IN', flag: '🇮🇳', name: 'ગુજરાતી' },
+      { code: 'pl-PL', flag: '🇵🇱', name: 'Polski' },
+      { code: 'uk-UA', flag: '🇺🇦', name: 'Українська' },
+      { code: 'fa-IR', flag: '🇮🇷', name: 'فارسی' },
+      { code: 'ms-MY', flag: '🇲🇾', name: 'Bahasa Melayu' },
+      { code: 'nl-NL', flag: '🇳🇱', name: 'Nederlands' },
+      { code: 'my-MM', flag: '🇲🇲', name: 'မြန်မာဘာသာ' },
+      { code: 'ro-RO', flag: '🇷🇴', name: 'Română' }
+    ];
+
+    const langBtn = document.getElementById('lang-btn');
+    const langMenu = document.getElementById('lang-menu');
+    const currentFlag = document.getElementById('current-flag');
+    const currentLang = document.getElementById('current-lang');
+
+    // 初始化语言菜单
+    function initLangMenu() {
+      langMenu.innerHTML = '';
+      languages.forEach(lang => {
+        const item = document.createElement('div');
+        item.className = 'lang-item';
+        item.innerHTML = `<span>${lang.flag}</span><span>${lang.name}</span>`;
+        item.onclick = (e) => {
+          e.stopPropagation();
+          selectLanguage(lang);
+        };
+        langMenu.appendChild(item);
       });
+    }
+
+    // 切换语言
+    function selectLanguage(lang) {
+      currentFlag.textContent = lang.flag;
+      currentLang.textContent = lang.name;
+      langMenu.classList.remove('show');
+      // 保存到 localStorage
+      localStorage.setItem('apexLang', JSON.stringify(lang));
+    }
+
+    // 打开/关闭菜单
+    langBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      langMenu.classList.toggle('show');
+    });
+
+    // 点击外部关闭菜单
+    document.addEventListener('click', () => {
+      langMenu.classList.remove('show');
+    });
+
+    // 从 localStorage 恢复上次选择
+    document.addEventListener('DOMContentLoaded', () => {
+      initLangMenu();
+      const saved = localStorage.getItem('apexLang');
+      if (saved) {
+        try {
+          const lang = JSON.parse(saved);
+          currentFlag.textContent = lang.flag;
+          currentLang.textContent = lang.name;
+        } catch (e) { /* 忽略解析错误 */ }
+      }
     });
   </script>
 </body>
