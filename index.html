@@ -85,58 +85,63 @@
 
 
 
+
+
 <style id="apex-splash-style">
-  #apex-splash-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #050505; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 10px 0 15px 0; transition: opacity 0.5s ease, visibility 0.5s; overflow: hidden; box-sizing: border-box; }
+  /* 锁定屏幕，防止滑动露出底层页面 */
+  html, body { overflow: hidden !important; height: 100%; width: 100%; position: fixed; }
+  #apex-splash-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; height: 100vh; background: #050505; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 5px 0 10px 0; transition: opacity 0.5s ease, visibility 0.5s; box-sizing: border-box; overflow: hidden; }
   #apex-splash-screen.hide { opacity: 0; visibility: hidden; }
-  .splash-top-img { width: 100%; height: 20vh; object-fit: contain; margin-bottom: 2px; }
-  /* 欢迎语：图二风格字体与颜色（古典衬线体，白金色渐变） */
-  .splash-welcome { font-family: 'Cinzel', 'Times New Roman', serif; font-size: 18px; font-weight: 700; letter-spacing: 2px; background: linear-gradient(to bottom, #ffffff 0%, #d4af37 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px; text-align: center; }
+  .splash-top-img { width: 100%; height: 16vh; object-fit: contain; margin-bottom: 2px; }
   
-  /* 终端框：缩小高度，确保底部组件不被挤出去 */
-  .splash-terminal-box { width: 95%; height: 32vh; display: flex; border: 1px solid #444; border-radius: 8px; background: #0a0a0a; margin-bottom: 8px; overflow: hidden; }
-  .splash-code-area { flex: 1.5; padding: 10px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.5; color: #4ade80; white-space: pre-wrap; word-break: break-all; border-right: 1px solid #222; }
+  /* 欢迎语：全大写，字距收紧，图二字体风格 */
+  .splash-welcome { font-family: 'Cinzel', 'Times New Roman', serif; font-size: 16px; font-weight: 700; letter-spacing: 1px; background: linear-gradient(to bottom, #ffffff 0%, #d4af37 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; text-align: center; text-transform: uppercase; }
+  
+  /* 终端框严格限制高度 */
+  .splash-terminal-box { width: 95%; height: 32vh; display: flex; border: 1px solid #444; border-radius: 8px; background: #0a0a0a; margin-bottom: 6px; overflow: hidden; }
+  .splash-code-area { flex: 1.5; padding: 8px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.5; color: #4ade80; white-space: pre-wrap; word-break: break-all; border-right: 1px solid #222; }
   .splash-code-area::-webkit-scrollbar { display: none; }
   .code-keyword { color: #c678dd; }
   .code-string { color: #98c379; }
   .code-func { color: #61afef; }
   .code-success { color: #4ade80; font-weight: bold; }
   
-  /* 右侧系统列表：禁止换行，修复错乱 */
-  .splash-system-list { flex: 1; padding: 10px; display: flex; flex-direction: column; justify-content: space-around; font-size: 12px; color: #777; white-space: nowrap; }
+  /* 右侧系统列表 */
+  .splash-system-list { flex: 1; padding: 8px; display: flex; flex-direction: column; justify-content: space-around; font-size: 11px; color: #777; white-space: nowrap; }
   .splash-system-item { display: flex; align-items: center; gap: 6px; transition: 0.3s; }
   .splash-system-item.active { color: #fff; }
-  .sys-dot { width: 8px; height: 8px; border-radius: 50%; border: 1px solid #666; background: transparent; transition: 0.3s; flex-shrink: 0; }
+  .sys-dot { width: 6px; height: 6px; border-radius: 50%; border: 1px solid #666; background: transparent; transition: 0.3s; flex-shrink: 0; }
   .splash-system-item.active .sys-dot { background: #4ade80; border-color: #4ade80; box-shadow: 0 0 8px rgba(74,222,128,0.8); }
   .splash-system-item.checked::after { content: '✓'; color: #4ade80; font-weight: bold; margin-left: auto; margin-right: 2px; }
   
   /* 进度条 */
-  .splash-progress-container { width: 95%; margin-bottom: 8px; }
-  .splash-progress-text { font-size: 12px; color: #ccc; margin-bottom: 6px; display: flex; justify-content: space-between; }
-  .splash-progress-bar-bg { width: 100%; height: 6px; background: #222; border-radius: 3px; overflow: hidden; }
+  .splash-progress-container { width: 95%; margin-bottom: 6px; }
+  .splash-progress-text { font-size: 11px; color: #ccc; margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .splash-progress-bar-bg { width: 100%; height: 5px; background: #222; border-radius: 3px; overflow: hidden; }
   .splash-progress-bar { width: 0%; height: 100%; background: #fff; transition: width 0.1s linear; box-shadow: 0 0 10px rgba(255,255,255,0.8); }
   
-  /* 底部四大组件：缩小尺寸，确保完整显示 */
-  .splash-features { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; width: 95%; margin-top: 2px; }
+  /* 底部四大组件：结构清晰，防止文字错乱 */
+  .splash-features { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; width: 95%; margin-top: 2px; }
   .splash-feature-item { display: flex; align-items: center; gap: 8px; }
-  .splash-feature-icon { width: 32px; height: 32px; border-radius: 50%; background: rgba(230, 57, 70, 0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .splash-feature-icon { width: 30px; height: 30px; border-radius: 50%; background: rgba(230, 57, 70, 0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .splash-feature-icon svg { width: 16px; height: 16px; }
   .splash-feature-text { display: flex; flex-direction: column; }
-  .splash-feature-text span { font-size: 12px; font-weight: bold; color: #fff; }
-  .splash-feature-text small { font-size: 10px; color: #888; }
+  .feature-title { font-size: 12px; font-weight: bold; color: #fff; }
+  .feature-desc { font-size: 9px; color: #888; }
 </style>
 </head>
 <body>
 
 <div id="apex-splash-screen">
   <img src="./splash-top.jpeg" alt="Splash" class="splash-top-img">
-  <div class="splash-welcome">欢迎来到 Apex Entertainment</div>
+  <div class="splash-welcome">欢迎来到 APEX ENTERTAINMENT</div>
   <div class="splash-terminal-box">
     <div class="splash-code-area" id="splash-code-log"></div>
     <div class="splash-system-list">
       <div class="splash-system-item" id="sys-1"><span class="sys-dot"></span>网络通信系统</div>
       <div class="splash-system-item" id="sys-2"><span class="sys-dot"></span>安全防护系统</div>
       <div class="splash-system-item" id="sys-3"><span class="sys-dot"></span>后端服务系统</div>
-      <div class="splash-system-item" id="sys-4"><span class="sys-dot"></span>前端渲染系统 </div>
+      <div class="splash-system-item" id="sys-4"><span class="sys-dot"></span>前端渲染系统</div>
     </div>
   </div>
   <div class="splash-progress-container">
@@ -146,10 +151,10 @@
     </div>
   </div>
   <div class="splash-features">
-    <div class="splash-feature-item"><div class="splash-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m90 12 2 2  4-4"/></svg></div><div0 class="splash-feature -text"><span>安全可靠</span><0small>顶级加密 资金保障</small></div></div>
-    <div class="splash-feature-item"><div class="splash-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M12 3v18"/><path d="M4 7h16"/><path d="M6 7l-3 6h6z"/><path d="M18 7l-3 6h6z"/><path d="M12 21h6"/></svg></div><div class="splash-feature-text"><span>公平公正</span><small>全球监管 透明公开</small></div></div>
-    <div class="splash-feature-item"><div class="splash-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><div class="splash-feature-text"><span>极速开户</span><small>简单便捷 快速畅玩</small></div></div>
-    <div class="splash-feature-item"><div class="splash-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></div><div class="splash-feature-text"><span>24/7客服</span><small>专业团队 随时在线</small></div></div>
+    <div class="splash-feature-item"><div class="splash-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div><div class="splash-feature-text"><span class="feature-title">安全可靠</span><span class="feature-desc">顶级加密 资金保障</span></div></div>
+    <div class="splash-feature-item"><div class="splash-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M12 3v18"/><path d="M4 7h16"/><path d="M6 7l-3 6h6z"/><path d="M18 7l-3 6h6z"/><path d="M12 21h6"/></svg></div><div class="splash-feature-text"><span class="feature-title">公平公正</span><span class="feature-desc">全球监管 透明公开</span></div></div>
+    <div class="splash-feature-item"><div class="splash-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><div class="splash-feature-text"><span class="feature-title">极速开户</span><span class="feature-desc">简单便捷 快速畅玩</span></div></div>
+    <div class="splash-feature-item"><div class="splash-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></div><div class="splash-feature-text"><span class="feature-title">24/7客服</span><span class="feature-desc">专业团队 随时在线</span></div></div>
   </div>
 </div>
 
@@ -352,6 +357,8 @@ document.addEventListener('click', function(e) {
 
 
 
+
+
 <script>
   window.addEventListener('load', function() {
     const codeLog = document.getElementById('splash-code-log');
@@ -359,13 +366,16 @@ document.addEventListener('click', function(e) {
     const progressText = document.getElementById('splash-progress-text');
     const sysItems = [document.getElementById('sys-1'), document.getElementById('sys-2'), document.getElementById('sys-3'), document.getElementById('sys-4')];
     
+    // 增加更多代码行，确保能持续输出约 7 秒，避免提前跑完
     const codeSnippets = [
       '<span class="code-keyword">import</span> { ApexCore } <span class="code-keyword">from</span> <span class="code-string">"@apex/core"</span>;',
+      '<span class="code-keyword">import</span> { NetworkModule } <span class="code-keyword">from</span> <span class="code-string">"@apex/network"</span>;',
       '',
       'async function initSystem() {',
       '  console.log(<span class="code-string">"初始化 Apex 核心引擎..."</span>);',
       '  const core = new ApexCore();',
-      '  await core.connect(<span class="code-string">"global-network"</span>);',
+      '  const net = new NetworkModule();',
+      '  await net.connect(<span class="code-string">"global-network"</span>);',
       '  console.log(<span class="code-string">"网络通信已建立"</span>);',
       '  await core.security.encrypt();',
       '  console.log(<span class="code-string">"安全防护已启动"</span>);',
@@ -375,14 +385,23 @@ document.addEventListener('click', function(e) {
       '  console.log(<span class="code-string">"前端渲染已完成"</span>);',
       '}',
       '',
+      '// 启动系统初始化流程',
       'initSystem().then(() => {',
       '  console.log(<span class="code-success">"欢迎来到 Apex Entertainment 系统加载完毕"</span>);',
+      '});',
+      '',
+      '// 执行预热和资源加载',
+      'Promise.all([',
+      '  core.preloadAssets(),',
+      '  core.warmupCache()',
+      ']).then(() => {',
+      '  console.log(<span class="code-string">"预热完成，准备进入系统"</span>);',
       '});'
     ];
     
     let lineIndex = 0;
-    // 代码打印总耗时 6.5 秒，确保能在 8 秒内从容完成
-    let totalTime = 6500; 
+    // 代码总耗时设定为 7 秒，与进度条同步
+    let totalTime = 7000;
     let stepTime = totalTime / codeSnippets.length;
     
     function typeCode() {
@@ -405,10 +424,10 @@ document.addEventListener('click', function(e) {
       }, index * 1600 + 500);
     });
 
-    // 进度条动画：约耗时 7.5 秒
+    // 进度条动画：与代码输出同步，约耗时 7.5 秒
     let progress = 0;
     const progressInterval = setInterval(() => {
-      progress += Math.floor(Math.random() * 2) + 0.5; // 每次增加 0.5~2.5
+      progress += Math.floor(Math.random() * 2) + 1;
       if (progress > 100) progress = 100;
       progressBar.style.width = progress + '%';
       progressText.innerHTML = 'APEX 系统加载中... <span>' + Math.floor(progress) + '%</span>';
@@ -416,13 +435,12 @@ document.addEventListener('click', function(e) {
       if (progress === 100) {
         clearInterval(progressInterval);
         progressText.innerHTML = 'APEX系统加载完成';
-        // 完成后停留 0.8 秒再隐藏，总计约 8.3 秒
         setTimeout(() => {
           const splash = document.getElementById('apex-splash-screen');
           if (splash) splash.classList.add('hide');
         }, 800);
       }
-    }, 120); 
+    }, 100);
   });
 </script>
 </body>
