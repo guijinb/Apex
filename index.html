@@ -86,6 +86,16 @@
     /* 副标题字号 11px，大幅缩减上边距，紧贴上方 */
     .brand .sub { font-size: 11px !important; color: var(--text-muted) !important; width: auto !important; text-align: left !important; line-height: 1.2 !important; margin-top: 0px !important; letter-spacing: 2px !important; padding-left: 2px !important; }
 
+
+    /* 品牌区居中布局重构 */
+    .header { display: flex !important; justify-content: center !important; align-items: center !important; position: relative !important; padding: 30px 0 !important; }
+    .lang-selector { position: absolute !important; right: 0 !important; top: 30px !important; }
+    .brand { display: flex !important; flex-direction: column !important; align-items: center !important; gap: 4px !important; text-align: center !important; }
+    .brand-top { display: flex !important; align-items: center !important; justify-content: center !important; gap: 14px !important; }
+    .brand .logo-img { width: 48px !important; height: 48px !important; object-fit: contain !important; mix-blend-mode: screen !important; }
+    .brand .en { font-family: 'Cinzel', 'Times New Roman', serif !important; font-size: 34px !important; font-weight: 700 !important; letter-spacing: 2px !important; color: #ffffff !important; line-height: 1 !important; }
+    .brand .sub { font-size: 10px !important; color: var(--text-muted) !important; letter-spacing: 4px !important; text-transform: uppercase !important; margin-top: 4px !important; padding: 0 !important; }
+
 </style>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
 </head>
@@ -98,14 +108,14 @@
         <img src="./logo.jpeg" alt="Apex Logo" class="logo-img">
         <span class="en">APEX</span>
       </div>
-      <span class="sub">全球娱乐游戏平台</span>
+      <span class="sub">ENTERTAINMENT</span>
     </div>
       <div class="lang-selector" id="lang-selector">
         <button class="lang-btn" id="lang-btn"><span id="current-flag">🇨🇳</span><span id="current-lang">简体中文</span><span class="arrow">▼</span></button>
         <div class="lang-menu" id="lang-menu"></div>
       </div>
     </div>
-    <div class="banner-text"><div class="main-title">全球游戏娱乐平台</div><div class="sub-title">一站式体验·玩法丰富·公平公正·极速存取</div></div>
+    <div class="banner-text" style="display:none !important;"><div class="main-title">全球游戏娱乐平台</div><div class="sub-title">一站式体验·玩法丰富·公平公正·极速存取</div></div>
     <div class="banner"></div>
     <div class="auth-card">
       <div class="tabs">
