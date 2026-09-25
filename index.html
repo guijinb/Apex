@@ -115,7 +115,10 @@
         <div class="lang-menu" id="lang-menu"></div>
       </div>
     </div>
-    <div class="banner-text" style="display:none !important;"><div class="main-title">全球游戏娱乐平台</div><div class="sub-title">一站式体验·玩法丰富·公平公正·极速存取</div></div>
+    <div class="banner-text" style="display:block !important; margin-bottom:12px;">
+  <div class="main-title" style="font-size:15px; font-weight:bold; color:#fff; margin-bottom:4px;">全球娱乐游戏平台</div>
+  <div class="sub-title" style="font-size:10px; color:var(--text-muted);">一站式体验·电子游艺·真人娱乐·体育竞猜·极速存取</div>
+</div><div class="sub-title">一站式体验·玩法丰富·公平公正·极速存取</div></div>
     <div class="banner"></div>
     <div class="auth-card">
       <div class="tabs">
@@ -127,12 +130,12 @@
       <div id="login-form">
         <div class="input-group">
           <label>账号</label>
-          <input type="text" placeholder="请输入账号">
+          <div style="position:relative;"><span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:14px;">👤</span><input type="text" placeholder="请输入账号" style="padding-left:36px !important;"></div>
         </div>
         <div class="input-group">
           <label>登录密码</label>
           <div class="pwd-wrap">
-            <input type="password" placeholder="请输入密码" oninput="this.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.nextElementSibling.style.opacity = this.value ? '1' : '0';">
+            <div style="position:relative;"><span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:14px;">🔒</span><input type="password" placeholder="请输入密码" style="padding-left:36px !important;" oninput="this.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.nextElementSibling.style.opacity = this.value ? '1' : '0';">
             <div class="pwd-actions">
               <span class="btn-clear" onpointerdown="event.preventDefault(); this.parentElement.previousElementSibling.value=''; this.parentElement.style.visibility='hidden'; this.parentElement.style.opacity='0';">✕</span>
               <span class="btn-toggle" onpointerdown="event.preventDefault(); togglePwd(this)"></span>
@@ -156,7 +159,7 @@
           <label for="agreement">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label>
         </div>
         
-        <button class="btn-primary">登 录</button>
+        <button class="btn-primary" style="background:var(--gold); color:#000; border-radius:8px; font-weight:bold;">登 录 <span style="margin-left:6px;">→</span></button>
       </div>
       
       <!-- 注册表单 -->
@@ -174,7 +177,7 @@
         <div class="input-group">
           <label>密码</label>
           <div class="pwd-wrap">
-            <input type="password" placeholder="请输入密码" oninput="this.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.nextElementSibling.style.opacity = this.value ? '1' : '0';">
+            <div style="position:relative;"><span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:14px;">🔒</span><input type="password" placeholder="请输入密码" style="padding-left:36px !important;" oninput="this.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.nextElementSibling.style.opacity = this.value ? '1' : '0';">
             <div class="pwd-actions">
               <span class="btn-clear" onpointerdown="event.preventDefault(); this.parentElement.previousElementSibling.value=''; this.parentElement.style.visibility='hidden'; this.parentElement.style.opacity='0';">✕</span>
               <span class="btn-toggle" onpointerdown="event.preventDefault(); togglePwd(this)"></span>
@@ -203,7 +206,7 @@
           <div class="apex-captcha-footer">Apex 安全防护</div>
         </div>
         
-        <button class="btn-primary">注 册</button>
+        <button class="btn-primary" style="background:var(--gold); color:#000; border-radius:8px; font-weight:bold;">注 册 <span style="margin-left:6px;">→</span></button>
       </div>
     </div>
     <div class="features-grid">
