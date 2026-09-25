@@ -96,6 +96,19 @@
   .feature-title { font-size: 12px; font-weight: bold; color: #fff; }
   .feature-desc { font-size: 9px; color: #888; }
 
+
+  /* 表单验证样式 */
+  .input-wrap.error { border-color: #e63946 !important; }
+  .input-wrap.success { border-color: #4ade80 !important; }
+  .field-error { font-size: 10px; color: #e63946; margin-top: 4px; display: none; }
+  .field-error.show { display: block; }
+  .pwd-strength { display: flex; gap: 4px; margin-top: 6px; }
+  .pwd-strength .bar { flex: 1; height: 3px; background: #333; border-radius: 2px; transition: 0.3s; }
+  .pwd-strength .bar.active-weak { background: #e63946; }
+  .pwd-strength .bar.active-medium { background: #f4d03f; }
+  .pwd-strength .bar.active-strong { background: #4ade80; }
+  .pwd-strength-text { font-size: 10px; margin-top: 4px; color: #888; }
+
 </style>
 
 
@@ -495,6 +508,142 @@ document.addEventListener('click', function(e) {
       }
     }, 100);
   });
+</script>
+
+<script>
+(function() {
+  // 输入清理：防止 XSS 注入
+  function sanitize(str) {
+    if (typeof str !== 'string') return '';
+    return str.replace(/[<>"'&]/g, '').trim().substring(0, 200);
+  }
+
+  // 邮箱正则
+  const emailRe = /^[^s@]+@[^s@]+.[^s@]+$/;
+  // 账号：6-20位，字母数字下划线
+  const userRe = /^[a-zA-Z0-9_]{6,20}$/;
+  // 强密码：至少8位，含大小写、数字、特殊字符
+  const strongPwdRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[!@#$%^&*()_+-=[]{};':"\|,.<>/?]).{8,}$/;
+  // 中等密码：至少8位，含字母和数字
+  const mediumPwdRe = /^(?=.*[a-zA-Z])(?=.*d).{8,}$/;
+
+  function showError(input, msg) {
+    const wrap = input.closest('.input-wrap');
+    if (wrap) { wrap.classList.add('error'); wrap.classList.remove('success'); }
+    let err = wrap.parentElement.querySelector('.field-error');
+    if (!err) {
+      err = document.createElement('div');
+      err.className = 'field-error show';
+      wrap.parentElement.appendChild(err);
+    }
+    err.textContent = msg;
+    err.classList.add('show');
+  }
+
+  function showSuccess(input) {
+    const wrap = input.closest('.input-wrap');
+    if (wrap) { wrap.classList.remove('error'); wrap.classList.add('success'); }
+    const err = wrap.parentElement.querySelector('.field-error');
+    if (err) err.classList.remove('show');
+  }
+
+  function clearState(input) {
+    const wrap = input.closest('.input-wrap');
+    if (wrap) { wrap.classList.remove('error', 'success'); }
+    const err = wrap.parentElement.querySelector('.field-error');
+    if (err) err.classList.remove('show');
+  }
+
+  // 密码强度条渲染
+  function renderStrength(input) {
+    const wrap = input.closest('.input-wrap');
+    const parent = wrap.parentElement;
+    let barContainer = parent.querySelector('.pwd-strength');
+    if (!barContainer) {
+      barContainer = document.createElement('div');
+      barContainer.className = 'pwd-strength';
+      barContainer.innerHTML = '<div class="bar"></div><div class="bar"></div><div class="bar"></div>';
+      parent.appendChild(barContainer);
+    }
+    const bars = barContainer.querySelectorAll('.bar');
+    const val = input.value;
+    let level = 0;
+    if (val.length === 0) { bars.forEach(b => b.className = 'bar'); return; }
+    if (strongPwdRe.test(val)) level = 3;
+    else if (mediumPwdRe.test(val)) level = 2;
+    else level = 1;
+
+    bars.forEach((b, i) => {
+      b.className = 'bar';
+      if (i < level) {
+        if (level === 1) b.classList.add('active-weak');
+        else if (level === 2) b.classList.add('active-medium');
+        else b.classList.add('active-strong');
+      }
+    });
+  }
+
+  // 绑定事件到所有输入框
+  document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"]').forEach(input => {
+    const placeholder = input.placeholder;
+
+    // 输入时实时清理
+    input.addEventListener('input', function() {
+      const clean = sanitize(this.value);
+      if (clean !== this.value) this.value = clean;
+
+      // 密码强度条
+      if (placeholder.includes('密码') && !placeholder.includes('再次') && !placeholder.includes('新')) {
+        renderStrength(this);
+      }
+
+      // 实时验证
+      if (placeholder.includes('账号') && !placeholder.includes('邮箱')) {
+        if (this.value.length === 0) { clearState(this); return; }
+        userRe.test(this.value) ? showSuccess(this) : showError(this, '账号需 6-20 位，仅限字母、数字、下划线');
+      }
+      if (placeholder.includes('邮箱') && !placeholder.includes('账号')) {
+        if (this.value.length === 0) { clearState(this); return; }
+        emailRe.test(this.value) ? showSuccess(this) : showError(this, '请输入有效的邮箱地址');
+      }
+      if (placeholder.includes('新密码') || (placeholder.includes('密码') && !placeholder.includes('登录') && !placeholder.includes('再次'))) {
+        if (this.value.length === 0) { clearState(this); return; }
+        strongPwdRe.test(this.value) ? showSuccess(this) : showError(this, '需至少 8 位，含大小写字母、数字和特殊字符');
+      }
+      if (placeholder.includes('登录密码')) {
+        if (this.value.length === 0) { clearState(this); return; }
+        this.value.length >= 6 ? showSuccess(this) : showError(this, '密码至少 6 位');
+      }
+      if (placeholder.includes('再次输入') || placeholder.includes('确认')) {
+        const pwdInput = this.closest('.input-group').previousElementSibling?.querySelector('input[type="password"]');
+        if (!pwdInput || this.value.length === 0) { clearState(this); return; }
+        this.value === pwdInput.value ? showSuccess(this) : showError(this, '两次输入的密码不一致');
+      }
+    });
+  });
+
+  // 拦截表单提交
+  document.querySelectorAll('.btn-primary').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      const form = this.closest('[id$="-form"]');
+      if (!form) return;
+      const inputs = form.querySelectorAll('input');
+      let hasError = false;
+      inputs.forEach(input => {
+        if (input.closest('.input-wrap')?.classList.contains('error')) hasError = true;
+        if (input.required && input.value.trim() === '') {
+          showError(input, '此项为必填');
+          hasError = true;
+        }
+      });
+      if (hasError) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    }, true);
+  });
+})();
 </script>
 </body>
 </html>
