@@ -290,94 +290,7 @@
     </div>
     <div class="footer">© 2026 Apex Global Entertainment. All rights reserved.</div>
   </div>
-  <script>
-    const EYE_OPEN = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
-    const EYE_CLOSED = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
-    function togglePwd(el) { const p = el.parentElement.previousElementSibling; p.type = p.type === 'password' ? 'text' : 'password'; el.innerHTML = p.type === 'password' ? EYE_OPEN : EYE_CLOSED; }
-    function startCaptcha(box) {
-      if (box.dataset.status === 'success' || box.dataset.status === 'verifying') return;
-      box.dataset.status = 'verifying'; box.classList.add('verifying');
-      let progress = 0; const percent = box.querySelector('.apex-captcha-percent'); percent.textContent = '0%';
-      const interval = setInterval(() => {
-        progress += Math.floor(Math.random() * 15) + 5; if (progress > 100) progress = 100;
-        percent.textContent = progress < 100 ? progress + '%' : '验证成功';
-        if (progress === 100) { clearInterval(interval); setTimeout(() => { box.classList.remove('verifying'); box.classList.add('success'); box.dataset.status = 'success'; }, 300); }
-      }, 100);
-    }
-    function switchForm(showId) {
-      document.getElementById('login-form').style.display = (showId === 'login-form') ? 'block' : 'none';
-      document.getElementById('register-form').style.display = (showId === 'register-form') ? 'block' : 'none';
-      document.getElementById('forgot-form').style.display = (showId === 'forgot-form') ? 'block' : 'none';
-      const tabs = document.getElementById('auth-tabs');
-      if (showId === 'forgot-form') {
-        tabs.style.display = 'none';
-      } else {
-        tabs.style.display = 'flex';
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        if (showId === 'login-form') document.getElementById('tab-login').classList.add('active');
-        if (showId === 'register-form') document.getElementById('tab-register').classList.add('active');
-      }
-    }
-    document.getElementById('tab-login').addEventListener('click', () => switchForm('login-form'));
-    document.getElementById('tab-register').addEventListener('click', () => switchForm('register-form'));
-    document.getElementById('forgot-pwd').addEventListener('click', (e) => { e.preventDefault(); switchForm('forgot-form'); });
-    document.getElementById('back-to-login').addEventListener('click', (e) => { e.preventDefault(); switchForm('login-form'); });
-    document.getElementById('btn-send-code').addEventListener('click', function() {
-      const btn = this; btn.disabled = true; let countdown = 60; btn.textContent = countdown + '秒后重发';
-      const timer = setInterval(() => { countdown--; btn.textContent = countdown + '秒后重发'; if (countdown <= 0) { clearInterval(timer); btn.textContent = '发送验证码'; btn.disabled = false; } }, 1000);
-    });
-    document.addEventListener('DOMContentLoaded', () => { document.querySelectorAll('.btn-toggle').forEach(el => { el.innerHTML = EYE_OPEN; }); });
-    const languages = [
-  { code: 'zh-CN', flag: '🇨🇳', name: '简体中文' }, { code: 'en-US', flag: '🇺🇸', name: 'English' },
-  { code: 'es-ES', flag: '🇪🇸', name: 'Español' }, { code: 'hi-IN', flag: '🇮🇳', name: 'हिन्दी' },
-  { code: 'ar-SA', flag: '🇸🇦', name: 'العربية' }, { code: 'fr-FR', flag: '🇫🇷', name: 'Français' },
-  { code: 'bn-BD', flag: '🇧🇩', name: 'বাংলা' }, { code: 'pt-BR', flag: '🇧🇷', name: 'Português' },
-  { code: 'ru-RU', flag: '🇷🇺', name: 'Русский' }, { code: 'ur-PK', flag: '🇵🇰', name: 'اردو' },
-  { code: 'id-ID', flag: '🇮🇩', name: 'Bahasa Indonesia' }, { code: 'de-DE', flag: '🇩🇪', name: 'Deutsch' },
-  { code: 'ja-JP', flag: '🇯🇵', name: '日本語' }, { code: 'sw-KE', flag: '🇰🇪', name: 'Kiswahili' },
-  { code: 'mr-IN', flag: '🇮🇳', name: 'मराठी' }, { code: 'te-IN', flag: '🇮🇳', name: 'తెలుగు' },
-  { code: 'tr-TR', flag: '🇹🇷', name: 'Türkçe' }, { code: 'ta-IN', flag: '🇮🇳', name: 'தமிழ்' },
-  { code: 'vi-VN', flag: '🇻🇳', name: 'Tiếng Việt' }, { code: 'ko-KR', flag: '🇰🇷', name: '한국어' },
-  { code: 'it-IT', flag: '🇮🇹', name: 'Italiano' }, { code: 'th-TH', flag: '🇹🇭', name: 'ไทย' },
-  { code: 'gu-IN', flag: '🇮🇳', name: 'ગુજરાતી' }, { code: 'pl-PL', flag: '🇵🇱', name: 'Polski' },
-  { code: 'uk-UA', flag: '🇺🇦', name: 'Українська' }, { code: 'fa-IR', flag: '🇮🇷', name: 'فارسی' },
-  { code: 'ms-MY', flag: '🇲🇾', name: 'Bahasa Melayu' }, { code: 'nl-NL', flag: '🇳🇱', name: 'Nederlands' },
-  { code: 'my-MM', flag: '🇲🇲', name: 'မြန်မာဘာသာ' }, { code: 'ro-RO', flag: '🇷🇴', name: 'Română' }
-];
-    const langBtn = document.getElementById('lang-btn'), langMenu = document.getElementById('lang-menu'), currentFlag = document.getElementById('current-flag'), currentLang = document.getElementById('current-lang');
-    languages.forEach(lang => {
-      const item = document.createElement('div'); item.className = 'lang-item'; item.innerHTML = `<span>${lang.flag}</span><span>${lang.name}</span>`;
-      item.onclick = (e) => { e.stopPropagation(); currentFlag.textContent = lang.flag; currentLang.textContent = lang.name; langMenu.classList.remove('show'); };
-      langMenu.appendChild(item);
-    });
-    langBtn.addEventListener('click', (e) => { e.stopPropagation(); langMenu.classList.toggle('show'); });
-    document.addEventListener('click', () => langMenu.classList.remove('show'));
   
-    // 注册成功跳转逻辑
-    const registerForm = document.getElementById('register-form');
-    const registerSuccess = document.getElementById('register-success');
-    const loginForm = document.getElementById('login-form');
-    const authTabs = document.getElementById('auth-tabs');
-
-    registerForm.querySelector('.btn-primary').addEventListener('click', function(e) {
-      e.preventDefault(); // 阻止默认提交行为
-      // 模拟注册成功，隐藏注册表单，显示成功页面，隐藏顶部Tab
-      registerForm.style.display = 'none';
-      authTabs.style.display = 'none';
-      registerSuccess.style.display = 'block';
-    });
-
-    document.getElementById('btn-go-login').addEventListener('click', function(e) {
-      e.preventDefault();
-      // 返回登录页面
-      registerSuccess.style.display = 'none';
-      loginForm.style.display = 'block';
-      authTabs.style.display = 'flex';
-      document.getElementById('tab-login').classList.add('active');
-      document.getElementById('tab-register').classList.remove('active');
-    });
-
-  </script>
 
 <script>
 document.addEventListener('click', function(e) {
@@ -882,53 +795,7 @@ document.addEventListener('click', function(e) {
 </script>
 </body>
 </html>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // 1. 获取注册表单、登录表单、顶部Tab
-  const registerForm = document.getElementById('register-form');
-  const loginForm = document.getElementById('login-form');
-  const tabs = document.querySelector('.tabs');
-  const authCard = document.querySelector('.auth-card');
 
-  // 2. 动态创建“注册成功”页面（纯JS生成，不会破坏现有结构）
-  let successPage = document.getElementById('fake-success');
-  if (!successPage) {
-    successPage = document.createElement('div');
-    successPage.id = 'fake-success';
-    successPage.style.cssText = 'display:none; text-align:center; padding:20px 0;';
-    successPage.innerHTML = `
-      <div style="width: 64px; height: 64px; margin: 0 auto 16px; background: rgba(74,222,128,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-      </div>
-      <h3 style="color: #fff; margin-bottom: 8px; font-size: 18px;">注册成功</h3>
-      <p style="color: #888; font-size: 13px; margin-bottom: 24px;">欢迎加入 Apex，您的账号已创建成功。</p>
-      <button class="btn-primary" id="fake-go-login">立即登录</button>
-    `;
-    authCard.appendChild(successPage);
-  }
-
-  // 3. 注册按钮点击事件（直接跳转成功页）
-  const regBtn = registerForm.querySelector('.btn-primary');
-  if (regBtn) {
-    regBtn.addEventListener('click', function(e) {
-      e.preventDefault(); // 阻止表单默认提交
-      registerForm.style.display = 'none';
-      tabs.style.display = 'none';
-      successPage.style.display = 'block';
-    });
-  }
-
-  // 4. 点击“立即登录”返回登录页面
-  document.getElementById('fake-go-login').addEventListener('click', function(e) {
-    e.preventDefault();
-    successPage.style.display = 'none';
-    loginForm.style.display = 'block';
-    tabs.style.display = 'flex';
-    document.getElementById('tab-login').classList.add('active');
-    document.getElementById('tab-register').classList.remove('active');
-  });
-});
-</script>
 <script>
 document.addEventListener('click', function(e) {
   // 1. 捕获“注册”按钮的点击
