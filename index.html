@@ -121,6 +121,14 @@
     .footer { text-align:center; color:var(--text-muted); font-size:11px; margin-top:20px; padding-bottom:16px; }
     #apex-toast { position:fixed; top:20px; left:50%; transform:translateX(-50%); padding:12px 24px; border-radius:8px; font-size:14px; z-index:999999; transition:opacity 0.3s; max-width:90%; text-align:center; }
   </style>
+
+<!-- APEX-PRELOAD-START -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://images.unsplash.com">
+  <link rel="preload" href="/logo.png" as="image">
+  <link rel="preload" href="/splash-top.webp" as="image" fetchpriority="high">
+<!-- APEX-PRELOAD-END -->
 </head>
 <body>
   <!-- ============ 加载页 ============ -->
@@ -884,6 +892,45 @@
         .catch(err => console.log('[Apex] Service Worker 注册失败：', err));
     });
   }
+  </script>
+
+
+  <script id="apex-monitoring">
+  (function() {
+    function report(type, message) {
+      try {
+        fetch('/api/log', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: type, message: message, url: location.href }),
+          keepalive: true
+        }).catch(() => {});
+      } catch (e) {}
+    }
+    window.addEventListener('error', function(e) {
+      report('js_error', (e.message || 'Unknown') + ' @ ' + (e.filename || '') + ':' + (e.lineno || ''));
+    });
+    window.addEventListener('unhandledrejection', function(e) {
+      const reason = e.reason && e.reason.message ? e.reason.message : String(e.reason);
+      report('promise_rejection', reason.substring(0, 500));
+    });
+    if ('PerformanceObserver' in window) {
+      try {
+        new PerformanceObserver((list) => {
+          const entries = list.getEntries();
+          const last = entries[entries.length - 1];
+          report('perf_lcp', Math.round(last.startTime) + 'ms');
+        }).observe({ type: 'largest-contentful-paint', buffered: true });
+      } catch (e) {}
+    }
+    window.addEventListener('load', function() {
+      setTimeout(() => {
+        const nav = performance.getEntriesByType('navigation')[0];
+        if (nav) report('perf_load', 'DOM:' + Math.round(nav.domContentLoadedEventEnd) + 'ms Load:' + Math.round(nav.loadEventEnd) + 'ms');
+      }, 1000);
+    });
+    console.log('[Apex] 监控已启用');
+  })();
   </script>
 
 </body>
