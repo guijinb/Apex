@@ -74,6 +74,17 @@
     .brand .en { font-family: 'Cinzel', 'Times New Roman', serif !important; font-size: 24px !important; font-weight: 700 !important; letter-spacing: 1.5px !important; color: #ffffff !important; line-height: 1 !important; }
     .brand .sub { font-size: 9px !important; color: var(--text-muted) !important; letter-spacing: 0.5px !important; margin-top: 0 !important; margin-left: 0 !important; line-height: 1 !important; }
 
+
+    /* 品牌区完美排版终极修复 */
+    .brand { display: inline-flex !important; flex-direction: column !important; align-items: flex-start !important; gap: 4px !important; padding: 0 !important; background: transparent !important; border: none !important; }
+    .brand-top { display: flex !important; align-items: center !important; gap: 8px !important; }
+    /* 让 Logo 大小与 APEX 文字视觉上保持一致（32px） */
+    .brand .logo-img { width: 32px !important; height: 32px !important; object-fit: contain !important; mix-blend-mode: screen !important; }
+    /* 品牌名字号定为 26px，字距略微缩小 */
+    .brand .en { font-family: 'Cinzel', 'Times New Roman', serif !important; font-size: 26px !important; font-weight: 700 !important; letter-spacing: 1.5px !important; color: #ffffff !important; line-height: 1 !important; }
+    /* 副标题宽度撑满 100%，并通过两端对齐让文字刚好等于上方（Logo到APEX）的宽度 */
+    .brand .sub { font-size: 10px !important; color: var(--text-muted) !important; width: 100% !important; text-align: justify !important; text-align-last: justify !important; line-height: 1.2 !important; margin-top: 6px !important; letter-spacing: 1.5px !important; }
+
 </style>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
 </head>
