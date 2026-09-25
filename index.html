@@ -81,45 +81,44 @@
 
 
 
+
+
 <style id="apex-splash-style">
-  #apex-splash-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #050505; z-index: 99999; display: flex; flex-direction: column; align-items: center; padding: 10px 0; transition: opacity 0.5s ease, visibility 0.5s; overflow: hidden; box-sizing: border-box; }
+  #apex-splash-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #050505; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 15px 0 25px 0; transition: opacity 0.5s ease, visibility 0.5s; overflow: hidden; box-sizing: border-box; }
   #apex-splash-screen.hide { opacity: 0; visibility: hidden; }
-  /* 顶部图片放大，但限制高度 */
-  .splash-top-img { width: 96%; max-height: 20vh; object-fit: contain; object-position: center top; display: block; margin-bottom: 4px; }
-  .splash-welcome { font-size: 15px; color: #fff; font-weight: bold; letter-spacing: 1px; margin-bottom: 8px; text-align: center; }
+  .splash-top-img { width: 100%; height: 22vh; object-fit: contain; margin-bottom: 4px; }
+  .splash-welcome { font-size: 18px; color: #fff; font-weight: bold; letter-spacing: 1px; margin-bottom: 4px; text-align: center; }
   
-  /* 终端框放大，宽度95%，高度30vh */
-  .splash-terminal-box { width: 95%; max-width: 100%; height: 30vh; display: flex; border: 1px solid #444; border-radius: 8px; background: #0a0a0a; margin-bottom: 10px; overflow: hidden; }
-  /* 左侧代码区：加大字体，允许滚动 */
-  .splash-code-area { flex: 1.6; padding: 10px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 10px; line-height: 1.5; color: #4ade80; white-space: pre-wrap; word-break: break-all; border-right: 1px solid #222; }
+  /* 终端框最大化 */
+  .splash-terminal-box { width: 95%; height: 38vh; display: flex; border: 1px solid #444; border-radius: 10px; background: #0a0a0a; margin-bottom: 10px; overflow: hidden; }
+  .splash-code-area { flex: 1.6; padding: 12px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.5; color: #4ade80; white-space: pre-wrap; word-break: break-all; border-right: 1px solid #222; }
   .splash-code-area::-webkit-scrollbar { display: none; }
   .code-keyword { color: #c678dd; }
   .code-string { color: #98c379; }
   .code-func { color: #61afef; }
   .code-success { color: #4ade80; font-weight: bold; }
   
-  /* 右侧系统列表放大 */
-  .splash-system-list { flex: 1; padding: 10px; display: flex; flex-direction: column; justify-content: space-around; font-size: 11px; color: #777; }
-  .splash-system-item { display: flex; align-items: center; gap: 6px; transition: 0.3s; }
+  .splash-system-list { flex: 1; padding: 15px 10px; display: flex; flex-direction: column; justify-content: space-around; font-size: 13px; color: #777; }
+  .splash-system-item { display: flex; align-items: center; gap: 8px; transition: 0.3s; }
   .splash-system-item.active { color: #fff; }
-  .sys-dot { width: 8px; height: 8px; border-radius: 50%; border: 1px solid #666; background: transparent; transition: 0.3s; flex-shrink: 0; }
-  .splash-system-item.active .sys-dot { background: #4ade80; border-color: #4ade80; box-shadow: 0 0 8px rgba(74,222,128,0.8); }
-  .splash-system-item.checked::after { content: '✓'; color: #4ade80; font-weight: bold; margin-left: auto; margin-right: 4px; }
+  .sys-dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid #666; background: transparent; transition: 0.3s; flex-shrink: 0; }
+  .splash-system-item.active .sys-dot { background: #4ade80; border-color: #4ade80; box-shadow: 0 0 10px rgba(74,222,128,0.8); }
+  .splash-system-item.checked::after { content: '✓'; color: #4ade80; font-weight: bold; margin-left: auto; margin-right: 4px; font-size: 15px; }
   
   /* 进度条放大 */
-  .splash-progress-container { width: 95%; max-width: 100%; margin-bottom: 12px; }
-  .splash-progress-text { font-size: 12px; color: #ccc; margin-bottom: 6px; display: flex; justify-content: space-between; }
-  .splash-progress-bar-bg { width: 100%; height: 6px; background: #222; border-radius: 3px; overflow: hidden; }
-  .splash-progress-bar { width: 0%; height: 100%; background: #fff; transition: width 0.1s linear; box-shadow: 0 0 10px rgba(255,255,255,0.8); }
+  .splash-progress-container { width: 95%; margin-bottom: 15px; }
+  .splash-progress-text { font-size: 14px; color: #ccc; margin-bottom: 8px; display: flex; justify-content: space-between; }
+  .splash-progress-bar-bg { width: 100%; height: 8px; background: #222; border-radius: 4px; overflow: hidden; }
+  .splash-progress-bar { width: 0%; height: 100%; background: #fff; transition: width 0.1s linear; box-shadow: 0 0 12px rgba(255,255,255,0.9); }
   
-  /* 底部四大组件放大 */
-  .splash-features { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; width: 95%; max-width: 100%; margin-top: 2px; }
-  .splash-feature-item { display: flex; align-items: center; gap: 10px; }
-  .splash-feature-icon { width: 34px; height: 34px; border-radius: 50%; background: rgba(230, 57, 70, 0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .splash-feature-icon svg { width: 18px; height: 18px; }
+  /* 四大组件放大 */
+  .splash-features { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 20px; width: 95%; margin-top: 2px; }
+  .splash-feature-item { display: flex; align-items: center; gap: 12px; }
+  .splash-feature-icon { width: 42px; height: 42px; border-radius: 50%; background: rgba(230, 57, 70, 0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .splash-feature-icon svg { width: 22px; height: 22px; }
   .splash-feature-text { display: flex; flex-direction: column; }
-  .splash-feature-text span { font-size: 13px; font-weight: bold; color: #fff; }
-  .splash-feature-text small { font-size: 10px; color: #888; }
+  .splash-feature-text span { font-size: 15px; font-weight: bold; color: #fff; margin-bottom: 2px; }
+  .splash-feature-text small { font-size: 11px; color: #888; }
 </style>
 </head>
 <body>
@@ -345,6 +344,8 @@ document.addEventListener('click', function(e) {
 
 
 
+
+
 <script>
   window.addEventListener('load', function() {
     const codeLog = document.getElementById('splash-code-log');
@@ -357,7 +358,6 @@ document.addEventListener('click', function(e) {
       document.getElementById('sys-4')
     ];
     
-    // 更丰富的代码片段，确保能触发滚动
     const codeSnippets = [
       '<span class="code-keyword">import</span> { ApexCore } <span class="code-keyword">from</span> <span class="code-string">"@apex/core"</span>;',
       '',
@@ -380,16 +380,14 @@ document.addEventListener('click', function(e) {
     ];
     
     let lineIndex = 0;
-    let totalTime = 4400; // 总耗时4.4秒
+    let totalTime = 5500; // 代码打印总耗时5.5秒
     let stepTime = totalTime / codeSnippets.length;
     
-    // 打字机真实滚动逻辑
     function typeCode() {
       if (lineIndex < codeSnippets.length) {
         const line = document.createElement('div');
         line.innerHTML = codeSnippets[lineIndex];
         codeLog.appendChild(line);
-        // 强制滚动到底部
         codeLog.scrollTop = codeLog.scrollHeight;
         lineIndex++;
         setTimeout(typeCode, stepTime);
@@ -397,21 +395,21 @@ document.addEventListener('click', function(e) {
     }
     typeCode();
 
-    // 右侧系统打勾 (间隔 1.1 秒依次点亮)
+    // 系统打勾：每1.5秒打一个勾，全部约耗时6秒
     sysItems.forEach((item, index) => {
       setTimeout(() => {
         item.classList.add('active');
-        setTimeout(() => { item.classList.add('checked'); }, 700);
-      }, index * 1050 + 200);
+        setTimeout(() => { item.classList.add('checked'); }, 900);
+      }, index * 1500 + 300);
     });
 
-    // 进度条动画
+    // 进度条动画：约耗时6.5秒
     let progress = 0;
     const progressInterval = setInterval(() => {
-      progress += Math.floor(Math.random() * 6) + 2;
+      progress += Math.floor(Math.random() * 3) + 1.5; // 每次增加1.5~4.5
       if (progress > 100) progress = 100;
       progressBar.style.width = progress + '%';
-      progressText.innerHTML = 'APEX 系统加载中... <span>' + progress + '%</span>';
+      progressText.innerHTML = 'APEX 系统加载中... <span>' + Math.floor(progress) + '%</span>';
       
       if (progress === 100) {
         clearInterval(progressInterval);
@@ -419,9 +417,9 @@ document.addEventListener('click', function(e) {
         setTimeout(() => {
           const splash = document.getElementById('apex-splash-screen');
           if (splash) splash.classList.add('hide');
-        }, 600);
+        }, 700); // 完成后再停留0.7秒
       }
-    }, 80);
+    }, 120); // 每120ms更新一次
   });
 </script>
 </body>
