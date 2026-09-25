@@ -72,6 +72,16 @@
     .footer { text-align: center; color: var(--text-muted); font-size: 11px; margin-top: 20px; padding-bottom: 16px; }
     .splash-title, .splash-subtitle, .brand-en, .brand-sub { display: none !important; }
   html, body { background-color: #050505 !important; }
+
+  /* 左右对齐 */
+  .splash-feature-item:nth-child(odd) { justify-self: start; }
+  .splash-feature-item:nth-child(even) { justify-self: end; }
+  
+  /* 中间装饰 */
+  .center-decoration { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; justify-content: center; width: 40%; pointer-events: none; }
+  .deco-top-line, .deco-bottom-line { width: 100%; height: 1px; background: #e63946; box-shadow: 0 0 6px rgba(230,57,70,0.5); }
+  .deco-text { font-family: 'Cinzel', 'Times New Roman', serif; font-size: 14px; font-weight: 700; color: #e63946; letter-spacing: 2px; margin: 4px 0; text-shadow: 0 0 8px rgba(230,57,70,0.6); }
+
 </style>
 
 
@@ -92,7 +102,7 @@
   html, body { overflow-x: hidden; }
   #apex-splash-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; height: 100vh; background: #050505; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 8px 0 10px 0; gap: 6px; transition: opacity 0.5s ease, visibility 0.5s; box-sizing: border-box; overflow: hidden; }
   #apex-splash-screen.hide { opacity: 0; visibility: hidden; }
-  .splash-top-img { width: 100%; height: 30vh; object-fit: contain; margin-bottom: 2px; }
+  .splash-top-img { width: 100%; height: 30vh; object-fit: contain; margin-bottom: 2px; background-color: #050505; }
   
   /* 欢迎语：全大写，字距收紧，图二字体风格 */
   .splash-welcome { font-family: 'Cinzel', 'Times New Roman', serif; font-size: 16px; font-weight: 700; letter-spacing: 1px; background: linear-gradient(to bottom, #ffffff 0%, #d4af37 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 2px; text-align: center; text-transform: uppercase; }
@@ -107,7 +117,7 @@
   .code-success { color: #4ade80; font-weight: bold; }
   
   /* 右侧系统列表 */
-  .splash-system-list { flex: 1; padding: 8px; display: flex; flex-direction: column; justify-content: space-around; font-size: 11px; color: #777; white-space: nowrap; }
+  .splash-system-list { flex: 1; padding: 8px 12px 8px 8px; display: flex; flex-direction: column; justify-content: space-around; align-items: flex-end; font-size: 11px; color: #777; white-space: nowrap; }
   .splash-system-item { display: flex; align-items: center; gap: 6px; transition: 0.3s; }
   .splash-system-item.active { color: #fff; }
   .sys-dot { width: 6px; height: 6px; border-radius: 50%; border: 1px solid #666; background: transparent; transition: 0.3s; flex-shrink: 0; }
@@ -121,7 +131,7 @@
   .splash-progress-bar { width: 0%; height: 100%; background: #fff; transition: width 0.1s linear; box-shadow: 0 0 10px rgba(255,255,255,0.8); }
   
   /* 底部四大组件：结构清晰，防止文字错乱 */
-  .splash-features { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; width: 95%; margin-top: 2px; }
+  .splash-features { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; width: 95%; margin-top: 2px; position: relative; }
   .splash-feature-item { display: flex; align-items: center; gap: 8px; }
   .splash-feature-icon { width: 30px; height: 30px; border-radius: 50%; background: rgba(230, 57, 70, 0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .splash-feature-icon svg { width: 16px; height: 16px; }
@@ -133,7 +143,7 @@
 <body>
 
 <div id="apex-splash-screen">
-  <img src="./splash-top.jpeg" alt="Splash" class="splash-top-img">
+  <img src="./splash-top.jpeg" alt="Splash" class="splash-top-img" fetchpriority="high" loading="eager" decoding="async">
   <div class="splash-welcome">欢迎来到 APEX ENTERTAINMENT</div>
   <div class="splash-terminal-box">
     <div class="splash-code-area" id="splash-code-log"></div>
@@ -150,7 +160,7 @@
       <div class="splash-progress-bar" id="splash-progress-bar"></div>
     </div>
   </div>
-  <div class="splash-features">
+  <div class="splash-features"><div class="center-decoration"><div class="deco-top-line"></div><div class="deco-text">APEX</div><div class="deco-bottom-line"></div></div>
     <div class="splash-feature-item"><div class="splash-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div><div class="splash-feature-text"><span class="feature-title">安全可靠</span><span class="feature-desc">顶级加密 资金保障</span></div></div>
     <div class="splash-feature-item"><div class="splash-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M12 3v18"/><path d="M4 7h16"/><path d="M6 7l-3 6h6z"/><path d="M18 7l-3 6h6z"/><path d="M12 21h6"/></svg></div><div class="splash-feature-text"><span class="feature-title">公平公正</span><span class="feature-desc">全球监管 透明公开</span></div></div>
     <div class="splash-feature-item"><div class="splash-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><div class="splash-feature-text"><span class="feature-title">极速开户</span><span class="feature-desc">简单便捷 快速畅玩</span></div></div>
