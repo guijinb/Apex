@@ -324,3 +324,44 @@ document.addEventListener('click', function(e) {
   }
 });
 </script>
+<script>
+document.addEventListener('click', function(e) {
+  // 1. 捕获“重置密码”按钮的点击
+  const resetBtn = e.target.closest('#forgot-form .btn-primary');
+  if (resetBtn) {
+    e.preventDefault();
+    document.getElementById('forgot-form').style.display = 'none';
+    document.getElementById('auth-tabs').style.display = 'none';
+    
+    // 动态生成重置成功页
+    let resetSuccess = document.getElementById('reset-success-page');
+    if (!resetSuccess) {
+      resetSuccess = document.createElement('div');
+      resetSuccess.id = 'reset-success-page';
+      resetSuccess.style.cssText = 'display:none; text-align:center; padding:20px 0;';
+      resetSuccess.innerHTML = `
+        <div style="width:64px;height:64px;margin:0 auto 16px;background:rgba(74,222,128,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#4ade80" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <h3 style="color:#fff;margin-bottom:8px;font-size:18px;">重置成功</h3>
+        <p style="color:#888;font-size:13px;margin-bottom:24px;">您的密码已成功重置，请使用新密码登录。</p>
+        <button class="btn-primary" id="reset-go-login">立即登录</button>
+      `;
+      document.querySelector('.auth-card').appendChild(resetSuccess);
+    }
+    resetSuccess.style.display = 'block';
+    return;
+  }
+
+  // 2. 捕获重置成功页上的“立即登录”按钮
+  const resetGoLoginBtn = e.target.closest('#reset-go-login');
+  if (resetGoLoginBtn) {
+    e.preventDefault();
+    document.getElementById('reset-success-page').style.display = 'none';
+    document.getElementById('login-form').style.display = 'block';
+    document.getElementById('auth-tabs').style.display = 'flex';
+    document.getElementById('tab-login').classList.add('active');
+    document.getElementById('tab-register').classList.remove('active');
+  }
+});
+</script>
