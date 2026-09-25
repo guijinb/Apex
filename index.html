@@ -236,3 +236,50 @@
   </script>
 </body>
 </html>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // 1. 获取注册表单、登录表单、顶部Tab
+  const registerForm = document.getElementById('register-form');
+  const loginForm = document.getElementById('login-form');
+  const tabs = document.querySelector('.tabs');
+  const authCard = document.querySelector('.auth-card');
+
+  // 2. 动态创建“注册成功”页面（纯JS生成，不会破坏现有结构）
+  let successPage = document.getElementById('fake-success');
+  if (!successPage) {
+    successPage = document.createElement('div');
+    successPage.id = 'fake-success';
+    successPage.style.cssText = 'display:none; text-align:center; padding:20px 0;';
+    successPage.innerHTML = `
+      <div style="width: 64px; height: 64px; margin: 0 auto 16px; background: rgba(74,222,128,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <h3 style="color: #fff; margin-bottom: 8px; font-size: 18px;">注册成功</h3>
+      <p style="color: #888; font-size: 13px; margin-bottom: 24px;">欢迎加入 Apex，您的账号已创建成功。</p>
+      <button class="btn-primary" id="fake-go-login">立即登录</button>
+    `;
+    authCard.appendChild(successPage);
+  }
+
+  // 3. 注册按钮点击事件（直接跳转成功页）
+  const regBtn = registerForm.querySelector('.btn-primary');
+  if (regBtn) {
+    regBtn.addEventListener('click', function(e) {
+      e.preventDefault(); // 阻止表单默认提交
+      registerForm.style.display = 'none';
+      tabs.style.display = 'none';
+      successPage.style.display = 'block';
+    });
+  }
+
+  // 4. 点击“立即登录”返回登录页面
+  document.getElementById('fake-go-login').addEventListener('click', function(e) {
+    e.preventDefault();
+    successPage.style.display = 'none';
+    loginForm.style.display = 'block';
+    tabs.style.display = 'flex';
+    document.getElementById('tab-login').classList.add('active');
+    document.getElementById('tab-register').classList.remove('active');
+  });
+});
+</script>
