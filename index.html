@@ -3,567 +3,558 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#050505">
   <title>Apex - Global Entertainment</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    :root { --bg:#050505; --card-bg:#0f0f0f; --gold:#d4af37; --text:#ffffff; --text-muted:#888888; --border:#2a2a2a; --green:#4ade80; }
-    * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color: transparent; }
+    :root { --bg:#050505; --card-bg:#0f0f0f; --gold:#d4af37; --text:#ffffff; --text-muted:#888888; --border:#2a2a2a; --green:#4ade80; --red:#e63946; }
+    * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
     body { font-family:'Inter',system-ui,-apple-system,sans-serif; background-color:var(--bg); color:var(--text); display:flex; flex-direction:column; min-height:100vh; }
-    .container { max-width:480px; margin:0 auto; padding:16px; width:100%; }
-    .header { position: absolute; top: 16px; right: 16px; z-index: 100; }
-    .lang-selector { position: relative; }
-    .lang-btn { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px; backdrop-filter: blur(5px); }
-    .lang-menu { display: none; position: absolute; right: 0; top: calc(100% + 6px); width: 150px; max-height: 220px; overflow-y: auto; background: rgba(10,10,10,0.95); border: 1px solid var(--border); border-radius: 8px; z-index: 200; backdrop-filter: blur(10px); }
-    .lang-menu.show { display: block; }
-    .lang-item { padding: 10px 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12px; color: var(--text-muted); border-bottom: 1px solid #1a1a1a; }
-    .hero { position: relative; width: 100%; height: 36vh; min-height: 280px; background: url('https://images.unsplash.com/photo-1596838132731-3301c3fd4317?auto=format&fit=crop&w=1200&q=90') center top no-repeat; background-size: cover; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding-top: 0; margin-top: 0; }
-    .hero::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(5,5,5,0.5) 0%, rgba(5,5,5,0.95) 100%); z-index: 1; }
-    .hero-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; }
-    .hero .logo-img { width: 130px !important; height: 130px !important; object-fit: contain !important; margin: 0 auto 5px auto !important; display: block !important; mix-blend-mode: screen !important; }
-    .hero .brand-en { font-family: 'Cinzel', 'Times New Roman', serif; font-size: 36px; font-weight: 700; letter-spacing: 2px; color: #ffffff; line-height: 1; text-shadow: 0 4px 15px rgba(0,0,0,0.8); }
-    .hero .brand-sub { font-size: 9px; color: var(--gold); letter-spacing: 5px; text-transform: uppercase; margin-top: 6px; }
-    .hero .main-title { font-size: 16px; font-weight: bold; color: #fff; margin-top: 12px !important; margin-bottom: 4px; }
-    .hero .sub-title { font-size: 11px; color: #ccc; }
-    .card-section { max-width: 480px; margin: 0 auto; padding: 0 16px; width: 100%; margin-top: -20px; position: relative; z-index: 3; }
-    .auth-card { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
-    .tabs { display: flex; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 4px; margin-bottom: 20px; }
-    .tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; font-weight: bold; color: var(--text-muted); background: transparent; border: none; border-radius: 8px; font-size: 14px; transition: 0.3s; }
-    .tab.active { background: #fff; color: #000; box-shadow: 0 2px 10px rgba(255,255,255,0.1); }
-    .input-group { margin-bottom: 16px; }
-    .input-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
-    .input-wrap { position: relative; display: flex; align-items: center; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 10px; transition: 0.3s; }
-    .input-wrap:focus-within { border-color: #fff; }
-    .input-wrap .icon { padding-left: 14px; color: var(--text-muted); font-size: 16px; }
-    .input-wrap input { flex: 1; padding: 14px 14px 14px 10px; background: transparent; border: none; color: #fff; font-size: 14px; outline: none; }
-    .form-tip { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
-    .red-tip { color: #e63946; }
-    .pwd-actions { position: absolute; right: 14px; display: flex; gap: 8px; color: var(--text-muted); cursor: pointer; font-size: 14px; transition: 0.2s; z-index: 10; }
-    .pwd-actions span { padding: 8px; margin: -8px; }
-    .checkbox-group { display: flex; align-items: center; gap: 8px; margin: 16px 0; font-size: 12px; color: var(--text-muted); }
-    .checkbox-group input { accent-color: #ffffff; width: 16px; height: 16px; }
-    .checkbox-group a { color: #fff; text-decoration: none; }
-    .btn-primary { width: 100%; padding: 14px; background: #ffffff; color: #000000; font-weight: 700; font-size: 15px; border: none; border-radius: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; box-shadow: 0 4px 12px rgba(255,255,255,0.1); }
-    .btn-primary:hover { background: #e0e0e0; transform: translateY(-1px); }
-    .apex-captcha-box { background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; margin: 16px 0; cursor: pointer; }
-    .apex-captcha-content { display: flex; align-items: center; gap: 12px; }
-    .apex-captcha-checkbox { width: 20px; height: 20px; border: 2px solid #555; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-    .apex-captcha-box.verifying .apex-captcha-checkbox { border-color: var(--green); }
-    .apex-captcha-box.success .apex-captcha-checkbox { background: var(--green); border-color: var(--green); }
-    .apex-checkmark { width: 10px; height: 10px; stroke: #000; stroke-width: 3; fill: none; display: none; }
-    .apex-captcha-box.success .apex-checkmark { display: block; }
-    .apex-captcha-text { font-size: 13px; color: #ccc; }
-    .apex-captcha-percent { font-size: 13px; color: var(--green); font-weight: bold; display: none; }
-    .apex-captcha-box.verifying .apex-captcha-text, .apex-captcha-box.success .apex-captcha-text { display: none; }
-    .apex-captcha-box.verifying .apex-captcha-percent, .apex-captcha-box.success .apex-captcha-percent { display: block; }
-    .apex-captcha-footer { font-size: 10px; color: #555; }
-    .link-row { display: flex; justify-content: space-between; margin-top: 12px; margin-bottom: 8px; }
-    .link-row a { color: var(--text-muted); font-size: 12px; text-decoration: none; transition: 0.3s; }
-    .link-row a:hover { color: #fff; }
-    .code-row { display: flex; gap: 10px; align-items: center; }
-    .code-boxes { display: flex; gap: 6px; flex: 1; }
-    .code-boxes input { width: 100%; height: 44px; text-align: center; font-size: 18px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none; }
-    .code-boxes input:focus { border-color: #fff; }
-    .btn-send-code { padding: 0 12px; height: 44px; background: transparent; border: 1px solid var(--border); color: var(--text-muted); border-radius: 8px; font-size: 12px; cursor: pointer; white-space: nowrap; transition: 0.3s; }
-    .btn-send-code:hover { border-color: #fff; color: #fff; }
-    .btn-send-code:disabled { opacity: 0.5; cursor: not-allowed; }
-    .forgot-top { display: flex; justify-content: flex-end; margin-bottom: 16px; }
-    .forgot-top a { color: var(--text-muted); font-size: 12px; text-decoration: none; transition: 0.3s; }
-    .forgot-top a:hover { color: #fff; }
-    .footer { text-align: center; color: var(--text-muted); font-size: 11px; margin-top: 20px; padding-bottom: 16px; }
-    .splash-title, .splash-subtitle, .brand-en, .brand-sub { display: none !important; }
-  html, body { background-color: #050505 !important; }
-
-  /* 左右对齐 */
-  .splash-feature-item:nth-child(odd) { justify-self: start; }
-  .splash-feature-item:nth-child(even) { justify-self: end; }
-  
-  /* 中间装饰 */
-  .center-decoration { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; justify-content: center; width: 40%; pointer-events: none; }
-  .deco-top-line, .deco-bottom-line { width: 100%; height: 1px; background: #e63946; box-shadow: 0 0 6px rgba(230,57,70,0.5); }
-  .deco-text { font-family: 'Cinzel', 'Times New Roman', serif; font-size: 14px; font-weight: 700; color: #e63946; letter-spacing: 2px; margin: 4px 0; text-shadow: 0 0 8px rgba(230,57,70,0.6); }
-
-
-  .feature-col { display: flex; flex-direction: column; gap: 6px; flex: 1; }
-  .feature-col.left { align-items: flex-start; }
-  .feature-col.right { align-items: flex-end; }
-  .center-deco { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 0 0 60px; }
-  .deco-line { width: 40px; height: 1px; background: #e63946; box-shadow: 0 0 6px rgba(230,57,70,0.5); }
-  .deco-text { font-family: 'Cinzel', 'Times New Roman', serif; font-size: 14px; font-weight: 700; color: #e63946; letter-spacing: 2px; margin: 4px 0; text-shadow: 0 0 8px rgba(230,57,70,0.6); }
-  .splash-feature-item { display: flex; align-items: center; gap: 8px; }
-  .splash-feature-icon { width: 30px; height: 30px; border-radius: 50%; background: rgba(230, 57, 70, 0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .splash-feature-icon svg { width: 16px; height: 16px; }
-  .splash-feature-text { display: flex; flex-direction: column; }
-  .feature-title { font-size: 12px; font-weight: bold; color: #fff; }
-  .feature-desc { font-size: 9px; color: #888; }
-
-
-  /* 表单验证样式 */
-  .input-wrap.error { border-color: #e63946 !important; }
-  .input-wrap.success { border-color: #4ade80 !important; }
-  .field-error { font-size: 10px; color: #e63946; margin-top: 4px; display: none; }
-  .field-error.show { display: block; }
-  .pwd-strength { display: flex; gap: 4px; margin-top: 6px; }
-  .pwd-strength .bar { flex: 1; height: 3px; background: #333; border-radius: 2px; transition: 0.3s; }
-  .pwd-strength .bar.active-weak { background: #e63946; }
-  .pwd-strength .bar.active-medium { background: #f4d03f; }
-  .pwd-strength .bar.active-strong { background: #4ade80; }
-  .pwd-strength-text { font-size: 10px; margin-top: 4px; color: #888; }
-
-</style>
-
-
-<meta name="theme-color" content="#050505"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-
-
-
-
-
-
-
-
-
-
-<style id="apex-splash-style">
-  /* 锁定屏幕，防止滑动露出底层页面 */
-  html, body { overflow-x: hidden; }
-  #apex-splash-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; height: 100vh; background: #050505; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 8px 0 10px 0; gap: 6px; transition: opacity 0.5s ease, visibility 0.5s; box-sizing: border-box; overflow: hidden; }
-  #apex-splash-screen.hide { opacity: 0; visibility: hidden; }
-  .splash-top-img { width: 100%; height: 30vh; object-fit: contain; margin-bottom: 2px; background-color: #050505; }
-  
-  /* 欢迎语：全大写，字距收紧，图二字体风格 */
-  .splash-welcome { font-family: 'Cinzel', 'Times New Roman', serif; font-size: 16px; font-weight: 700; letter-spacing: 1px; background: linear-gradient(to bottom, #ffffff 0%, #d4af37 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 2px; text-align: center; text-transform: uppercase; }
-  
-  /* 终端框严格限制高度 */
-  .splash-terminal-box { width: 95%; height: 36vh; display: flex; border: 1px solid #444; border-radius: 8px; background: #0a0a0a; margin-bottom: 4px; overflow: hidden; }
-  .splash-code-area { flex: 1.5; padding: 8px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.5; color: #4ade80; white-space: pre-wrap; word-break: break-all; border-right: 1px solid #222; }
-  .splash-code-area::-webkit-scrollbar { display: none; }
-  .code-keyword { color: #c678dd; }
-  .code-string { color: #98c379; }
-  .code-func { color: #61afef; }
-  .code-success { color: #4ade80; font-weight: bold; }
-  
-  /* 右侧系统列表 */
-  .splash-system-list { flex: 1; padding: 8px 12px 8px 8px; display: flex; flex-direction: column; justify-content: space-around; align-items: flex-end; font-size: 11px; color: #777; white-space: nowrap; }
-  .splash-system-item { display: flex; align-items: center; gap: 6px; transition: 0.3s; }
-  .splash-system-item.active { color: #fff; }
-  .sys-dot { width: 6px; height: 6px; border-radius: 50%; border: 1px solid #666; background: transparent; transition: 0.3s; flex-shrink: 0; }
-  .splash-system-item.active .sys-dot { background: #4ade80; border-color: #4ade80; box-shadow: 0 0 8px rgba(74,222,128,0.8); }
-  .splash-system-item.checked::after { content: '✓'; color: #4ade80; font-weight: bold; margin-left: auto; margin-right: 2px; }
-  
-  /* 进度条 */
-  .splash-progress-container { width: 95%; margin-bottom: 4px; }
-  .splash-progress-text { font-size: 11px; color: #ccc; margin-bottom: 4px; display: flex; justify-content: space-between; }
-  .splash-progress-bar-bg { width: 100%; height: 5px; background: #222; border-radius: 3px; overflow: hidden; }
-  .splash-progress-bar { width: 0%; height: 100%; background: #fff; transition: width 0.1s linear; box-shadow: 0 0 10px rgba(255,255,255,0.8); }
-  
-  /* 底部四大组件：结构清晰，防止文字错乱 */
-  .splash-features-wrapper { display: flex; justify-content: space-between; align-items: center; width: 95%; margin-top: 2px; }
-  .splash-feature-item { display: flex; align-items: center; gap: 8px; }
-  .splash-feature-icon { width: 30px; height: 30px; border-radius: 50%; background: rgba(230, 57, 70, 0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .splash-feature-icon svg { width: 16px; height: 16px; }
-  .splash-feature-text { display: flex; flex-direction: column; }
-  .feature-title { font-size: 12px; font-weight: bold; color: #fff; }
-  .feature-desc { font-size: 9px; color: #888; }
-</style>
+    /* ============ 顶部导航 ============ */
+    .header { position:absolute; top:16px; right:16px; z-index:100; }
+    .lang-selector { position:relative; }
+    .lang-btn { background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.15); color:#fff; padding:6px 12px; border-radius:20px; display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; backdrop-filter:blur(5px); }
+    .lang-menu { display:none; position:absolute; right:0; top:calc(100% + 6px); width:150px; max-height:220px; overflow-y:auto; background:rgba(10,10,10,0.95); border:1px solid var(--border); border-radius:8px; z-index:200; backdrop-filter:blur(10px); }
+    .lang-menu.show { display:block; }
+    .lang-item { padding:10px 12px; display:flex; align-items:center; gap:8px; cursor:pointer; font-size:12px; color:var(--text-muted); border-bottom:1px solid #1a1a1a; }
+    .lang-item:hover { background:rgba(255,255,255,0.05); color:#fff; }
+    /* ============ Hero 区 ============ */
+    .hero { position:relative; width:100%; height:36vh; min-height:280px; background:url('https://images.unsplash.com/photo-1596838132731-3301c3fd4317?auto=format&fit=crop&w=1200&q=90') center/cover no-repeat; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+    .hero::before { content:''; position:absolute; top:0; left:0; width:100%; height:100%; background:linear-gradient(180deg, rgba(5,5,5,0.4) 0%, rgba(5,5,5,0.95) 100%); }
+    .hero-content { position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; }
+    .hero .logo-img { width:90px; height:90px; object-fit:contain; mix-blend-mode:screen; margin-bottom:12px; }
+    .hero .main-title { font-size:16px; font-weight:bold; color:#fff; margin-bottom:4px; }
+    .hero .sub-title { font-size:11px; color:#ccc; }
+    /* ============ 卡片容器 ============ */
+    .card-section { max-width:480px; margin:0 auto; padding:0 16px; width:100%; margin-top:-20px; position:relative; z-index:3; }
+    .auth-card { background:var(--card-bg); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.8); }
+    .tabs { display:flex; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:4px; margin-bottom:20px; }
+    .tab { flex:1; padding:12px; text-align:center; cursor:pointer; font-weight:bold; color:var(--text-muted); background:transparent; border:none; border-radius:8px; font-size:14px; transition:0.3s; }
+    .tab.active { background:#fff; color:#000; }
+    /* ============ 输入框 ============ */
+    .input-group { margin-bottom:16px; }
+    .input-group label { display:block; font-size:12px; color:var(--text-muted); margin-bottom:6px; }
+    .input-wrap { position:relative; display:flex; align-items:center; background:rgba(0,0,0,0.4); border:1px solid var(--border); border-radius:10px; transition:0.3s; }
+    .input-wrap:focus-within { border-color:#fff; }
+    .input-wrap.error { border-color:var(--red); }
+    .input-wrap.success { border-color:var(--green); }
+    .input-wrap .icon { padding-left:14px; color:var(--text-muted); display:flex; align-items:center; }
+    .input-wrap input { flex:1; padding:14px 14px 14px 10px; background:transparent; border:none; color:#fff; font-size:14px; outline:none; }
+    .pwd-actions { position:absolute; right:14px; display:flex; gap:8px; color:var(--text-muted); cursor:pointer; z-index:10; }
+    .pwd-actions span { padding:8px; margin:-8px; display:flex; align-items:center; }
+    .form-tip { font-size:10px; color:var(--text-muted); margin-top:4px; }
+    .field-error { font-size:10px; color:var(--red); margin-top:4px; display:none; }
+    .field-error.show { display:block; }
+    .pwd-strength { display:flex; gap:4px; margin-top:6px; }
+    .pwd-strength .bar { flex:1; height:3px; background:#333; border-radius:2px; transition:0.3s; }
+    .pwd-strength .bar.active-weak { background:var(--red); }
+    .pwd-strength .bar.active-medium { background:var(--gold); }
+    .pwd-strength .bar.active-strong { background:var(--green); }
+    /* ============ 人机验证 ============ */
+    .apex-captcha-box { background:rgba(0,0,0,0.4); border:1px solid var(--border); border-radius:10px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; margin:16px 0; cursor:pointer; }
+    .apex-captcha-content { display:flex; align-items:center; gap:12px; }
+    .apex-captcha-checkbox { width:20px; height:20px; border:2px solid #555; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+    .apex-captcha-box.verifying .apex-captcha-checkbox { border-color:var(--green); }
+    .apex-captcha-box.success .apex-captcha-checkbox { background:var(--green); border-color:var(--green); }
+    .apex-checkmark { width:10px; height:10px; stroke:#000; stroke-width:3; fill:none; display:none; }
+    .apex-captcha-box.success .apex-checkmark { display:block; }
+    .apex-captcha-text { font-size:13px; color:#ccc; }
+    .apex-captcha-percent { font-size:13px; color:var(--green); font-weight:bold; display:none; }
+    .apex-captcha-box.verifying .apex-captcha-text, .apex-captcha-box.success .apex-captcha-text { display:none; }
+    .apex-captcha-box.verifying .apex-captcha-percent, .apex-captcha-box.success .apex-captcha-percent { display:block; }
+    .apex-captcha-footer { font-size:10px; color:#555; }
+    /* ============ 复选框 & 按钮 ============ */
+    .checkbox-group { display:flex; align-items:flex-start; gap:8px; margin:16px 0; font-size:12px; color:var(--text-muted); }
+    .checkbox-group input { accent-color:#fff; width:16px; height:16px; margin-top:2px; }
+    .checkbox-group a { color:#fff; text-decoration:none; }
+    .btn-primary { width:100%; padding:14px; background:#fff; color:#000; font-weight:700; font-size:15px; border:none; border-radius:10px; cursor:pointer; transition:0.3s; box-shadow:0 4px 12px rgba(255,255,255,0.1); }
+    .btn-primary:hover { background:#e0e0e0; }
+    .btn-primary:disabled { opacity:0.6; cursor:not-allowed; }
+    /* ============ 底部链接 ============ */
+    .link-row { display:flex; justify-content:space-between; margin-top:12px; margin-bottom:8px; }
+    .link-row a { color:var(--text-muted); font-size:12px; text-decoration:none; }
+    .link-row a:hover { color:#fff; }
+    .forgot-top { display:flex; justify-content:flex-end; margin-bottom:16px; }
+    .forgot-top a { color:var(--text-muted); font-size:12px; text-decoration:none; }
+    /* ============ 验证码 6 位框 ============ */
+    .code-row { display:flex; gap:10px; align-items:center; }
+    .code-boxes { display:flex; gap:6px; flex:1; }
+    .code-boxes input { width:100%; height:44px; text-align:center; font-size:18px; background:rgba(0,0,0,0.4); border:1px solid var(--border); border-radius:8px; color:#fff; outline:none; }
+    .code-boxes input:focus { border-color:#fff; }
+    .btn-send-code { padding:0 12px; height:44px; background:transparent; border:1px solid var(--border); color:var(--text-muted); border-radius:8px; font-size:12px; cursor:pointer; white-space:nowrap; }
+    .btn-send-code:disabled { opacity:0.5; }
+    /* ============ 加载页 ============ */
+    #apex-splash-screen { position:fixed; top:0; left:0; width:100vw; height:100dvh; height:100vh; background:#050505; z-index:99999; display:none; flex-direction:column; align-items:center; justify-content:flex-start; padding:8px 0 10px 0; gap:6px; box-sizing:border-box; overflow:hidden; }
+    #apex-splash-screen.hide { opacity:0; visibility:hidden; transition:opacity 0.5s, visibility 0.5s; }
+    .splash-top-img { width:100%; height:30vh; object-fit:contain; margin-bottom:2px; background-color:#050505; }
+    .splash-welcome { font-family:'Cinzel','Times New Roman',serif; font-size:16px; font-weight:700; letter-spacing:1px; background:linear-gradient(to bottom, #ffffff 0%, #d4af37 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:2px; text-align:center; }
+    .splash-terminal-box { width:95%; height:36vh; display:flex; border:1px solid #444; border-radius:8px; background:#0a0a0a; margin-bottom:4px; overflow:hidden; }
+    .splash-code-area { flex:1.5; padding:8px; overflow-y:auto; font-family:'Courier New',monospace; font-size:11px; line-height:1.5; color:#4ade80; white-space:pre-wrap; word-break:break-all; border-right:1px solid #222; }
+    .splash-code-area::-webkit-scrollbar { display:none; }
+    .code-keyword { color:#c678dd; }
+    .code-string { color:#98c379; }
+    .code-success { color:#4ade80; font-weight:bold; }
+    .splash-system-list { flex:1; padding:8px 12px 8px 8px; display:flex; flex-direction:column; justify-content:space-around; align-items:flex-end; font-size:11px; color:#777; white-space:nowrap; }
+    .splash-system-item { display:flex; align-items:center; gap:6px; transition:0.3s; }
+    .splash-system-item.active { color:#fff; }
+    .sys-dot { width:6px; height:6px; border-radius:50%; border:1px solid #666; transition:0.3s; flex-shrink:0; }
+    .splash-system-item.active .sys-dot { background:var(--green); border-color:var(--green); }
+    .splash-system-item.checked::after { content:'✓'; color:var(--green); font-weight:bold; margin-left:auto; }
+    .splash-progress-container { width:95%; margin-bottom:4px; }
+    .splash-progress-text { font-size:11px; color:#ccc; margin-bottom:4px; display:flex; justify-content:space-between; }
+    .splash-progress-bar-bg { width:100%; height:5px; background:#222; border-radius:3px; overflow:hidden; }
+    .splash-progress-bar { width:0%; height:100%; background:#fff; transition:width 0.1s linear; box-shadow:0 0 10px rgba(255,255,255,0.8); }
+    .splash-features-wrapper { display:flex; justify-content:space-between; align-items:center; width:95%; }
+    .feature-col { display:flex; flex-direction:column; gap:6px; flex:1; }
+    .feature-col.left { align-items:flex-start; }
+    .feature-col.right { align-items:flex-end; }
+    .center-deco { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:0 0 60px; }
+    .deco-line { width:40px; height:1px; background:var(--red); }
+    .deco-text { font-family:'Cinzel',serif; font-size:14px; font-weight:700; color:var(--red); letter-spacing:2px; margin:4px 0; }
+    .splash-feature-item { display:flex; align-items:center; gap:8px; }
+    .splash-feature-icon { width:30px; height:30px; border-radius:50%; background:rgba(230,57,70,0.1); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .splash-feature-icon svg { width:16px; height:16px; }
+    .splash-feature-text { display:flex; flex-direction:column; }
+    .feature-title { font-size:12px; font-weight:bold; color:#fff; }
+    .feature-desc { font-size:9px; color:#888; }
+    /* ============ 页脚 & Toast ============ */
+    .footer { text-align:center; color:var(--text-muted); font-size:11px; margin-top:20px; padding-bottom:16px; }
+    #apex-toast { position:fixed; top:20px; left:50%; transform:translateX(-50%); padding:12px 24px; border-radius:8px; font-size:14px; z-index:999999; transition:opacity 0.3s; max-width:90%; text-align:center; }
+  </style>
 </head>
 <body>
+  <!-- ============ 加载页 ============ -->
+  <div id="apex-splash-screen">
+    <img src="./splash-top.webp" alt="Splash" class="splash-top-img" fetchpriority="high" loading="eager" decoding="async">
+    <div class="splash-welcome">欢迎来到 APEX ENTERTAINMENT</div>
+    <div class="splash-terminal-box">
+      <div class="splash-code-area" id="splash-code-log"></div>
+      <div class="splash-system-list">
+        <div class="splash-system-item" id="sys-1"><span class="sys-dot"></span>网络通信系统</div>
+        <div class="splash-system-item" id="sys-2"><span class="sys-dot"></span>安全防护系统</div>
+        <div class="splash-system-item" id="sys-3"><span class="sys-dot"></span>后端服务系统</div>
+        <div class="splash-system-item" id="sys-4"><span class="sys-dot"></span>前端渲染系统</div>
+      </div>
+    </div>
+    <div class="splash-progress-container">
+      <div class="splash-progress-text" id="splash-progress-text">APEX 系统加载中... <span>0%</span></div>
+      <div class="splash-progress-bar-bg">
+        <div class="splash-progress-bar" id="splash-progress-bar"></div>
+      </div>
+    </div>
+    <div class="splash-features-wrapper">
+      <div class="feature-col left">
+        <div class="splash-feature-item"><div class="splash-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div><div class="splash-feature-text"><span class="feature-title">安全可靠</span><span class="feature-desc">顶级加密 资金保障</span></div></div>
+        <div class="splash-feature-item"><div class="splash-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><div class="splash-feature-text"><span class="feature-title">极速开户</span><span class="feature-desc">简单便捷 快速畅玩</span></div></div>
+      </div>
+      <div class="center-deco">
+        <div class="deco-line"></div>
+        <div class="deco-text">APEX</div>
+        <div class="deco-line"></div>
+      </div>
+      <div class="feature-col right">
+        <div class="splash-feature-item"><div class="splash-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M12 3v18"/><path d="M4 7h16"/><path d="M6 7l-3 6h6z"/><path d="M18 7l-3 6h6z"/><path d="M12 21h6"/></svg></div><div class="splash-feature-text"><span class="feature-title">公平公正</span><span class="feature-desc">全球监管 透明公开</span></div></div>
+        <div class="splash-feature-item"><div class="splash-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></div><div class="splash-feature-text"><span class="feature-title">24/7客服</span><span class="feature-desc">专业团队 随时在线</span></div></div>
+      </div>
+    </div>
+  </div>
 
-
-<div id="apex-splash-screen" style="display: none;">
-  <img src="./splash-top.webp" alt="Splash" class="splash-top-img" fetchpriority="high" loading="eager" decoding="async">
-  <div class="splash-welcome">欢迎来到 APEX ENTERTAINMENT</div>
-  <div class="splash-terminal-box">
-    <div class="splash-code-area" id="splash-code-log"></div>
-    <div class="splash-system-list">
-      <div class="splash-system-item" id="sys-1"><span class="sys-dot"></span>网络通信系统</div>
-      <div class="splash-system-item" id="sys-2"><span class="sys-dot"></span>安全防护系统</div>
-      <div class="splash-system-item" id="sys-3"><span class="sys-dot"></span>后端服务系统</div>
-      <div class="splash-system-item" id="sys-4"><span class="sys-dot"></span>前端渲染系统</div>
-    </div>
-  </div>
-  <div class="splash-progress-container">
-    <div class="splash-progress-text" id="splash-progress-text">APEX 系统加载中... <span>0%</span></div>
-    <div class="splash-progress-bar-bg">
-      <div class="splash-progress-bar" id="splash-progress-bar"></div>
-    </div>
-  </div>
-  <div class="splash-features-wrapper">
-    <div class="feature-col left">
-      <div class="splash-feature-item"><div class="splash-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div><div class="splash-feature-text"><span class="feature-title">安全可靠</span><span class="feature-desc">顶级加密 资金保障</span></div></div>
-      <div class="splash-feature-item"><div class="splash-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><div class="splash-feature-text"><span class="feature-title">极速开户</span><span class="feature-desc">简单便捷 快速畅玩</span></div></div>
-    </div>
-    <div class="center-deco">
-      <div class="deco-line"></div>
-      <div class="deco-text">APEX</div>
-      <div class="deco-line"></div>
-    </div>
-    <div class="feature-col right">
-      <div class="splash-feature-item"><div class="splash-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M12 3v18"/><path d="M4 7h16"/><path d="M6 7l-3 6h6z"/><path d="M18 7l-3 6h6z"/><path d="M12 21h6"/></svg></div><div class="splash-feature-text"><span class="feature-title">公平公正</span><span class="feature-desc">全球监管 透明公开</span></div></div>
-      <div class="splash-feature-item"><div class="splash-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></div><div class="splash-feature-text"><span class="feature-title">24/7客服</span><span class="feature-desc">专业团队 随时在线</span></div></div>
-    </div>
-  </div>
-</div>
-<script>
-  (function() {
-    // 如果是首次进入，立刻显示加载页并锁定滚动
-    if (!sessionStorage.getItem('apex_splash_shown')) {
-      const splash = document.getElementById('apex-splash-screen');
-      if (splash) { splash.style.display = 'flex'; }
-      document.body.style.overflow = 'hidden';
-    } else {
-      // 如果是刷新，保持隐藏并恢复滚动
-      document.body.style.overflow = 'auto';
-    }
-  })();
-</script>
-<div class="header">
+  <!-- ============ 顶部语言切换 ============ -->
+  <div class="header">
     <div class="lang-selector" id="lang-selector">
       <button class="lang-btn" id="lang-btn"><span id="current-flag">🇨🇳</span><span id="current-lang">简体中文</span><span style="font-size:10px;">▼</span></button>
       <div class="lang-menu" id="lang-menu"></div>
     </div>
   </div>
+
+  <!-- ============ Hero 区 ============ -->
   <div class="hero">
     <div class="hero-content">
       <img src="./logo.png" alt="Apex Logo" class="logo-img">
-      
-      
       <div class="main-title">全球娱乐游戏平台</div>
       <div class="sub-title">一站式体验·玩法丰富·公平公正·极速存取</div>
     </div>
   </div>
+
+  <!-- ============ 卡片区 ============ -->
   <div class="card-section">
     <div class="auth-card">
       <div class="tabs" id="auth-tabs">
         <button class="tab active" id="tab-login">登录</button>
         <button class="tab" id="tab-register">注册</button>
       </div>
-
-      <!-- 登录表单 -->
+      <!-- ============ 登录表单 ============ -->
       <div id="login-form">
-        <div class="input-group"><label>账号</label><div class="input-wrap"><span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span><input type="text" placeholder="请输入账号"></div></div>
-        <div class="input-group"><label>登录密码</label><div class="input-wrap"><span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span><input type="password" placeholder="请输入密码" ><div class="pwd-actions"><span class="btn-toggle" onpointerdown="event.preventDefault(); togglePwd(this)"></span></div></div></div>
-        <div class="apex-captcha-box" data-status="idle" onclick="startCaptcha(this)"><div class="apex-captcha-content"><div class="apex-captcha-checkbox"><svg class="apex-checkmark" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div><div class="apex-captcha-text">点击进行人机验证</div><div class="apex-captcha-percent">0%</div></div><div class="apex-captcha-footer">Apex 安全防护</div></div>
-        
-        <!-- 在线客服和忘记密码位置修正 -->
-        <div class="link-row"><div><a href="#" id="online-support">在线客服</a></div><div><a href="#" id="forgot-pwd">忘记密码？</a></div></div>
-        
-        <div class="checkbox-group"><input type="checkbox" id="agreement" checked><label for="agreement">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label></div>
-        <button class="btn-primary">登 录</button>
-      </div>
-
-      <!-- 注册表单 -->
-      <div id="register-form" style="display:none;">
-        <div class="input-group"><label>账号</label><div class="input-wrap"><span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span><input type="text" placeholder="请输入账号"></div><div class="form-tip">6-20位字符，支持字母、数字、下划线</div></div>
-
-      <!-- 注册成功页面 -->
-      <div id="register-success" style="display:none; text-align: center; padding: 20px 0;">
-        <div style="width: 64px; height: 64px; margin: 0 auto 16px; background: rgba(74,222,128,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        <div class="input-group">
+          <label>账号</label>
+          <div class="input-wrap">
+            <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
+            <input type="text" id="login-account" placeholder="请输入账号">
+          </div>
+          <div class="field-error"></div>
         </div>
-        <h3 style="color: #fff; margin-bottom: 8px; font-size: 18px;">注册成功</h3>
-        <p style="color: #888; font-size: 13px; margin-bottom: 24px;">欢迎加入 Apex，您的账号已创建成功。</p>
-        <button class="btn-primary" id="btn-go-login">立即登录</button>
+        <div class="input-group">
+          <label>登录密码</label>
+          <div class="input-wrap">
+            <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
+            <input type="password" id="login-password" placeholder="请输入密码">
+            <div class="pwd-actions"><span class="btn-toggle" onpointerdown="event.preventDefault(); window.togglePwd(this)"></span></div>
+          </div>
+          <div class="field-error"></div>
+        </div>
+
+        <!-- 人机验证 -->
+        <div class="apex-captcha-box" id="login-captcha" onclick="window.startCaptcha(this)">
+          <div class="apex-captcha-content">
+            <div class="apex-captcha-checkbox"><svg class="apex-checkmark" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+            <div class="apex-captcha-text">点击进行人机验证</div>
+            <div class="apex-captcha-percent">0%</div>
+          </div>
+          <div class="apex-captcha-footer">Apex 安全防护</div>
+        </div>
+
+        <!-- 在线客服 / 忘记密码 -->
+        <div class="link-row">
+          <a href="#" id="online-support">在线客服</a>
+          <a href="#" id="forgot-pwd">忘记密码？</a>
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="login-agreement" checked>
+          <label for="login-agreement">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label>
+        </div>
+
+        <button class="btn-primary" id="btn-login">登 录</button>
       </div>
 
-        <div class="input-group"><label>邮箱</label><div class="input-wrap"><span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></span><input type="email" placeholder="请输入邮箱"></div><div class="form-tip red-tip">⚠️：必须填写真实邮箱且自己长期使用的邮箱，以便于密码找回使用</div></div>
-        <div class="input-group"><label>密码</label><div class="input-wrap"><span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span><input type="password" placeholder="请输入密码" ><div class="pwd-actions"><span class="btn-toggle" onpointerdown="event.preventDefault(); togglePwd(this)"></span></div></div><div class="form-tip">至少12位，必须包含大小写字母、数字及特殊符号，且不能与账号相同</div></div>
-        <div class="input-group"><label>确认密码</label><div class="input-wrap"><span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span><input type="password" placeholder="请再次输入密码" ><div class="pwd-actions"><span class="btn-toggle" onpointerdown="event.preventDefault(); togglePwd(this)"></span></div></div></div>
-        <div class="apex-captcha-box" data-status="idle" onclick="startCaptcha(this)"><div class="apex-captcha-content"><div class="apex-captcha-checkbox"><svg class="apex-checkmark" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div><div class="apex-captcha-text">点击进行人机验证</div><div class="apex-captcha-percent">0%</div></div><div class="apex-captcha-footer">Apex 安全防护</div></div>
-        <div class="checkbox-group"><input type="checkbox" id="agreement-reg" checked><label for="agreement-reg">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label></div>
-        <button class="btn-primary">注 册</button>
+      <!-- ============ 注册表单 ============ -->
+      <div id="register-form" style="display:none;">
+        <div class="input-group">
+          <label>账号</label>
+          <div class="input-wrap">
+            <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
+            <input type="text" id="reg-username" placeholder="请输入账号">
+          </div>
+          <div class="form-tip">6-20 位字符，支持字母、数字、下划线</div>
+          <div class="field-error"></div>
+        </div>
+        <div class="input-group">
+          <label>邮箱</label>
+          <div class="input-wrap">
+            <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></span>
+            <input type="email" id="reg-email" placeholder="请输入邮箱">
+          </div>
+          <div class="form-tip" style="color:#e63946;">⚠️ 必须填写真实邮箱且长期使用的邮箱，以便于密码找回</div>
+          <div class="field-error"></div>
+        </div>
+        <div class="input-group">
+          <label>密码</label>
+          <div class="input-wrap">
+            <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
+            <input type="password" id="reg-password" placeholder="请输入密码">
+            <div class="pwd-actions"><span class="btn-toggle" onpointerdown="event.preventDefault(); window.togglePwd(this)"></span></div>
+          </div>
+          <div class="pwd-strength" id="reg-strength"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+          <div class="form-tip">至少 8 位，含大小写字母、数字和特殊字符</div>
+          <div class="field-error"></div>
+        </div>
+        <div class="input-group">
+          <label>确认密码</label>
+          <div class="input-wrap">
+            <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
+            <input type="password" id="reg-confirm" placeholder="请再次输入密码">
+            <div class="pwd-actions"><span class="btn-toggle" onpointerdown="event.preventDefault(); window.togglePwd(this)"></span></div>
+          </div>
+          <div class="field-error"></div>
+        </div>
+
+        <!-- 人机验证 -->
+        <div class="apex-captcha-box" id="reg-captcha" onclick="window.startCaptcha(this)">
+          <div class="apex-captcha-content">
+            <div class="apex-captcha-checkbox"><svg class="apex-checkmark" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+            <div class="apex-captcha-text">点击进行人机验证</div>
+            <div class="apex-captcha-percent">0%</div>
+          </div>
+          <div class="apex-captcha-footer">Apex 安全防护</div>
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="reg-agreement" checked>
+          <label for="reg-agreement">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label>
+        </div>
+
+        <button class="btn-primary" id="btn-register">注 册</button>
       </div>
-      <!-- 忘记密码表单 -->
+      <!-- ============ 忘记密码表单 ============ -->
       <div id="forgot-form" style="display:none;">
-        <!-- 返回登录按钮移到了顶部 -->
         <div class="forgot-top"><a href="#" id="back-to-login">返回登录</a></div>
-        
-        <div class="input-group"><label>输入邮箱</label><div class="input-wrap"><span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></span><input type="text" placeholder="请输入邮箱"></div><div class="form-tip red-tip">⚠️ 填写注册账号时所绑定的邮箱</div></div>
-        <div class="input-group"><label>新密码</label><div class="input-wrap"><span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span><input type="password" placeholder="请输入新密码" ><div class="pwd-actions"><span class="btn-toggle" onpointerdown="event.preventDefault(); togglePwd(this)"></span></div></div><div class="form-tip">至少12位，必须包含大小写字母、数字及特殊符号，且不能与账号相同</div></div>
-        <!-- 新增确认密码 -->
-        <div class="input-group"><label>确认密码</label><div class="input-wrap"><span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span><input type="password" placeholder="请再次输入新密码" ><div class="pwd-actions"><span class="btn-toggle" onpointerdown="event.preventDefault(); togglePwd(this)"></span></div></div></div>
-        <div class="input-group"><label>邮箱验证码</label><div class="code-row"><div class="code-boxes"><input type="text" maxlength="1" oninput="if(this.value)this.nextElementSibling.focus()" onkeydown="if(event.key==='Backspace'&&!this.value)this.previousElementSibling.focus()"><input type="text" maxlength="1" oninput="if(this.value)this.nextElementSibling.focus()" onkeydown="if(event.key==='Backspace'&&!this.value)this.previousElementSibling.focus()"><input type="text" maxlength="1" oninput="if(this.value)this.nextElementSibling.focus()" onkeydown="if(event.key==='Backspace'&&!this.value)this.previousElementSibling.focus()"><input type="text" maxlength="1" oninput="if(this.value)this.nextElementSibling.focus()" onkeydown="if(event.key==='Backspace'&&!this.value)this.previousElementSibling.focus()"><input type="text" maxlength="1" oninput="if(this.value)this.nextElementSibling.focus()" onkeydown="if(event.key==='Backspace'&&!this.value)this.previousElementSibling.focus()"><input type="text" maxlength="1" oninput="if(this.value)this.nextElementSibling.focus()" onkeydown="if(event.key==='Backspace'&&!this.value)this.previousElementSibling.focus()"></div><button class="btn-send-code" id="btn-send-code">发送验证码</button></div><div class="form-tip">未收到邮件？请前往垃圾邮件查看。</div></div>
-        <!-- 新增人机验证 -->
-        <div class="apex-captcha-box" data-status="idle" onclick="startCaptcha(this)"><div class="apex-captcha-content"><div class="apex-captcha-checkbox"><svg class="apex-checkmark" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div><div class="apex-captcha-text">点击进行人机验证</div><div class="apex-captcha-percent">0%</div></div><div class="apex-captcha-footer">Apex 安全防护</div></div>
-        <button class="btn-primary">重置密码</button>
+
+        <div class="input-group">
+          <label>输入邮箱</label>
+          <div class="input-wrap">
+            <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></span>
+            <input type="email" id="forgot-email" placeholder="请输入邮箱">
+          </div>
+          <div class="form-tip" style="color:#e63946;">⚠️ 填写注册账号时所绑定的邮箱</div>
+          <div class="field-error"></div>
+        </div>
+
+        <div class="input-group">
+          <label>新密码</label>
+          <div class="input-wrap">
+            <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
+            <input type="password" id="forgot-newpwd" placeholder="请输入新密码">
+            <div class="pwd-actions"><span class="btn-toggle" onpointerdown="event.preventDefault(); window.togglePwd(this)"></span></div>
+          </div>
+          <div class="form-tip">至少 8 位，含大小写字母、数字和特殊字符</div>
+          <div class="field-error"></div>
+        </div>
+
+        <div class="input-group">
+          <label>确认密码</label>
+          <div class="input-wrap">
+            <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
+            <input type="password" id="forgot-confirm" placeholder="请再次输入新密码">
+            <div class="pwd-actions"><span class="btn-toggle" onpointerdown="event.preventDefault(); window.togglePwd(this)"></span></div>
+          </div>
+          <div class="field-error"></div>
+        </div>
+
+        <div class="input-group">
+          <label>邮箱验证码</label>
+          <div class="code-row">
+            <div class="code-boxes" id="code-boxes">
+              <input type="text" maxlength="1"><input type="text" maxlength="1"><input type="text" maxlength="1">
+              <input type="text" maxlength="1"><input type="text" maxlength="1"><input type="text" maxlength="1">
+            </div>
+            <button class="btn-send-code" id="btn-send-code">发送验证码</button>
+          </div>
+          <div class="form-tip">未收到邮件？请前往垃圾邮件查看。</div>
+        </div>
+
+        <div class="apex-captcha-box" id="forgot-captcha" onclick="window.startCaptcha(this)">
+          <div class="apex-captcha-content">
+            <div class="apex-captcha-checkbox"><svg class="apex-checkmark" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+            <div class="apex-captcha-text">点击进行人机验证</div>
+            <div class="apex-captcha-percent">0%</div>
+          </div>
+          <div class="apex-captcha-footer">Apex 安全防护</div>
+        </div>
+
+        <button class="btn-primary" id="btn-reset">重置密码</button>
       </div>
-    </div>
-    <div class="footer">© 2026 Apex Global Entertainment. All rights reserved.</div>
-  </div>
-  
 
-<script>
-document.addEventListener('click', function(e) {
-  const loginBtn = e.target.closest('#login-form .btn-primary');
-  if (loginBtn) {
-    e.preventDefault();
-    // 隐藏页面上所有原本的元素（Header, Hero区, 卡片区）
-    document.querySelectorAll('body > div').forEach(el => el.style.display = 'none');
-    
-    // 动态创建一个全屏的“开发中”页面
-    let devPage = document.getElementById('dev-full-page');
-    if (!devPage) {
-      devPage = document.createElement('div');
-      devPage.id = 'dev-full-page';
-      // 强制固定定位、全屏、黑底、居中
-      devPage.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#050505;display:flex;align-items:center;justify-content:center;z-index:9999;';
-      devPage.innerHTML = '<h3 style="color:#fff;font-size:24px;font-weight:300;letter-spacing:4px;">正在开发中</h3>';
-      document.body.appendChild(devPage);
-    }
-    devPage.style.display = 'flex';
-  }
-});
-</script>
+    </div><!-- /.auth-card -->
+  </div><!-- /.card-section -->
 
-<script>
-  // 启动页 2.5 秒后自动淡出
-  
-  });
-</script>
+  <div class="footer">© 2026 Apex Global Entertainment. All rights reserved.</div>
 
+  <script>
+  (function() {
+    'use strict';
 
+    // ========== 1. 小眼睛 ==========
+    const EYE_OPEN = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+    const EYE_CLOSED = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+    window.togglePwd = function(el) {
+      const p = el.closest('.input-wrap').querySelector('input');
+      if (!p) return;
+      p.type = p.type === 'password' ? 'text' : 'password';
+      el.innerHTML = p.type === 'password' ? EYE_OPEN : EYE_CLOSED;
+    };
 
-
-
-
-
-
-
-
-
-<script>
-  window.addEventListener('load', function() {
-
-    // 检查是否已经展示过加载页
-    if (sessionStorage.getItem('apex_splash_shown') === 'true') { return; }
-
-    document.body.style.overflow = 'hidden';
-    const codeLog = document.getElementById('splash-code-log');
-    const progressBar = document.getElementById('splash-progress-bar');
-    const progressText = document.getElementById('splash-progress-text');
-    const sysItems = [document.getElementById('sys-1'), document.getElementById('sys-2'), document.getElementById('sys-3'), document.getElementById('sys-4')];
-    
-    // 增加更多代码行，确保能持续输出约 7 秒，避免提前跑完
-    const codeSnippets = [
-      '<span class="code-keyword">import</span> { ApexCore } <span class="code-keyword">from</span> <span class="code-string">"@apex/core"</span>;',
-      '<span class="code-keyword">import</span> { NetworkModule } <span class="code-keyword">from</span> <span class="code-string">"@apex/network"</span>;',
-      '',
-      'async function initSystem() {',
-      '  console.log(<span class="code-string">"初始化 Apex 核心引擎..."</span>);',
-      '  const core = new ApexCore();',
-      '  const net = new NetworkModule();',
-      '  await net.connect(<span class="code-string">"global-network"</span>);',
-      '  console.log(<span class="code-string">"网络通信已建立"</span>);',
-      '  await core.security.encrypt();',
-      '  console.log(<span class="code-string">"安全防护已启动"</span>);',
-      '  await core.backend.deploy();',
-      '  console.log(<span class="code-string">"后端服务已就绪"</span>);',
-      '  await core.frontend.render();',
-      '  console.log(<span class="code-string">"前端渲染已完成"</span>);',
-      '}',
-      '',
-      '// 启动系统初始化流程',
-      'initSystem().then(() => {',
-      '  console.log(<span class="code-success">"欢迎来到 Apex Entertainment 系统加载完毕"</span>);',
-      '});',
-      '',
-      '// 执行预热和资源加载',
-      'Promise.all([',
-      '  core.preloadAssets(),',
-      '  core.warmupCache()',
-      ']).then(() => {',
-      '  console.log(<span class="code-string">"预热完成，准备进入系统"</span>);',
-      '});'
-    ];
-    
-    let lineIndex = 0;
-    // 代码总耗时设定为 7 秒，与进度条同步
-    let totalTime = 7000;
-    let stepTime = totalTime / codeSnippets.length;
-    
-    function typeCode() {
-      if (lineIndex < codeSnippets.length) {
-        const line = document.createElement('div');
-        line.innerHTML = codeSnippets[lineIndex];
-        codeLog.appendChild(line);
-        codeLog.scrollTop = codeLog.scrollHeight;
-        lineIndex++;
-        setTimeout(typeCode, stepTime);
-      }
-    }
-    typeCode();
-
-    // 系统打勾：每 1.6 秒打一个勾，全部约耗时 7 秒
-    sysItems.forEach((item, index) => {
-      setTimeout(() => {
-        item.classList.add('active');
-        setTimeout(() => { item.classList.add('checked'); }, 1000);
-      }, index * 1600 + 500);
-    });
-
-    // 进度条动画：与代码输出同步，约耗时 7.5 秒
-    let progress = 0;
-    const progressInterval = setInterval(() => {
-      progress += Math.floor(Math.random() * 2) + 1;
-      if (progress > 100) progress = 100;
-      progressBar.style.width = progress + '%';
-      progressText.innerHTML = 'APEX 系统加载中... <span>' + Math.floor(progress) + '%</span>';
-      
-      if (progress === 100) {
-        clearInterval(progressInterval);
-        progressText.innerHTML = 'APEX系统加载完成';
-        setTimeout(() => {
-          const splash = document.getElementById('apex-splash-screen');
-          if (splash) splash.classList.add('hide');
-          sessionStorage.setItem('apex_splash_shown', 'true');
-          document.body.style.overflow = 'auto';
-        }, 800);
-      }
-    }, 100);
-  });
-</script>
-
-<script>
-(function() {
-  // 输入清理：防止 XSS 注入
-  function sanitize(str) {
-    if (typeof str !== 'string') return '';
-    return str.replace(/[<>"'&]/g, '').trim().substring(0, 200);
-  }
-
-  // 邮箱正则
-  const emailRe = /^[^s@]+@[^s@]+.[^s@]+$/;
-  // 账号：6-20位，字母数字下划线
-  const userRe = /^[a-zA-Z0-9_]{6,20}$/;
-  // 强密码：至少8位，含大小写、数字、特殊字符
-  const strongPwdRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[!@#$%^&*()_+-=[]{};':"\|,.<>/?]).{8,}$/;
-  // 中等密码：至少8位，含字母和数字
-  const mediumPwdRe = /^(?=.*[a-zA-Z])(?=.*d).{8,}$/;
-
-  function showError(input, msg) {
-    const wrap = input.closest('.input-wrap');
-    if (wrap) { wrap.classList.add('error'); wrap.classList.remove('success'); }
-    let err = wrap.parentElement.querySelector('.field-error');
-    if (!err) {
-      err = document.createElement('div');
-      err.className = 'field-error show';
-      wrap.parentElement.appendChild(err);
-    }
-    err.textContent = msg;
-    err.classList.add('show');
-  }
-
-  function showSuccess(input) {
-    const wrap = input.closest('.input-wrap');
-    if (wrap) { wrap.classList.remove('error'); wrap.classList.add('success'); }
-    const err = wrap.parentElement.querySelector('.field-error');
-    if (err) err.classList.remove('show');
-  }
-
-  function clearState(input) {
-    const wrap = input.closest('.input-wrap');
-    if (wrap) { wrap.classList.remove('error', 'success'); }
-    const err = wrap.parentElement.querySelector('.field-error');
-    if (err) err.classList.remove('show');
-  }
-
-  // 密码强度条渲染
-  function renderStrength(input) {
-    const wrap = input.closest('.input-wrap');
-    const parent = wrap.parentElement;
-    let barContainer = parent.querySelector('.pwd-strength');
-    if (!barContainer) {
-      barContainer = document.createElement('div');
-      barContainer.className = 'pwd-strength';
-      barContainer.innerHTML = '<div class="bar"></div><div class="bar"></div><div class="bar"></div>';
-      parent.appendChild(barContainer);
-    }
-    const bars = barContainer.querySelectorAll('.bar');
-    const val = input.value;
-    let level = 0;
-    if (val.length === 0) { bars.forEach(b => b.className = 'bar'); return; }
-    if (strongPwdRe.test(val)) level = 3;
-    else if (mediumPwdRe.test(val)) level = 2;
-    else level = 1;
-
-    bars.forEach((b, i) => {
-      b.className = 'bar';
-      if (i < level) {
-        if (level === 1) b.classList.add('active-weak');
-        else if (level === 2) b.classList.add('active-medium');
-        else b.classList.add('active-strong');
-      }
-    });
-  }
-
-  // 绑定事件到所有输入框
-  document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"]').forEach(input => {
-    const placeholder = input.placeholder;
-
-    // 输入时实时清理
-    input.addEventListener('input', function() {
-      const clean = sanitize(this.value);
-      if (clean !== this.value) this.value = clean;
-
-      // 密码强度条
-      if (placeholder.includes('密码') && !placeholder.includes('再次') && !placeholder.includes('新')) {
-        renderStrength(this);
-      }
-
-      // 实时验证
-      if (placeholder.includes('账号') && !placeholder.includes('邮箱')) {
-        if (this.value.length === 0) { clearState(this); return; }
-        userRe.test(this.value) ? showSuccess(this) : showError(this, '账号需 6-20 位，仅限字母、数字、下划线');
-      }
-      if (placeholder.includes('邮箱') && !placeholder.includes('账号')) {
-        if (this.value.length === 0) { clearState(this); return; }
-        emailRe.test(this.value) ? showSuccess(this) : showError(this, '请输入有效的邮箱地址');
-      }
-      if (placeholder.includes('新密码') || (placeholder.includes('密码') && !placeholder.includes('登录') && !placeholder.includes('再次'))) {
-        if (this.value.length === 0) { clearState(this); return; }
-        strongPwdRe.test(this.value) ? showSuccess(this) : showError(this, '需至少 8 位，含大小写字母、数字和特殊字符');
-      }
-      if (placeholder.includes('登录密码')) {
-        if (this.value.length === 0) { clearState(this); return; }
-        this.value.length >= 6 ? showSuccess(this) : showError(this, '密码至少 6 位');
-      }
-      if (placeholder.includes('再次输入') || placeholder.includes('确认')) {
-        const pwdInput = this.closest('.input-group').previousElementSibling?.querySelector('input[type="password"]');
-        if (!pwdInput || this.value.length === 0) { clearState(this); return; }
-        this.value === pwdInput.value ? showSuccess(this) : showError(this, '两次输入的密码不一致');
-      }
-    });
-  });
-
-  // 拦截表单提交
-  document.querySelectorAll('.btn-primary').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      const form = this.closest('[id$="-form"]');
-      if (!form) return;
-      const inputs = form.querySelectorAll('input');
-      let hasError = false;
-      inputs.forEach(input => {
-        if (input.closest('.input-wrap')?.classList.contains('error')) hasError = true;
-        if (input.required && input.value.trim() === '') {
-          showError(input, '此项为必填');
-          hasError = true;
+    // ========== 2. 人机验证 ==========
+    window.startCaptcha = function(box) {
+      if (box.dataset.status === 'success' || box.dataset.status === 'verifying') return;
+      box.dataset.status = 'verifying';
+      box.classList.add('verifying');
+      let progress = 0;
+      const percent = box.querySelector('.apex-captcha-percent');
+      percent.textContent = '0%';
+      const interval = setInterval(() => {
+        progress += Math.floor(Math.random() * 15) + 5;
+        if (progress > 100) progress = 100;
+        percent.textContent = progress < 100 ? progress + '%' : '验证成功';
+        if (progress === 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            box.classList.remove('verifying');
+            box.classList.add('success');
+            box.dataset.status = 'success';
+          }, 300);
         }
-      });
-      if (hasError) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-      }
-    }, true);
-  });
-})();
-</script>
+      }, 100);
+    };
 
-<script>
-(function() {
-  // ==================== API 客户端 ====================
-  const API = {
-    async post(url, data) {
+    // ========== 3. Toast ==========
+    function toast(msg, type) {
+      let t = document.getElementById('apex-toast');
+      if (!t) { t = document.createElement('div'); t.id = 'apex-toast'; document.body.appendChild(t); }
+      t.textContent = msg;
+      t.style.background = type === 'error' ? '#e63946' : '#4ade80';
+      t.style.color = type === 'error' ? '#fff' : '#000';
+      t.style.opacity = '1';
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => { t.style.opacity = '0'; }, 3000);
+    }
+
+    // ========== 4. 成功页 ==========
+    function showSuccess(title, desc) {
+      ['login-form','register-form','forgot-form'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.style.display = 'none';
+      });
+      const tabs = document.getElementById('auth-tabs');
+      if (tabs) tabs.style.display = 'none';
+      let page = document.getElementById('apex-success-page');
+      if (!page) {
+        page = document.createElement('div');
+        page.id = 'apex-success-page';
+        page.style.cssText = 'text-align:center;padding:20px 0;';
+        document.querySelector('.auth-card').appendChild(page);
+      }
+      page.innerHTML = '<div style="width:64px;height:64px;margin:0 auto 16px;background:rgba(74,222,128,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;">' +
+        '<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#4ade80" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>' +
+        '<h3 style="color:#fff;margin-bottom:8px;font-size:18px;">' + title + '</h3>' +
+        '<p style="color:#888;font-size:13px;margin-bottom:24px;">' + desc + '</p>' +
+        '<button class="btn-primary" id="apex-success-btn">立即登录</button>';
+      page.style.display = 'block';
+      document.getElementById('apex-success-btn').onclick = () => { page.style.display = 'none'; switchTo('login-form'); };
+    }
+
+    // ========== 5. 表单切换 ==========
+    function switchTo(formId) {
+      ['login-form','register-form','forgot-form'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = (id === formId) ? 'block' : 'none';
+      });
+      const sp = document.getElementById('apex-success-page');
+      if (sp) sp.style.display = 'none';
+      const tabs = document.getElementById('auth-tabs');
+      if (tabs) tabs.style.display = (formId === 'forgot-form') ? 'none' : 'flex';
+      document.getElementById('tab-login').classList.toggle('active', formId === 'login-form');
+      document.getElementById('tab-register').classList.toggle('active', formId === 'register-form');
+    }
+
+    document.getElementById('tab-login').addEventListener('click', () => switchTo('login-form'));
+    document.getElementById('tab-register').addEventListener('click', () => switchTo('register-form'));
+    document.getElementById('forgot-pwd').addEventListener('click', (e) => { e.preventDefault(); switchTo('forgot-form'); });
+    document.getElementById('back-to-login').addEventListener('click', (e) => { e.preventDefault(); switchTo('login-form'); });
+
+    window.__apex = { toast, showSuccess, switchTo };
+  })();
+  </script>
+
+  <script>
+  (function() {
+    'use strict';
+
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const userRe = /^[a-zA-Z0-9_]{6,20}$/;
+    const strongPwdRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+
+    function setErr(input, msg) {
+      const wrap = input.closest('.input-wrap');
+      wrap.classList.add('error'); wrap.classList.remove('success');
+      const err = input.closest('.input-group').querySelector('.field-error');
+      if (err) { err.textContent = msg; err.classList.add('show'); }
+    }
+    function setOk(input) {
+      const wrap = input.closest('.input-wrap');
+      wrap.classList.remove('error'); wrap.classList.add('success');
+      const err = input.closest('.input-group').querySelector('.field-error');
+      if (err) err.classList.remove('show');
+    }
+    function clearState(input) {
+      const wrap = input.closest('.input-wrap');
+      wrap.classList.remove('error', 'success');
+      const err = input.closest('.input-group').querySelector('.field-error');
+      if (err) err.classList.remove('show');
+    }
+
+    // 注册账号
+    const regUser = document.getElementById('reg-username');
+    if (regUser) regUser.addEventListener('input', function() {
+      if (!this.value) return clearState(this);
+      userRe.test(this.value) ? setOk(this) : setErr(this, '账号需 6-20 位，仅限字母、数字、下划线');
+    });
+
+    // 注册邮箱
+    const regEmail = document.getElementById('reg-email');
+    if (regEmail) regEmail.addEventListener('input', function() {
+      if (!this.value) return clearState(this);
+      emailRe.test(this.value) ? setOk(this) : setErr(this, '请输入有效的邮箱地址');
+    });
+
+    // 注册密码 + 强度条
+    const regPwd = document.getElementById('reg-password');
+    if (regPwd) regPwd.addEventListener('input', function() {
+      const bars = document.querySelectorAll('#reg-strength .bar');
+      bars.forEach(b => b.className = 'bar');
+      if (!this.value) return clearState(this);
+      let level = 0;
+      if (strongPwdRe.test(this.value)) level = 3;
+      else if (this.value.length >= 8) level = 2;
+      else level = 1;
+      bars.forEach((b, i) => {
+        if (i < level) b.classList.add(level === 1 ? 'active-weak' : (level === 2 ? 'active-medium' : 'active-strong'));
+      });
+      if (level === 3) setOk(this);
+      else setErr(this, '需至少 8 位，含大小写字母、数字和特殊字符');
+    });
+
+    // 确认密码
+    const regConfirm = document.getElementById('reg-confirm');
+    if (regConfirm) regConfirm.addEventListener('input', function() {
+      const pwd = document.getElementById('reg-password').value;
+      if (!this.value) return clearState(this);
+      this.value === pwd ? setOk(this) : setErr(this, '两次输入的密码不一致');
+    });
+
+    // 忘记密码 - 邮箱
+    const forgotEmail = document.getElementById('forgot-email');
+    if (forgotEmail) forgotEmail.addEventListener('input', function() {
+      if (!this.value) return clearState(this);
+      emailRe.test(this.value) ? setOk(this) : setErr(this, '请输入有效的邮箱地址');
+    });
+
+    // 忘记密码 - 新密码
+    const forgotNew = document.getElementById('forgot-newpwd');
+    if (forgotNew) forgotNew.addEventListener('input', function() {
+      if (!this.value) return clearState(this);
+      strongPwdRe.test(this.value) ? setOk(this) : setErr(this, '需至少 8 位，含大小写字母、数字和特殊字符');
+    });
+
+    // 忘记密码 - 确认密码
+    const forgotConfirm = document.getElementById('forgot-confirm');
+    if (forgotConfirm) forgotConfirm.addEventListener('input', function() {
+      const pwd = document.getElementById('forgot-newpwd').value;
+      if (!this.value) return clearState(this);
+      this.value === pwd ? setOk(this) : setErr(this, '两次输入的密码不一致');
+    });
+
+    // 6 位验证码自动跳转
+    const codeInputs = document.querySelectorAll('#code-boxes input');
+    codeInputs.forEach((input, i) => {
+      input.addEventListener('input', () => {
+        if (input.value && i < codeInputs.length - 1) codeInputs[i + 1].focus();
+      });
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !input.value && i > 0) codeInputs[i - 1].focus();
+      });
+    });
+
+    console.log('[Apex] 表单验证已加载');
+  })();
+  </script>
+
+  <script>
+  (function() {
+    'use strict';
+
+    const { toast, showSuccess } = window.__apex;
+
+    // ========== API 客户端 ==========
+    async function apiPost(url, data) {
       try {
         const res = await fetch(url, {
           method: 'POST',
@@ -572,624 +563,281 @@ document.addEventListener('click', function(e) {
         });
         return await res.json();
       } catch (err) {
-        return { success: false, message: '网络错误，请稍后重试' };
+        return { success: false, message: '网络错误：' + err.message };
       }
     }
-  };
 
-  // ==================== 工具函数 ====================
-  function getFormValue(formId, placeholderKeyword) {
-    const form = document.getElementById(formId);
-    if (!form) return '';
-    const inputs = form.querySelectorAll('input');
-    for (const input of inputs) {
-      if (input.placeholder && input.placeholder.includes(placeholderKeyword)) return input.value.trim();
-    }
-    return '';
-  }
-
-  function getFormPassword(formId, index) {
-    const form = document.getElementById(formId);
-    if (!form) return '';
-    const inputs = form.querySelectorAll('input[type="password"]');
-    return inputs[index] ? inputs[index].value : '';
-  }
-
-  function setButtonLoading(btn, loading, originalText) {
-    if (loading) {
-      btn.dataset.originalText = btn.textContent;
-      btn.textContent = '处理中...';
-      btn.disabled = true;
-      btn.style.opacity = '0.6';
-    } else {
-      btn.textContent = btn.dataset.originalText || originalText || '提交';
-      btn.disabled = false;
-      btn.style.opacity = '1';
-    }
-  }
-
-  function showToast(message, type) {
-    let toast = document.getElementById('apex-toast');
-    if (!toast) {
-      toast = document.createElement('div');
-      toast.id = 'apex-toast';
-      toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:8px;font-size:14px;z-index:99999;transition:opacity 0.3s;box-shadow:0 4px 12px rgba(0,0,0,0.5);max-width:90%;text-align:center;';
-      document.body.appendChild(toast);
-    }
-    toast.textContent = message;
-    toast.style.background = type === 'error' ? '#e63946' : '#4ade80';
-    toast.style.color = type === 'error' ? '#fff' : '#000';
-    toast.style.opacity = '1';
-    clearTimeout(toast._timer);
-    toast._timer = setTimeout(() => { toast.style.opacity = '0'; }, 3000);
-  }
-
-  function showFullPageSuccess(title, desc, buttonText, onButtonClick) {
-    // 隐藏所有表单
-    ['login-form', 'register-form', 'forgot-form'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.style.display = 'none';
-    });
-    const tabs = document.getElementById('auth-tabs');
-    if (tabs) tabs.style.display = 'none';
-
-    // 创建成功页
-    let successPage = document.getElementById('apex-success-page');
-    if (!successPage) {
-      successPage = document.createElement('div');
-      successPage.id = 'apex-success-page';
-      successPage.style.cssText = 'text-align:center; padding:20px 0;';
-      document.querySelector('.auth-card').appendChild(successPage);
-    }
-    successPage.innerHTML = `
-      <div style="width:64px;height:64px;margin:0 auto 16px;background:rgba(74,222,128,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;">
-        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#4ade80" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
-      </div>
-      <h3 style="color:#fff;margin-bottom:8px;font-size:18px;">${title}</h3>
-      <p style="color:#888;font-size:13px;margin-bottom:24px;">${desc}</p>
-      <button class="btn-primary" id="apex-success-btn">${buttonText}</button>
-    `;
-    successPage.style.display = 'block';
-
-    document.getElementById('apex-success-btn').addEventListener('click', function() {
-      successPage.style.display = 'none';
-      const loginForm = document.getElementById('login-form');
-      if (loginForm) loginForm.style.display = 'block';
-      if (tabs) tabs.style.display = 'flex';
-      const tabLogin = document.getElementById('tab-login');
-      const tabRegister = document.getElementById('tab-register');
-      if (tabLogin) tabLogin.classList.add('active');
-      if (tabRegister) tabRegister.classList.remove('active');
-      if (onButtonClick) onButtonClick();
-    });
-  }
-
-  // ==================== 注册 ====================
-  const registerBtn = document.querySelector('#register-form .btn-primary');
-  if (registerBtn) {
-    registerBtn.addEventListener('click', async function(e) {
-      e.preventDefault();
-      const username = getFormValue('register-form', '请输入账号');
-      const email = getFormValue('register-form', '请输入邮箱');
-      const password = getFormPassword('register-form', 0);
-      const confirm = getFormPassword('register-form', 1);
-
-      if (!username || !email || !password) { showToast('请完整填写所有信息', 'error'); return; }
-      if (password !== confirm) { showToast('两次输入的密码不一致', 'error'); return; }
-
-      setButtonLoading(this, true);
-      const result = await API.post('/api/register', { username, email, password });
-      setButtonLoading(this, false);
-
-      if (result.success) {
-        showFullPageSuccess('注册成功', '欢迎加入 Apex，您的账号已创建成功。', '立即登录');
+    function setLoading(btn, loading) {
+      if (loading) {
+        btn.dataset.orig = btn.textContent;
+        btn.textContent = '处理中...';
+        btn.disabled = true;
       } else {
-        showToast(result.message || '注册失败', 'error');
+        btn.textContent = btn.dataset.orig;
+        btn.disabled = false;
       }
-    });
-  }
+    }
 
-  // ==================== 登录 ====================
-  const loginBtn = document.querySelector('#login-form .btn-primary');
-  if (loginBtn) {
-    loginBtn.addEventListener('click', async function(e) {
-      e.preventDefault();
-      const account = getFormValue('login-form', '请输入账号');
-      const password = getFormPassword('login-form', 0);
+    // ========== 登录 ==========
+    document.getElementById('btn-login').addEventListener('click', async function() {
+      const account = document.getElementById('login-account').value.trim();
+      const password = document.getElementById('login-password').value;
+      if (!account || !password) { toast('请填写账号和密码', 'error'); return; }
+      if (document.getElementById('login-captcha').dataset.status !== 'success') {
+        toast('请先完成人机验证', 'error'); return;
+      }
 
-      if (!account || !password) { showToast('请填写账号和密码', 'error'); return; }
-
-      setButtonLoading(this, true);
-      const result = await API.post('/api/login', { account, password });
-      setButtonLoading(this, false);
+      setLoading(this, true);
+      const result = await apiPost('/api/login', { account, password });
+      setLoading(this, false);
 
       if (result.success) {
         localStorage.setItem('apex_token', result.token);
         localStorage.setItem('apex_user', JSON.stringify(result.user));
-        showToast('登录成功', 'success');
-        // 进入主页（开发中占位）
+        toast('登录成功', 'success');
         setTimeout(() => {
           document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#050505;color:#fff;font-size:24px;letter-spacing:4px;">正在开发中</div>';
         }, 800);
       } else {
-        showToast(result.message || '登录失败', 'error');
+        toast(result.message || '登录失败', 'error');
       }
     });
-  }
 
-  // ==================== 忘记密码 - 发送验证码 ====================
-  const sendCodeBtn = document.getElementById('btn-send-code');
-  if (sendCodeBtn) {
-    sendCodeBtn.addEventListener('click', async function(e) {
-      e.preventDefault();
-      const email = getFormValue('forgot-form', '请输入邮箱');
-      if (!email) { showToast('请填写邮箱', 'error'); return; }
-
-      setButtonLoading(this, true);
-      const result = await API.post('/api/send-reset-code', { email });
-      setButtonLoading(this, false);
-
-      if (result.success) {
-        showToast('验证码已发送', 'success');
-        // 开发模式：直接显示验证码方便测试
-        if (result.devCode) {
-          console.log('[开发模式] 验证码：', result.devCode);
-          showToast('开发模式验证码：' + result.devCode, 'success');
-        }
-        // 60秒倒计时
-        let countdown = 60;
-        this.disabled = true;
-        this.textContent = countdown + '秒后重发';
-        const timer = setInterval(() => {
-          countdown--;
-          this.textContent = countdown + '秒后重发';
-          if (countdown <= 0) {
-            clearInterval(timer);
-            this.textContent = '发送验证码';
-            this.disabled = false;
-          }
-        }, 1000);
-      } else {
-        showToast(result.message || '发送失败', 'error');
-      }
-    });
-  }
-
-  // ==================== 忘记密码 - 重置密码 ====================
-  const resetBtn = document.querySelector('#forgot-form .btn-primary');
-  if (resetBtn) {
-    resetBtn.addEventListener('click', async function(e) {
-      e.preventDefault();
-      const email = getFormValue('forgot-form', '请输入邮箱');
-      const newPassword = getFormPassword('forgot-form', 0);
-      const confirm = getFormPassword('forgot-form', 1);
-
-      // 收集 6 位验证码
-      const codeInputs = document.querySelectorAll('#forgot-form .code-boxes input');
-      let code = '';
-      codeInputs.forEach(input => { code += input.value; });
-
-      if (!email || !newPassword || code.length !== 6) {
-        showToast('请完整填写邮箱、新密码和 6 位验证码', 'error');
-        return;
-      }
-      if (newPassword !== confirm) {
-        showToast('两次输入的密码不一致', 'error');
-        return;
-      }
-
-      setButtonLoading(this, true);
-      const result = await API.post('/api/reset-password', { email, code, newPassword });
-      setButtonLoading(this, false);
-
-      if (result.success) {
-        showFullPageSuccess('重置成功', '您的密码已成功重置，请使用新密码登录。', '立即登录');
-      } else {
-        showToast(result.message || '重置失败', 'error');
-      }
-    });
-  }
-
-  console.log('[Apex] 前端 API 客户端已加载');
-})();
-</script>
-
-<script id="apex-final-takeover">
-(function() {
-  console.log('[Apex] 接管脚本已加载');
-
-  // 工具函数
-  function getVal(formId, placeholderKeyword) {
-    const form = document.getElementById(formId);
-    if (!form) return '';
-    const inputs = form.querySelectorAll('input');
-    for (const input of inputs) {
-      if (input.placeholder && input.placeholder.includes(placeholderKeyword)) return input.value.trim();
-    }
-    return '';
-  }
-
-  function getPwd(formId, index) {
-    const form = document.getElementById(formId);
-    if (!form) return '';
-    const inputs = form.querySelectorAll('input[type="password"]');
-    return inputs[index] ? inputs[index].value : '';
-  }
-
-  function toast(msg, type) {
-    let t = document.getElementById('apex-toast');
-    if (!t) {
-      t = document.createElement('div');
-      t.id = 'apex-toast';
-      t.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:8px;font-size:14px;z-index:999999;transition:opacity 0.3s;max-width:90%;text-align:center;';
-      document.body.appendChild(t);
-    }
-    t.textContent = msg;
-    t.style.background = type === 'error' ? '#e63946' : '#4ade80';
-    t.style.color = type === 'error' ? '#fff' : '#000';
-    t.style.opacity = '1';
-    clearTimeout(t._timer);
-    t._timer = setTimeout(() => { t.style.opacity = '0'; }, 3000);
-  }
-
-  function showSuccess(title, desc, btnText) {
-    ['login-form', 'register-form', 'forgot-form'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.style.display = 'none';
-    });
-    const tabs = document.getElementById('auth-tabs');
-    if (tabs) tabs.style.display = 'none';
-
-    let page = document.getElementById('apex-success-page');
-    if (!page) {
-      page = document.createElement('div');
-      page.id = 'apex-success-page';
-      page.style.cssText = 'text-align:center; padding:20px 0;';
-      const card = document.querySelector('.auth-card');
-      if (card) card.appendChild(page);
-      else document.body.appendChild(page);
-    }
-    page.innerHTML = '<div style="width:64px;height:64px;margin:0 auto 16px;background:rgba(74,222,128,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;">' +
-      '<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#4ade80" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>' +
-      '<h3 style="color:#fff;margin-bottom:8px;font-size:18px;">' + title + '</h3>' +
-      '<p style="color:#888;font-size:13px;margin-bottom:24px;">' + desc + '</p>' +
-      '<button class="btn-primary" id="apex-success-btn">' + btnText + '</button>';
-    page.style.display = 'block';
-
-    document.getElementById('apex-success-btn').onclick = function() {
-      page.style.display = 'none';
-      const loginForm = document.getElementById('login-form');
-      if (loginForm) loginForm.style.display = 'block';
-      if (tabs) tabs.style.display = 'flex';
-      const tl = document.getElementById('tab-login');
-      const tr = document.getElementById('tab-register');
-      if (tl) tl.classList.add('active');
-      if (tr) tr.classList.remove('active');
-    };
-  }
-
-  // capture=true 使得该监听器在所有其他监听器之前执行
-  document.addEventListener('click', async function(e) {
     // ========== 注册 ==========
-    const regBtn = e.target.closest('#register-form .btn-primary');
-    if (regBtn) {
-      console.log('[Apex] 注册按钮被点击');
-      e.preventDefault();
-      e.stopImmediatePropagation();
+    document.getElementById('btn-register').addEventListener('click', async function() {
+      const username = document.getElementById('reg-username').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const confirm = document.getElementById('reg-confirm').value;
 
-      const username = getVal('register-form', '请输入账号');
-      const email = getVal('register-form', '请输入邮箱');
-      const password = getPwd('register-form', 0);
-      const confirm = getPwd('register-form', 1);
+      const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const userRe = /^[a-zA-Z0-9_]{6,20}$/;
+      const strongPwdRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
 
       if (!username || !email || !password) { toast('请完整填写所有信息', 'error'); return; }
-      if (password !== confirm) { toast('两次输入的密码不一致', 'error'); return; }
-
-      regBtn.textContent = '处理中...';
-      regBtn.disabled = true;
-      regBtn.style.opacity = '0.6';
-
-      try {
-        const res = await fetch('/api/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, email, password })
-        });
-        const data = await res.json();
-        console.log('[Apex] 注册响应：', data);
-
-        regBtn.textContent = '注 册';
-        regBtn.disabled = false;
-        regBtn.style.opacity = '1';
-
-        if (data.success) {
-          showSuccess('注册成功', '欢迎加入 Apex，您的账号已创建成功。', '立即登录');
-        } else {
-          toast(data.message || '注册失败', 'error');
-        }
-      } catch (err) {
-        console.error('[Apex] 注册错误：', err);
-        regBtn.textContent = '注 册';
-        regBtn.disabled = false;
-        regBtn.style.opacity = '1';
-        toast('网络错误：' + err.message, 'error');
+      if (!userRe.test(username)) { toast('账号需 6-20 位，仅限字母、数字、下划线', 'error'); return; }
+      if (!emailRe.test(email)) { toast('邮箱格式错误', 'error'); return; }
+      if (!strongPwdRe.test(password)) { toast('密码强度不足', 'error'); return; }
+      if (password !== confirm) { toast('两次密码不一致', 'error'); return; }
+      if (document.getElementById('reg-captcha').dataset.status !== 'success') {
+        toast('请先完成人机验证', 'error'); return;
       }
-      return;
-    }
 
-    // ========== 登录 ==========
-    const loginBtn = e.target.closest('#login-form .btn-primary');
-    if (loginBtn) {
-      console.log('[Apex] 登录按钮被点击');
-      e.preventDefault();
-      e.stopImmediatePropagation();
+      setLoading(this, true);
+      const result = await apiPost('/api/register', { username, email, password });
+      setLoading(this, false);
 
-      const account = getVal('login-form', '请输入账号');
-      const password = getPwd('login-form', 0);
-      if (!account || !password) { toast('请填写账号和密码', 'error'); return; }
-
-      loginBtn.textContent = '处理中...';
-      loginBtn.disabled = true;
-      loginBtn.style.opacity = '0.6';
-
-      try {
-        const res = await fetch('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ account, password })
-        });
-        const data = await res.json();
-        console.log('[Apex] 登录响应：', data);
-
-        loginBtn.textContent = '登 录';
-        loginBtn.disabled = false;
-        loginBtn.style.opacity = '1';
-
-        if (data.success) {
-          localStorage.setItem('apex_token', data.token);
-          localStorage.setItem('apex_user', JSON.stringify(data.user));
-          toast('登录成功', 'success');
-          setTimeout(() => {
-            document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#050505;color:#fff;font-size:24px;letter-spacing:4px;">正在开发中</div>';
-          }, 800);
-        } else {
-          toast(data.message || '登录失败', 'error');
-        }
-      } catch (err) {
-        console.error('[Apex] 登录错误：', err);
-        loginBtn.textContent = '登 录';
-        loginBtn.disabled = false;
-        loginBtn.style.opacity = '1';
-        toast('网络错误：' + err.message, 'error');
+      if (result.success) {
+        showSuccess('注册成功', '欢迎加入 Apex，您的账号已创建成功。');
+      } else {
+        toast(result.message || '注册失败', 'error');
       }
-      return;
-    }
+    });
 
     // ========== 发送验证码 ==========
-    const sendBtn = e.target.closest('#btn-send-code');
-    if (sendBtn) {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      const email = getVal('forgot-form', '请输入邮箱');
-      if (!email) { toast('请填写邮箱', 'error'); return; }
-      sendBtn.disabled = true;
-      sendBtn.textContent = '发送中...';
-      try {
-        const res = await fetch('/api/send-reset-code', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email })
-        });
-        const data = await res.json();
-        if (data.success) {
-          toast('验证码已发送' + (data.devCode ? '（开发模式：' + data.devCode + '）' : ''), 'success');
-          let c = 60;
-          sendBtn.textContent = c + '秒后重发';
-          const timer = setInterval(() => {
-            c--;
-            sendBtn.textContent = c + '秒后重发';
-            if (c <= 0) { clearInterval(timer); sendBtn.textContent = '发送验证码'; sendBtn.disabled = false; }
-          }, 1000);
-        } else {
-          toast(data.message || '发送失败', 'error');
-          sendBtn.textContent = '发送验证码';
-          sendBtn.disabled = false;
-        }
-      } catch (err) {
-        toast('网络错误', 'error');
-        sendBtn.textContent = '发送验证码';
-        sendBtn.disabled = false;
+    document.getElementById('btn-send-code').addEventListener('click', async function() {
+      const email = document.getElementById('forgot-email').value.trim();
+      const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email || !emailRe.test(email)) { toast('请输入有效邮箱', 'error'); return; }
+
+      setLoading(this, true);
+      const result = await apiPost('/api/send-reset-code', { email });
+      setLoading(this, false);
+
+      if (result.success) {
+        let msg = '验证码已发送';
+        if (result.devCode) msg += '（开发模式：' + result.devCode + '）';
+        toast(msg, 'success');
+        let c = 60;
+        this.disabled = true;
+        this.textContent = c + '秒后重发';
+        const timer = setInterval(() => {
+          c--;
+          this.textContent = c + '秒后重发';
+          if (c <= 0) { clearInterval(timer); this.textContent = '发送验证码'; this.disabled = false; }
+        }, 1000);
+      } else {
+        toast(result.message || '发送失败', 'error');
       }
-      return;
-    }
+    });
 
     // ========== 重置密码 ==========
-    const resetBtn = e.target.closest('#forgot-form .btn-primary');
-    if (resetBtn) {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      const email = getVal('forgot-form', '请输入邮箱');
-      const newPassword = getPwd('forgot-form', 0);
-      const confirm = getPwd('forgot-form', 1);
-      const codeInputs = document.querySelectorAll('#forgot-form .code-boxes input');
+    document.getElementById('btn-reset').addEventListener('click', async function() {
+      const email = document.getElementById('forgot-email').value.trim();
+      const newPassword = document.getElementById('forgot-newpwd').value;
+      const confirm = document.getElementById('forgot-confirm').value;
       let code = '';
-      codeInputs.forEach(i => code += i.value);
-      if (!email || !newPassword || code.length !== 6) { toast('请完整填写邮箱、新密码和 6 位验证码', 'error'); return; }
-      if (newPassword !== confirm) { toast('两次输入的密码不一致', 'error'); return; }
-      resetBtn.textContent = '处理中...';
-      resetBtn.disabled = true;
+      document.querySelectorAll('#code-boxes input').forEach(i => code += i.value);
+
+      if (!email || !newPassword || code.length !== 6) { toast('请完整填写邮箱、密码和 6 位验证码', 'error'); return; }
+      if (newPassword !== confirm) { toast('两次密码不一致', 'error'); return; }
+      if (document.getElementById('forgot-captcha').dataset.status !== 'success') {
+        toast('请先完成人机验证', 'error'); return;
+      }
+
+      setLoading(this, true);
+      const result = await apiPost('/api/reset-password', { email, code, newPassword });
+      setLoading(this, false);
+
+      if (result.success) {
+        showSuccess('重置成功', '您的密码已成功重置，请使用新密码登录。');
+      } else {
+        toast(result.message || '重置失败', 'error');
+      }
+    });
+
+    console.log('[Apex] API 对接已加载');
+  })();
+  </script>
+
+  <script>
+  (function() {
+    'use strict';
+
+    // ============================================================
+    // 1. 语言切换（30 国）
+    // ============================================================
+    const languages = [
+      { code: 'zh-CN', flag: '🇨🇳', name: '简体中文' }, { code: 'en-US', flag: '🇺🇸', name: 'English' },
+      { code: 'es-ES', flag: '🇪🇸', name: 'Español' }, { code: 'hi-IN', flag: '🇮🇳', name: 'हिन्दी' },
+      { code: 'ar-SA', flag: '🇸🇦', name: 'العربية' }, { code: 'fr-FR', flag: '🇫🇷', name: 'Français' },
+      { code: 'bn-BD', flag: '🇧🇩', name: 'বাংলা' }, { code: 'pt-BR', flag: '🇧🇷', name: 'Português' },
+      { code: 'ru-RU', flag: '🇷🇺', name: 'Русский' }, { code: 'ur-PK', flag: '🇵🇰', name: 'اردو' },
+      { code: 'id-ID', flag: '🇮🇩', name: 'Bahasa Indonesia' }, { code: 'de-DE', flag: '🇩🇪', name: 'Deutsch' },
+      { code: 'ja-JP', flag: '🇯🇵', name: '日本語' }, { code: 'sw-KE', flag: '🇰🇪', name: 'Kiswahili' },
+      { code: 'mr-IN', flag: '🇮🇳', name: 'मराठी' }, { code: 'te-IN', flag: '🇮🇳', name: 'తెలుగు' },
+      { code: 'tr-TR', flag: '🇹🇷', name: 'Türkçe' }, { code: 'ta-IN', flag: '🇮🇳', name: 'தமிழ்' },
+      { code: 'vi-VN', flag: '🇻🇳', name: 'Tiếng Việt' }, { code: 'ko-KR', flag: '🇰🇷', name: '한국어' },
+      { code: 'it-IT', flag: '🇮🇹', name: 'Italiano' }, { code: 'th-TH', flag: '🇹🇭', name: 'ไทย' },
+      { code: 'gu-IN', flag: '🇮🇳', name: 'ગુજરાતી' }, { code: 'pl-PL', flag: '🇵🇱', name: 'Polski' },
+      { code: 'uk-UA', flag: '🇺🇦', name: 'Українська' }, { code: 'fa-IR', flag: '🇮🇷', name: 'فارسی' },
+      { code: 'ms-MY', flag: '🇲🇾', name: 'Bahasa Melayu' }, { code: 'nl-NL', flag: '🇳🇱', name: 'Nederlands' },
+      { code: 'my-MM', flag: '🇲🇲', name: 'မြန်မာဘာသာ' }, { code: 'ro-RO', flag: '🇷🇴', name: 'Română' }
+    ];
+
+    const langBtn = document.getElementById('lang-btn');
+    const langMenu = document.getElementById('lang-menu');
+    const currentFlag = document.getElementById('current-flag');
+    const currentLang = document.getElementById('current-lang');
+
+    languages.forEach(lang => {
+      const item = document.createElement('div');
+      item.className = 'lang-item';
+      item.innerHTML = '<span>' + lang.flag + '</span><span>' + lang.name + '</span>';
+      item.onclick = (e) => {
+        e.stopPropagation();
+        currentFlag.textContent = lang.flag;
+        currentLang.textContent = lang.name;
+        langMenu.classList.remove('show');
+        localStorage.setItem('apexLang', JSON.stringify(lang));
+      };
+      langMenu.appendChild(item);
+    });
+
+    // 恢复上次选中的语言
+    const savedLang = localStorage.getItem('apexLang');
+    if (savedLang) {
       try {
-        const res = await fetch('/api/reset-password', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, code, newPassword })
-        });
-        const data = await res.json();
-        resetBtn.textContent = '重置密码';
-        resetBtn.disabled = false;
-        if (data.success) {
-          showSuccess('重置成功', '您的密码已成功重置，请使用新密码登录。', '立即登录');
-        } else {
-          toast(data.message || '重置失败', 'error');
+        const lang = JSON.parse(savedLang);
+        currentFlag.textContent = lang.flag;
+        currentLang.textContent = lang.name;
+      } catch (e) {}
+    }
+
+    langBtn.addEventListener('click', (e) => { e.stopPropagation(); langMenu.classList.toggle('show'); });
+    document.addEventListener('click', () => langMenu.classList.remove('show'));
+
+    // ============================================================
+    // 2. 加载页逻辑（仅首次进入）
+    // ============================================================
+    (function() {
+      const splash = document.getElementById('apex-splash-screen');
+      if (!splash) return;
+
+      if (sessionStorage.getItem('apex_splash_shown') === 'true') {
+        splash.style.display = 'none';
+        return;
+      }
+
+      splash.style.display = 'flex';
+
+      const codeLog = document.getElementById('splash-code-log');
+      const progressBar = document.getElementById('splash-progress-bar');
+      const progressText = document.getElementById('splash-progress-text');
+      const sysItems = [
+        document.getElementById('sys-1'), document.getElementById('sys-2'),
+        document.getElementById('sys-3'), document.getElementById('sys-4')
+      ];
+
+      const codeSnippets = [
+        '<span class="code-keyword">import</span> { ApexCore } <span class="code-keyword">from</span> <span class="code-string">"@apex/core"</span>;',
+        '<span class="code-keyword">import</span> { NetworkModule } <span class="code-keyword">from</span> <span class="code-string">"@apex/network"</span>;',
+        '',
+        'async function initSystem() {',
+        '  console.log(<span class="code-string">"初始化 Apex 核心引擎..."</span>);',
+        '  const core = new ApexCore();',
+        '  const net = new NetworkModule();',
+        '  await net.connect(<span class="code-string">"global-network"</span>);',
+        '  console.log(<span class="code-string">"网络通信已建立"</span>);',
+        '  await core.security.encrypt();',
+        '  console.log(<span class="code-string">"安全防护已启动"</span>);',
+        '  await core.backend.deploy();',
+        '  console.log(<span class="code-string">"后端服务已就绪"</span>);',
+        '  await core.frontend.render();',
+        '  console.log(<span class="code-string">"前端渲染已完成"</span>);',
+        '}',
+        '',
+        'initSystem().then(() => {',
+        '  console.log(<span class="code-success">"欢迎来到 Apex Entertainment 系统加载完毕"</span>);',
+        '});'
+      ];
+
+      let lineIndex = 0;
+      const stepTime = 6500 / codeSnippets.length;
+      function typeCode() {
+        if (lineIndex < codeSnippets.length) {
+          const line = document.createElement('div');
+          line.innerHTML = codeSnippets[lineIndex];
+          codeLog.appendChild(line);
+          codeLog.scrollTop = codeLog.scrollHeight;
+          lineIndex++;
+          setTimeout(typeCode, stepTime);
         }
-      } catch (err) {
-        resetBtn.textContent = '重置密码';
-        resetBtn.disabled = false;
-        toast('网络错误', 'error');
       }
-      return;
-    }
-  }, true); // capture = true
+      typeCode();
 
-  console.log('[Apex] 接管脚本就绪');
-})();
-</script>
-
-<script id="apex-tab-fix">
-(function() {
-  console.log('[Apex] 标签切换脚本已加载');
-
-  function switchTo(formId) {
-    ['login-form', 'register-form', 'forgot-form'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.style.display = (id === formId) ? 'block' : 'none';
-    });
-    // 隐藏成功页（如果显示中）
-    const successPage = document.getElementById('apex-success-page');
-    if (successPage) successPage.style.display = 'none';
-    // 显示/隐藏顶部Tab
-    const tabs = document.getElementById('auth-tabs');
-    if (tabs) tabs.style.display = (formId === 'forgot-form') ? 'none' : 'flex';
-  }
-
-  // 用最高优先级捕获所有点击
-  document.addEventListener('click', function(e) {
-    // 点击"注册"标签
-    if (e.target.id === 'tab-register' || e.target.closest('#tab-register')) {
-      console.log('[Apex] 切换到注册');
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      const tabLogin = document.getElementById('tab-login');
-      const tabRegister = document.getElementById('tab-register');
-      if (tabLogin) tabLogin.classList.remove('active');
-      if (tabRegister) tabRegister.classList.add('active');
-      switchTo('register-form');
-      return;
-    }
-
-    // 点击"登录"标签
-    if (e.target.id === 'tab-login' || e.target.closest('#tab-login')) {
-      console.log('[Apex] 切换到登录');
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      const tabLogin = document.getElementById('tab-login');
-      const tabRegister = document.getElementById('tab-register');
-      if (tabLogin) tabLogin.classList.add('active');
-      if (tabRegister) tabRegister.classList.remove('active');
-      switchTo('login-form');
-      return;
-    }
-
-    // 点击"忘记密码？"
-    if (e.target.id === 'forgot-pwd' || e.target.closest('#forgot-pwd')) {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      const tabLogin = document.getElementById('tab-login');
-      const tabRegister = document.getElementById('tab-register');
-      if (tabLogin) tabLogin.classList.remove('active');
-      if (tabRegister) tabRegister.classList.remove('active');
-      switchTo('forgot-form');
-      return;
-    }
-
-    // 点击"返回登录"
-    if (e.target.id === 'back-to-login' || e.target.closest('#back-to-login')) {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      const tabLogin = document.getElementById('tab-login');
-      const tabRegister = document.getElementById('tab-register');
-      if (tabLogin) tabLogin.classList.add('active');
-      if (tabRegister) tabRegister.classList.remove('active');
-      switchTo('login-form');
-      return;
-    }
-  }, true);
-
-  console.log('[Apex] 标签切换脚本就绪');
-})();
-</script>
-
-<script id="apex-captcha-and-eye-fix">
-(function() {
-  console.log('[Apex] 人机验证和小眼睛函数补丁已加载');
-
-  // ========== 小眼睛（密码显示/隐藏） ==========
-  const EYE_OPEN = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
-  const EYE_CLOSED = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
-
-  window.togglePwd = function(el) {
-    const p = el.parentElement.previousElementSibling;
-    if (!p) return;
-    p.type = p.type === 'password' ? 'text' : 'password';
-    el.innerHTML = p.type === 'password' ? EYE_OPEN : EYE_CLOSED;
-  };
-
-  // 页面加载时，给所有小眼睛填充 SVG 图标
-  function initEyes() {
-    document.querySelectorAll('.btn-toggle').forEach(el => {
-      if (!el.innerHTML.trim() || el.innerHTML.includes('👁') || el.innerHTML.includes('🙈')) {
-        el.innerHTML = EYE_OPEN;
-      }
-    });
-  }
-
-  // ========== 人机验证 ==========
-  window.startCaptcha = function(box) {
-    if (box.dataset.status === 'success' || box.dataset.status === 'verifying') return;
-    box.dataset.status = 'verifying';
-    box.classList.add('verifying');
-    let progress = 0;
-    const percent = box.querySelector('.apex-captcha-percent');
-    if (percent) percent.textContent = '0%';
-
-    const interval = setInterval(() => {
-      progress += Math.floor(Math.random() * 15) + 5;
-      if (progress > 100) progress = 100;
-      if (percent) percent.textContent = progress < 100 ? progress + '%' : '验证成功';
-      if (progress === 100) {
-        clearInterval(interval);
+      sysItems.forEach((item, index) => {
         setTimeout(() => {
-          box.classList.remove('verifying');
-          box.classList.add('success');
-          box.dataset.status = 'success';
-        }, 300);
-      }
-    }, 100);
-  };
+          item.classList.add('active');
+          setTimeout(() => item.classList.add('checked'), 1000);
+        }, index * 1600 + 500);
+      });
 
-  // ========== 初始化 ==========
-  function init() {
-    initEyes();
-    // 给还没有 onclick 的人机验证框补上
-    document.querySelectorAll('.apex-captcha-box').forEach(box => {
-      if (!box.onclick && !box.dataset.status) {
-        box.onclick = function() { window.startCaptcha(this); };
-      }
-    });
-  }
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.floor(Math.random() * 2) + 1;
+        if (progress > 100) progress = 100;
+        progressBar.style.width = progress + '%';
+        progressText.innerHTML = 'APEX 系统加载中... <span>' + progress + '%</span>';
+        if (progress === 100) {
+          clearInterval(interval);
+          progressText.innerHTML = 'APEX系统加载完成';
+          setTimeout(() => {
+            splash.classList.add('hide');
+            sessionStorage.setItem('apex_splash_shown', 'true');
+          }, 800);
+        }
+      }, 100);
+    })();
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+    // ============================================================
+    // 3. 初始化所有小眼睛图标
+    // ============================================================
+    const EYE_OPEN = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+    document.querySelectorAll('.btn-toggle').forEach(el => { el.innerHTML = EYE_OPEN; });
 
-  console.log('[Apex] 补丁就绪');
-})();
-</script>
+    console.log('[Apex] 语言、加载页、小眼睛已初始化');
+  })();
+  </script>
 </body>
 </html>
-
-
-
-
