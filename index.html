@@ -76,8 +76,15 @@
 
 
 <meta name="theme-color" content="#050505"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<style id="apex-splash-style">
+  #apex-splash-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #050505; z-index: 99999; display: flex; justify-content: center; align-items: flex-start; transition: opacity 0.5s ease, visibility 0.5s; }
+  #apex-splash-screen.hide { opacity: 0; visibility: hidden; }
+  .splash-top-img { width: 100%; max-height: 100vh; object-fit: contain; object-position: top center; display: block; }
+</style>
 </head>
 <body>
+<div id="apex-splash-screen"><img src="./splash-top.jpeg" alt="Splash" class="splash-top-img"></div>
 <div class="header">
     <div class="lang-selector" id="lang-selector">
       <button class="lang-btn" id="lang-btn"><span id="current-flag">🇨🇳</span><span id="current-lang">简体中文</span><span style="font-size:10px;">▼</span></button>
@@ -266,6 +273,15 @@ document.addEventListener('click', function(e) {
 <script>
   // 启动页 2.5 秒后自动淡出
   
+  });
+</script>
+
+<script>
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      const splash = document.getElementById('apex-splash-screen');
+      if (splash) { splash.classList.add('hide'); }
+    }, 2500);
   });
 </script>
 </body>
