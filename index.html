@@ -157,7 +157,7 @@
 <body>
 
 
-<div id="apex-splash-screen">
+<div id="apex-splash-screen" style="display: none;">
   <img src="./splash-top.webp" alt="Splash" class="splash-top-img" fetchpriority="high" loading="eager" decoding="async">
   <div class="splash-welcome">欢迎来到 APEX ENTERTAINMENT</div>
   <div class="splash-terminal-box">
@@ -190,7 +190,21 @@
       <div class="splash-feature-item"><div class="splash-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></div><div class="splash-feature-text"><span class="feature-title">24/7客服</span><span class="feature-desc">专业团队 随时在线</span></div></div>
     </div>
   </div>
-</div><div class="header">
+</div>
+<script>
+  (function() {
+    // 如果是首次进入，立刻显示加载页并锁定滚动
+    if (!sessionStorage.getItem('apex_splash_shown')) {
+      const splash = document.getElementById('apex-splash-screen');
+      if (splash) { splash.style.display = 'flex'; }
+      document.body.style.overflow = 'hidden';
+    } else {
+      // 如果是刷新，保持隐藏并恢复滚动
+      document.body.style.overflow = 'auto';
+    }
+  })();
+</script>
+<div class="header">
     <div class="lang-selector" id="lang-selector">
       <button class="lang-btn" id="lang-btn"><span id="current-flag">🇨🇳</span><span id="current-lang">简体中文</span><span style="font-size:10px;">▼</span></button>
       <div class="lang-menu" id="lang-menu"></div>
@@ -395,12 +409,7 @@ document.addEventListener('click', function(e) {
   window.addEventListener('load', function() {
 
     // 检查是否已经展示过加载页
-    if (sessionStorage.getItem('apex_splash_shown') === 'true') {
-      const splash = document.getElementById('apex-splash-screen');
-      if (splash) { splash.style.display = 'none'; }
-      document.body.style.overflow = 'auto';
-      return; // 直接结束，不执行后续加载逻辑
-    }
+    if (sessionStorage.getItem('apex_splash_shown') === 'true') { return; }
 
     document.body.style.overflow = 'hidden';
     const codeLog = document.getElementById('splash-code-log');
