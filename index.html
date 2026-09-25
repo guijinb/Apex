@@ -365,3 +365,30 @@ document.addEventListener('click', function(e) {
   }
 });
 </script>
+<script>
+document.addEventListener('click', function(e) {
+  // 捕获登录按钮点击
+  const loginBtn = e.target.closest('#login-form .btn-primary');
+  if (loginBtn) {
+    e.preventDefault(); // 阻止真实提交
+    // 隐藏登录表单
+    document.getElementById('login-form').style.display = 'none';
+    // 隐藏顶部标签
+    document.getElementById('auth-tabs').style.display = 'none';
+    
+    // 动态生成开发中提示页
+    let devPage = document.getElementById('dev-page');
+    if (!devPage) {
+      devPage = document.createElement('div');
+      devPage.id = 'dev-page';
+      devPage.style.cssText = 'display:none; text-align:center; padding:40px 0;';
+      devPage.innerHTML = `
+        <h3 style="color:#fff; font-size:18px; letter-spacing:2px; font-weight:normal;">正在开发中</h3>
+      `;
+      document.querySelector('.auth-card').appendChild(devPage);
+    }
+    devPage.style.display = 'block';
+    return;
+  }
+});
+</script>
