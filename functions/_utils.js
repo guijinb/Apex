@@ -69,3 +69,18 @@ export function validateUsername(username) {
 export function validatePassword(pwd) {
   return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/.test(pwd);
 }
+
+// 速率限制检查：同一 IP 在 windowSec 秒内最多允许 maxCount 次请求
+export async function checkRateLimit(env, ip, action, maxCount, windowSec) {
+  const since = new Date(Date.now() - windowSec * 1000).toISOString();
+  const result = await env.apex_db.prepare(
+    'SELECT COUNT(*) as cnt FROM rate_limits WHERE ip = ? AND action = ? AND created_at > ?'
+  ).bind(ip, action, since).first();
+  if (result && result.cnt >= maxCount) {
+    return { allowed: false, remaining: 0 };
+  }
+  await env.apex_db.prepare(
+    'INSERT INTO rate_limits (ip, action) VALUES (?, ?)'
+  ).bind(ip, action).run();
+  return { allowed: true, remaining: maxCount - result.cnt - 1 };
+}
