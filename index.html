@@ -933,5 +933,102 @@
   })();
   </script>
 
+
+  <script id="apex-auto-login">
+  (function() {
+    // 检查本地是否有登录凭证
+    const token = localStorage.getItem('apex_token');
+    if (!token) return;
+
+    // 显示"正在恢复登录状态"提示
+    const notice = document.createElement('div');
+    notice.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.9);color:#fff;padding:20px 32px;border-radius:12px;font-size:14px;z-index:99999;border:1px solid #333;';
+    notice.textContent = '正在恢复登录状态...';
+    document.body.appendChild(notice);
+
+    // 调用 /api/me 验证 token
+    fetch('/api/me', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    })
+      .then(res => res.json())
+      .then(data => {
+        notice.remove();
+        if (data.success) {
+          // Token 有效，直接进入主页
+          console.log('[Apex] 自动登录成功：', data.user.username);
+          document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#050505;color:#fff;font-size:24px;letter-spacing:4px;">正在开发中</div>';
+        } else {
+          // Token 失效，清除并显示登录页
+          localStorage.removeItem('apex_token');
+          localStorage.removeItem('apex_user');
+          console.log('[Apex] 登录已过期');
+        }
+      })
+      .catch(() => {
+        notice.remove();
+      });
+  })();
+  </script>
+
+
+  <script id="apex-a11y">
+  (function() {
+    // 1. 给所有输入框补充无障碍属性
+    document.querySelectorAll('input').forEach(input => {
+      if (!input.id) return;
+      // 确保 label 关联
+      const label = input.closest('.input-group')?.querySelector('label');
+      if (label && !label.htmlFor) label.htmlFor = input.id;
+      // aria-label 描述
+      if (!input.getAttribute('aria-label') && input.placeholder) {
+        input.setAttribute('aria-label', input.placeholder);
+      }
+    });
+
+    // 2. 给所有按钮补充 aria-label
+    document.querySelectorAll('.btn-primary').forEach(btn => {
+      if (!btn.getAttribute('aria-label') && btn.textContent.trim()) {
+        btn.setAttribute('aria-label', btn.textContent.trim());
+      }
+    });
+
+    // 3. 给密码小眼睛添加 aria-label
+    document.querySelectorAll('.btn-toggle').forEach(btn => {
+      btn.setAttribute('role', 'button');
+      btn.setAttribute('aria-label', '显示或隐藏密码');
+      btn.setAttribute('tabindex', '0');
+    });
+
+    // 4. 给 Tab 补充无障碍状态
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.setAttribute('role', 'tab');
+      tab.setAttribute('aria-selected', tab.classList.contains('active') ? 'true' : 'false');
+    });
+
+    // 5. 给语言切换按钮补充 aria-label
+    const langBtn = document.getElementById('lang-btn');
+    if (langBtn) {
+      langBtn.setAttribute('aria-label', '切换语言');
+      langBtn.setAttribute('aria-haspopup', 'true');
+    }
+
+    // 6. 键盘可访问性：所有 [role=button] 支持 Enter/Space 触发
+    document.querySelectorAll('[role="button"]').forEach(el => {
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          el.click();
+        }
+      });
+    });
+
+    // 7. 加载页添加 aria-hidden（读屏器忽略它）
+    const splash = document.getElementById('apex-splash-screen');
+    if (splash) splash.setAttribute('aria-hidden', 'true');
+
+    console.log('[Apex] a11y 优化已应用');
+  })();
+  </script>
+
 </body>
 </html>
