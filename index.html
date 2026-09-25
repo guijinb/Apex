@@ -793,6 +793,257 @@ document.addEventListener('click', function(e) {
   console.log('[Apex] 前端 API 客户端已加载');
 })();
 </script>
+
+<script id="apex-final-takeover">
+(function() {
+  console.log('[Apex] 接管脚本已加载');
+
+  // 工具函数
+  function getVal(formId, placeholderKeyword) {
+    const form = document.getElementById(formId);
+    if (!form) return '';
+    const inputs = form.querySelectorAll('input');
+    for (const input of inputs) {
+      if (input.placeholder && input.placeholder.includes(placeholderKeyword)) return input.value.trim();
+    }
+    return '';
+  }
+
+  function getPwd(formId, index) {
+    const form = document.getElementById(formId);
+    if (!form) return '';
+    const inputs = form.querySelectorAll('input[type="password"]');
+    return inputs[index] ? inputs[index].value : '';
+  }
+
+  function toast(msg, type) {
+    let t = document.getElementById('apex-toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'apex-toast';
+      t.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:8px;font-size:14px;z-index:999999;transition:opacity 0.3s;max-width:90%;text-align:center;';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.background = type === 'error' ? '#e63946' : '#4ade80';
+    t.style.color = type === 'error' ? '#fff' : '#000';
+    t.style.opacity = '1';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => { t.style.opacity = '0'; }, 3000);
+  }
+
+  function showSuccess(title, desc, btnText) {
+    ['login-form', 'register-form', 'forgot-form'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+    const tabs = document.getElementById('auth-tabs');
+    if (tabs) tabs.style.display = 'none';
+
+    let page = document.getElementById('apex-success-page');
+    if (!page) {
+      page = document.createElement('div');
+      page.id = 'apex-success-page';
+      page.style.cssText = 'text-align:center; padding:20px 0;';
+      const card = document.querySelector('.auth-card');
+      if (card) card.appendChild(page);
+      else document.body.appendChild(page);
+    }
+    page.innerHTML = '<div style="width:64px;height:64px;margin:0 auto 16px;background:rgba(74,222,128,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;">' +
+      '<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#4ade80" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>' +
+      '<h3 style="color:#fff;margin-bottom:8px;font-size:18px;">' + title + '</h3>' +
+      '<p style="color:#888;font-size:13px;margin-bottom:24px;">' + desc + '</p>' +
+      '<button class="btn-primary" id="apex-success-btn">' + btnText + '</button>';
+    page.style.display = 'block';
+
+    document.getElementById('apex-success-btn').onclick = function() {
+      page.style.display = 'none';
+      const loginForm = document.getElementById('login-form');
+      if (loginForm) loginForm.style.display = 'block';
+      if (tabs) tabs.style.display = 'flex';
+      const tl = document.getElementById('tab-login');
+      const tr = document.getElementById('tab-register');
+      if (tl) tl.classList.add('active');
+      if (tr) tr.classList.remove('active');
+    };
+  }
+
+  // capture=true 使得该监听器在所有其他监听器之前执行
+  document.addEventListener('click', async function(e) {
+    // ========== 注册 ==========
+    const regBtn = e.target.closest('#register-form .btn-primary');
+    if (regBtn) {
+      console.log('[Apex] 注册按钮被点击');
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      const username = getVal('register-form', '请输入账号');
+      const email = getVal('register-form', '请输入邮箱');
+      const password = getPwd('register-form', 0);
+      const confirm = getPwd('register-form', 1);
+
+      if (!username || !email || !password) { toast('请完整填写所有信息', 'error'); return; }
+      if (password !== confirm) { toast('两次输入的密码不一致', 'error'); return; }
+
+      regBtn.textContent = '处理中...';
+      regBtn.disabled = true;
+      regBtn.style.opacity = '0.6';
+
+      try {
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, email, password })
+        });
+        const data = await res.json();
+        console.log('[Apex] 注册响应：', data);
+
+        regBtn.textContent = '注 册';
+        regBtn.disabled = false;
+        regBtn.style.opacity = '1';
+
+        if (data.success) {
+          showSuccess('注册成功', '欢迎加入 Apex，您的账号已创建成功。', '立即登录');
+        } else {
+          toast(data.message || '注册失败', 'error');
+        }
+      } catch (err) {
+        console.error('[Apex] 注册错误：', err);
+        regBtn.textContent = '注 册';
+        regBtn.disabled = false;
+        regBtn.style.opacity = '1';
+        toast('网络错误：' + err.message, 'error');
+      }
+      return;
+    }
+
+    // ========== 登录 ==========
+    const loginBtn = e.target.closest('#login-form .btn-primary');
+    if (loginBtn) {
+      console.log('[Apex] 登录按钮被点击');
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      const account = getVal('login-form', '请输入账号');
+      const password = getPwd('login-form', 0);
+      if (!account || !password) { toast('请填写账号和密码', 'error'); return; }
+
+      loginBtn.textContent = '处理中...';
+      loginBtn.disabled = true;
+      loginBtn.style.opacity = '0.6';
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ account, password })
+        });
+        const data = await res.json();
+        console.log('[Apex] 登录响应：', data);
+
+        loginBtn.textContent = '登 录';
+        loginBtn.disabled = false;
+        loginBtn.style.opacity = '1';
+
+        if (data.success) {
+          localStorage.setItem('apex_token', data.token);
+          localStorage.setItem('apex_user', JSON.stringify(data.user));
+          toast('登录成功', 'success');
+          setTimeout(() => {
+            document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#050505;color:#fff;font-size:24px;letter-spacing:4px;">正在开发中</div>';
+          }, 800);
+        } else {
+          toast(data.message || '登录失败', 'error');
+        }
+      } catch (err) {
+        console.error('[Apex] 登录错误：', err);
+        loginBtn.textContent = '登 录';
+        loginBtn.disabled = false;
+        loginBtn.style.opacity = '1';
+        toast('网络错误：' + err.message, 'error');
+      }
+      return;
+    }
+
+    // ========== 发送验证码 ==========
+    const sendBtn = e.target.closest('#btn-send-code');
+    if (sendBtn) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const email = getVal('forgot-form', '请输入邮箱');
+      if (!email) { toast('请填写邮箱', 'error'); return; }
+      sendBtn.disabled = true;
+      sendBtn.textContent = '发送中...';
+      try {
+        const res = await fetch('/api/send-reset-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (data.success) {
+          toast('验证码已发送' + (data.devCode ? '（开发模式：' + data.devCode + '）' : ''), 'success');
+          let c = 60;
+          sendBtn.textContent = c + '秒后重发';
+          const timer = setInterval(() => {
+            c--;
+            sendBtn.textContent = c + '秒后重发';
+            if (c <= 0) { clearInterval(timer); sendBtn.textContent = '发送验证码'; sendBtn.disabled = false; }
+          }, 1000);
+        } else {
+          toast(data.message || '发送失败', 'error');
+          sendBtn.textContent = '发送验证码';
+          sendBtn.disabled = false;
+        }
+      } catch (err) {
+        toast('网络错误', 'error');
+        sendBtn.textContent = '发送验证码';
+        sendBtn.disabled = false;
+      }
+      return;
+    }
+
+    // ========== 重置密码 ==========
+    const resetBtn = e.target.closest('#forgot-form .btn-primary');
+    if (resetBtn) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const email = getVal('forgot-form', '请输入邮箱');
+      const newPassword = getPwd('forgot-form', 0);
+      const confirm = getPwd('forgot-form', 1);
+      const codeInputs = document.querySelectorAll('#forgot-form .code-boxes input');
+      let code = '';
+      codeInputs.forEach(i => code += i.value);
+      if (!email || !newPassword || code.length !== 6) { toast('请完整填写邮箱、新密码和 6 位验证码', 'error'); return; }
+      if (newPassword !== confirm) { toast('两次输入的密码不一致', 'error'); return; }
+      resetBtn.textContent = '处理中...';
+      resetBtn.disabled = true;
+      try {
+        const res = await fetch('/api/reset-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, code, newPassword })
+        });
+        const data = await res.json();
+        resetBtn.textContent = '重置密码';
+        resetBtn.disabled = false;
+        if (data.success) {
+          showSuccess('重置成功', '您的密码已成功重置，请使用新密码登录。', '立即登录');
+        } else {
+          toast(data.message || '重置失败', 'error');
+        }
+      } catch (err) {
+        resetBtn.textContent = '重置密码';
+        resetBtn.disabled = false;
+        toast('网络错误', 'error');
+      }
+      return;
+    }
+  }, true); // capture = true
+
+  console.log('[Apex] 接管脚本就绪');
+})();
+</script>
 </body>
 </html>
 
