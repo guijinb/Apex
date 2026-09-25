@@ -111,6 +111,17 @@
       <!-- 注册表单 -->
       <div id="register-form" style="display:none;">
         <div class="input-group"><label>账号</label><div class="input-wrap"><span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span><input type="text" placeholder="请输入账号"></div><div class="form-tip">6-20位字符，支持字母、数字、下划线</div></div>
+
+      <!-- 注册成功页面 -->
+      <div id="register-success" style="display:none; text-align: center; padding: 20px 0;">
+        <div style="width: 64px; height: 64px; margin: 0 auto 16px; background: rgba(74,222,128,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <h3 style="color: #fff; margin-bottom: 8px; font-size: 18px;">注册成功</h3>
+        <p style="color: #888; font-size: 13px; margin-bottom: 24px;">欢迎加入 Apex，您的账号已创建成功。</p>
+        <button class="btn-primary" id="btn-go-login">立即登录</button>
+      </div>
+
         <div class="input-group"><label>邮箱</label><div class="input-wrap"><span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></span><input type="email" placeholder="请输入邮箱"></div><div class="form-tip red-tip">⚠️：必须填写真实邮箱且自己长期使用的邮箱，以便于密码找回使用</div></div>
         <div class="input-group"><label>密码</label><div class="input-wrap"><span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span><input type="password" placeholder="请输入密码" ><div class="pwd-actions"><span class="btn-toggle" onpointerdown="event.preventDefault(); togglePwd(this)"></span></div></div><div class="form-tip">至少12位，必须包含大小写字母、数字及特殊符号，且不能与账号相同</div></div>
         <div class="input-group"><label>确认密码</label><div class="input-wrap"><span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span><input type="password" placeholder="请再次输入密码" ><div class="pwd-actions"><span class="btn-toggle" onpointerdown="event.preventDefault(); togglePwd(this)"></span></div></div></div>
@@ -197,6 +208,31 @@
     });
     langBtn.addEventListener('click', (e) => { e.stopPropagation(); langMenu.classList.toggle('show'); });
     document.addEventListener('click', () => langMenu.classList.remove('show'));
+  
+    // 注册成功跳转逻辑
+    const registerForm = document.getElementById('register-form');
+    const registerSuccess = document.getElementById('register-success');
+    const loginForm = document.getElementById('login-form');
+    const authTabs = document.getElementById('auth-tabs');
+
+    registerForm.querySelector('.btn-primary').addEventListener('click', function(e) {
+      e.preventDefault(); // 阻止默认提交行为
+      // 模拟注册成功，隐藏注册表单，显示成功页面，隐藏顶部Tab
+      registerForm.style.display = 'none';
+      authTabs.style.display = 'none';
+      registerSuccess.style.display = 'block';
+    });
+
+    document.getElementById('btn-go-login').addEventListener('click', function(e) {
+      e.preventDefault();
+      // 返回登录页面
+      registerSuccess.style.display = 'none';
+      loginForm.style.display = 'block';
+      authTabs.style.display = 'flex';
+      document.getElementById('tab-login').classList.add('active');
+      document.getElementById('tab-register').classList.remove('active');
+    });
+
   </script>
 </body>
 </html>
