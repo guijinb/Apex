@@ -361,6 +361,15 @@ document.addEventListener('click', function(e) {
 
 <script>
   window.addEventListener('load', function() {
+
+    // 检查是否已经展示过加载页
+    if (sessionStorage.getItem('apex_splash_shown') === 'true') {
+      const splash = document.getElementById('apex-splash-screen');
+      if (splash) { splash.style.display = 'none'; }
+      document.body.style.overflow = 'auto';
+      return; // 直接结束，不执行后续加载逻辑
+    }
+
     document.body.style.overflow = 'hidden';
     const codeLog = document.getElementById('splash-code-log');
     const progressBar = document.getElementById('splash-progress-bar');
@@ -439,6 +448,7 @@ document.addEventListener('click', function(e) {
         setTimeout(() => {
           const splash = document.getElementById('apex-splash-screen');
           if (splash) splash.classList.add('hide');
+          sessionStorage.setItem('apex_splash_shown', 'true');
           document.body.style.overflow = 'auto';
         }, 800);
       }
