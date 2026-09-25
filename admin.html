@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apex Admin - 日志面板</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #050505; color: #e0e0e0; min-height: 100vh; padding: 20px; }
+    .container { max-width: 900px; margin: 0 auto; }
+    h1 { color: #d4af37; font-size: 24px; margin-bottom: 20px; letter-spacing: 2px; }
+    .login-box { background: #0f0f0f; border: 1px solid #2a2a2a; border-radius: 12px; padding: 24px; max-width: 400px; margin: 80px auto; text-align: center; }
+    .login-box input { width: 100%; padding: 12px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 14px; margin-bottom: 12px; }
+    .login-box button { width: 100%; padding: 12px; background: #d4af37; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .stat-card { background: #0f0f0f; border: 1px solid #2a2a2a; border-radius: 10px; padding: 16px; }
+    .stat-card .label { font-size: 11px; color: #888; margin-bottom: 6px; }
+    .stat-card .value { font-size: 24px; font-weight: bold; color: #fff; }
+    .filters { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+    .filters button { padding: 8px 14px; background: #0f0f0f; border: 1px solid #2a2a2a; color: #888; border-radius: 8px; cursor: pointer; font-size: 12px; }
+    .filters button.active { background: #d4af37; color: #000; border-color: #d4af37; }
+    .log-list { background: #0f0f0f; border: 1px solid #2a2a2a; border-radius: 10px; max-height: 60vh; overflow-y: auto; }
+    .log-item { padding: 12px 16px; border-bottom: 1px solid #1a1a1a; font-size: 12px; }
+    .log-item:last-child { border-bottom: none; }
+    .log-type { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-right: 8px; }
+    .log-type.js_error { background: #e6394622; color: #e63946; }
+    .log-type.promise_rejection { background: #e6394622; color: #e63946; }
+    .log-type.perf_lcp { background: #4ade8022; color: #4ade80; }
+    .log-type.perf_load { background: #4ade8022; color: #4ade80; }
+    .log-type.perf_cls { background: #4ade8022; color: #4ade80; }
+    .log-type.perf_fid { background: #4ade8022; color: #4ade80; }
+    .log-msg { color: #ccc; margin-top: 4px; word-break: break-all; }
+    .log-meta { color: #555; font-size: 10px; margin-top: 4px; }
+    .refresh-btn { background: #d4af37; color: #000; padding: 8px 16px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="login-view">
+      <div class="login-box">
+        <h1>🔐 Apex Admin</h1>
+        <input type="password" id="pwd" placeholder="管理员密码">
+        <button onclick="loadLogs()">登录查看日志</button>
+      </div>
+    </div>
+
+    <div id="dashboard-view" style="display:none;">
+      <div class="header-row">
+        <h1>📊 Apex 日志面板</h1>
+        <button class="refresh-btn" onclick="loadLogs()">🔄 刷新</button>
+      </div>
+      <div class="stats-grid" id="stats-grid"></div>
+      <div class="filters" id="filters"></div>
+      <div class="log-list" id="log-list"></div>
+    </div>
+  </div>
+
+  <script>
+    let currentType = '';
+    let password = '';
+
+    async function loadLogs(type) {
+      password = document.getElementById('pwd').value || password;
+      if (type !== undefined) currentType = type;
+
+      const url = '/api/admin/logs?pwd=' + encodeURIComponent(password) + (currentType ? '&type=' + currentType : '');
+      const res = await fetch(url);
+      const data = await res.json();
+
+      if (!data.success) {
+        alert(data.message || '密码错误');
+        return;
+      }
+
+      document.getElementById('login-view').style.display = 'none';
+      document.getElementById('dashboard-view').style.display = 'block';
+
+      // 统计卡片
+      const sg = document.getElementById('stats-grid');
+      sg.innerHTML = `
+        <div class="stat-card"><div class="label">总用户数</div><div class="value">${data.userCount}</div></div>
+        <div class="stat-card"><div class="label">活跃会话</div><div class="value">${data.sessionCount}</div></div>
+        <div class="stat-card"><div class="label">日志条数</div><div class="value">${data.total}</div></div>
+      `;
+
+      // 过滤器
+      const filters = document.getElementById('filters');
+      const allTypes = ['', 'js_error', 'promise_rejection', 'perf_lcp', 'perf_load', 'perf_cls', 'perf_fid'];
+      filters.innerHTML = allTypes.map(t => 
+        `<button class="${t === currentType ? 'active' : ''}" onclick="loadLogs('${t}')">${t || '全部'}</button>`
+      ).join('');
+
+      // 日志列表
+      const list = document.getElementById('log-list');
+      if (data.logs.length === 0) {
+        list.innerHTML = '<div class="log-item" style="text-align:center;color:#555;padding:40px;">暂无日志</div>';
+      } else {
+        list.innerHTML = data.logs.map(log => `
+          <div class="log-item">
+            <span class="log-type ${log.type}">${log.type}</span>
+            <span style="color:#666;font-size:10px;">${log.created_at}</span>
+            <div class="log-msg">${escapeHtml(log.message || '')}</div>
+            <div class="log-meta">${log.ip || ''} · ${escapeHtml(log.url || '').substring(0, 80)}</div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    document.getElementById('pwd').addEventListener('keydown', e => {
+      if (e.key === 'Enter') loadLogs();
+    });
+  </script>
+</body>
+</html>
