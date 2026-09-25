@@ -96,6 +96,14 @@
   .forgot-pwd-link a { color: var(--text-muted); font-size: 12px; text-decoration: none; transition: 0.3s; }
   .forgot-pwd-link a:hover { color: #fff; }
 
+
+  /* 双链接布局（在线客服 + 忘记密码） */
+  .link-row { display: flex !important; justify-content: space-between !important; align-items: center !important; margin-top: 12px !important; margin-bottom: 8px !important; }
+  .link-row a { color: var(--text-muted) !important; font-size: 12px !important; text-decoration: none !important; transition: 0.3s !important; }
+  .link-row a:hover { color: #ffffff !important; }
+  .online-support-link { text-align: left; }
+  .forgot-pwd-link { text-align: right; margin: 0 !important; }
+
 </style>
 </head>
 <body>
@@ -156,7 +164,10 @@
           <div class="apex-captcha-footer">Apex 安全防护</div>
         </div>
         
-        <div class="forgot-pwd-link"><a href="#">忘记密码？</a></div>
+        <div class="link-row">
+              <div class="online-support-link"><a href="#">在线客服</a></div>
+              <div class="forgot-pwd-link"><a href="#">忘记密码？</a></div>
+            </div>
 <div class="checkbox-group">
           <input type="checkbox" id="agreement" checked>
           <label for="agreement">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label>
