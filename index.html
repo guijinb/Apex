@@ -6,51 +6,57 @@
   <title>Apex - Global Entertainment</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    :root { --bg:#050505; --card-bg:rgba(15,15,15,0.85); --gold:#d4af37; --text:#ffffff; --text-muted:#888888; --border:#333333; --green:#4ade80; }
+    :root { --bg:#050505; --card-bg:#0f0f0f; --gold:#d4af37; --text:#ffffff; --text-muted:#888888; --border:#2a2a2a; --green:#4ade80; }
     * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color: transparent; }
-    body { font-family:'Inter',system-ui,-apple-system,sans-serif; background: url('https://images.unsplash.com/photo-1596838132731-3301c3fd4317?auto=format&fit=crop&w=800&q=80') center/cover no-repeat fixed; color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
-    body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(5,5,5,0.75) 0%, rgba(5,5,5,0.95) 100%); z-index: -1; }
+    body { font-family:'Inter',system-ui,-apple-system,sans-serif; background-color:var(--bg); color:var(--text); display:flex; flex-direction:column; min-height:100vh; }
     .container { max-width:480px; margin:0 auto; padding:16px; width:100%; }
-    
-    /* 顶部语言栏（绝对定位右上角） */
-    .header { position: relative; display: flex; justify-content: flex-end; padding: 8px 0 16px 0; }
-    .lang-selector { position: relative; }
-    .lang-btn { background: rgba(0,0,0,0.5); border: 1px solid var(--border); color: #fff; padding: 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px; }
+
+    /* 顶部语言栏（绝对定位） */
+    .header { position: absolute; top: 16px; right: 16px; z-index: 10; }
+    .lang-btn { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px; backdrop-filter: blur(5px); }
     .lang-menu { display: none; position: absolute; right: 0; top: calc(100% + 6px); width: 150px; max-height: 220px; overflow-y: auto; background: rgba(10,10,10,0.95); border: 1px solid var(--border); border-radius: 8px; z-index: 100; backdrop-filter: blur(10px); }
     .lang-menu.show { display: block; }
     .lang-item { padding: 10px 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12px; color: var(--text-muted); border-bottom: 1px solid #1a1a1a; }
-    
-    /* 居中品牌英雄区 */
-    .hero { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 40px 20px 20px 20px; margin-bottom: 0; position: relative; z-index: 1; }
-    .hero .logo-img { width: 64px; height: 64px; object-fit: contain; mix-blend-mode: screen; margin-bottom: 8px; }
-    .hero .brand-top { display: flex; align-items: center; gap: 12px; }
-    .hero .brand-en { font-family: 'Cinzel', 'Times New Roman', serif; font-size: 38px; font-weight: 700; letter-spacing: 2px; color: #ffffff; line-height: 1; text-shadow: 0 4px 15px rgba(255,255,255,0.15); }
-    .hero .brand-sub { font-size: 10px; color: var(--gold); letter-spacing: 5px; text-transform: uppercase; margin-top: 6px; }
-    .hero .main-title { font-size: 16px; font-weight: bold; color: #fff; margin-top: 20px; margin-bottom: 6px; }
-    .hero .sub-title { font-size: 11px; color: var(--text-muted); letter-spacing: 0.5px; }
 
-    /* 玻璃拟态卡片 */
-    .auth-card { background: rgba(15, 15, 15, 0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 20px; backdrop-filter: blur(16px); margin-bottom: 20px; position: relative; z-index: 1; }
-    .tabs { display: flex; background: rgba(255,255,255,0.05); border-radius: 12px; padding: 4px; margin-bottom: 20px; }
+    /* 上半部分（约三分之一高度，带背景图） */
+    .hero { 
+      position: relative; width: 100%; height: 36vh; min-height: 280px;
+      background: url('https://images.unsplash.com/photo-1596838132731-3301c3fd4317?auto=format&fit=crop&w=1200&q=90') center/cover no-repeat;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding-top: 20px;
+    }
+    .hero::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(5,5,5,0.5) 0%, rgba(5,5,5,0.95) 100%); z-index: 1; }
+    
+    .hero-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; }
+    .hero .logo-img { width: 52px; height: 52px; object-fit: contain; mix-blend-mode: screen; margin-bottom: 6px; }
+    .hero .brand-en { font-family: 'Cinzel', 'Times New Roman', serif; font-size: 36px; font-weight: 700; letter-spacing: 2px; color: #ffffff; line-height: 1; text-shadow: 0 4px 15px rgba(0,0,0,0.8); }
+    .hero .brand-sub { font-size: 9px; color: var(--gold); letter-spacing: 5px; text-transform: uppercase; margin-top: 6px; }
+    .hero .main-title { font-size: 16px; font-weight: bold; color: #fff; margin-top: 16px; margin-bottom: 4px; }
+    .hero .sub-title { font-size: 11px; color: #ccc; }
+
+    /* 下半部分卡片区域 */
+    .card-section { max-width: 480px; margin: 0 auto; padding: 0 16px; width: 100%; margin-top: -20px; position: relative; z-index: 3; }
+    .auth-card { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+    
+    /* Tab 切换 */
+    .tabs { display: flex; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 4px; margin-bottom: 20px; }
     .tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; font-weight: bold; color: var(--text-muted); background: transparent; border: none; border-radius: 8px; font-size: 14px; transition: 0.3s; }
     .tab.active { background: #fff; color: #000; box-shadow: 0 2px 10px rgba(255,255,255,0.1); }
-    
+
+    /* 输入框 */
     .input-group { margin-bottom: 16px; }
     .input-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
     .input-wrap { position: relative; display: flex; align-items: center; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 10px; transition: 0.3s; }
     .input-wrap:focus-within { border-color: #fff; }
-    .input-wrap .icon { padding-left: 14px; color: var(--text-muted); font-size: 16px; display: flex; align-items: center; }
+    .input-wrap .icon { padding-left: 14px; color: var(--text-muted); font-size: 16px; }
     .input-wrap input { flex: 1; padding: 14px 14px 14px 10px; background: transparent; border: none; color: #fff; font-size: 14px; outline: none; }
-    
+    .form-tip { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+    .red-tip { color: #e63946; }
+
+    /* 密码操作按钮 */
     .pwd-actions { position: absolute; right: 14px; display: flex; gap: 16px; color: var(--text-muted); cursor: pointer; font-size: 14px; visibility: hidden; opacity: 0; transition: 0.2s; }
     .pwd-actions span { padding: 8px; margin: -8px; }
-    .pwd-actions span:hover { color: #fff; }
     
-    .checkbox-group { display: flex; align-items: center; gap: 8px; margin: 16px 0; font-size: 12px; color: var(--text-muted); }
-    .checkbox-group input { accent-color: var(--gold); width: 16px; height: 16px; }
-    .checkbox-group a { color: #fff; text-decoration: none; }
-
-    /* 人机验证 */
+    /* 验证码与协议 */
     .apex-captcha-box { background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; margin: 16px 0; cursor: pointer; }
     .apex-captcha-content { display: flex; align-items: center; gap: 12px; }
     .apex-captcha-checkbox { width: 20px; height: 20px; border: 2px solid #555; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
@@ -63,39 +69,41 @@
     .apex-captcha-box.verifying .apex-captcha-text, .apex-captcha-box.success .apex-captcha-text { display: none; }
     .apex-captcha-box.verifying .apex-captcha-percent, .apex-captcha-box.success .apex-captcha-percent { display: block; }
     .apex-captcha-footer { font-size: 10px; color: #555; }
-
-    /* 主按钮 */
-    .btn-primary { width: 100%; padding: 14px; background: #fff; color: #000; font-weight: 700; font-size: 15px; border: none; border-radius: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.3s; }
-    .btn-primary:hover { background: #e0e0e0; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,255,255,0.1); }
+    
+    .checkbox-group { display: flex; align-items: center; gap: 8px; margin: 16px 0; font-size: 12px; color: var(--text-muted); }
+    .checkbox-group input { accent-color: var(--gold); width: 16px; height: 16px; }
+    .checkbox-group a { color: #fff; text-decoration: none; }
+    
+    /* 金色主按钮 */
+    .btn-primary { width: 100%; padding: 14px; background: var(--gold); color: #000; font-weight: 700; font-size: 15px; border: none; border-radius: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.3s; }
+    .btn-primary:hover { background: #e6c24a; transform: translateY(-1px); }
     .btn-primary .arrow { font-size: 18px; font-weight: bold; }
-
-    .features-grid { display: none; }
+    
     .footer { text-align: center; color: var(--text-muted); font-size: 11px; margin-top: 20px; padding-bottom: 16px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- 顶部语言栏 -->
-    <div class="header">
-      <div class="lang-selector" id="lang-selector">
-        <button class="lang-btn" id="lang-btn"><span id="current-flag">🇨🇳</span><span id="current-lang">简体中文</span><span style="font-size:10px;">▼</span></button>
-        <div class="lang-menu" id="lang-menu"></div>
-      </div>
+  <!-- 顶部语言切换 -->
+  <div class="header">
+    <div class="lang-selector" id="lang-selector">
+      <button class="lang-btn" id="lang-btn"><span id="current-flag">🇨🇳</span><span id="current-lang">简体中文</span><span style="font-size:10px;">▼</span></button>
+      <div class="lang-menu" id="lang-menu"></div>
     </div>
-    
-    <!-- 居中英雄区 (完全参照第二张图) -->
-    <div class="hero">
+  </div>
+
+  <!-- 上半部分（背景图+品牌区） -->
+  <div class="hero">
+    <div class="hero-content">
       <img src="./logo.jpeg" alt="Apex Logo" class="logo-img">
-      <div class="brand-top">
-        <span class="brand-en">APEX</span>
-      </div>
+      <span class="brand-en">APEX</span>
       <span class="brand-sub">GLOBAL ENTERTAINMENT</span>
-      
       <div class="main-title">全球娱乐游戏平台</div>
       <div class="sub-title">一站式体验·电子游艺·真人娱乐·体育竞猜·极速存取</div>
     </div>
+  </div>
 
-    <!-- 玻璃拟态卡片 -->
+  <!-- 下半部分（卡片表单） -->
+  <div class="card-section">
     <div class="auth-card">
       <div class="tabs">
         <button class="tab active" id="tab-login">登录</button>
@@ -123,7 +131,6 @@
           </div>
         </div>
         
-        <!-- 人机验证 -->
         <div class="apex-captcha-box" data-status="idle" onclick="startCaptcha(this)">
           <div class="apex-captcha-content">
             <div class="apex-captcha-checkbox"><svg class="apex-checkmark" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
@@ -191,10 +198,14 @@
           <div class="apex-captcha-footer">Apex 安全防护</div>
         </div>
         
+        <div class="checkbox-group">
+          <input type="checkbox" id="agreement-reg" checked>
+          <label for="agreement-reg">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label>
+        </div>
+        
         <button class="btn-primary">注 册 <span class="arrow">→</span></button>
       </div>
     </div>
-    
     <div class="footer">© 2026 Apex Global Entertainment. All rights reserved.</div>
   </div>
   
