@@ -84,3 +84,15 @@ export async function checkRateLimit(env, ip, action, maxCount, windowSec) {
   ).bind(ip, action).run();
   return { allowed: true, remaining: maxCount - result.cnt - 1 };
 }
+
+export async function verifyCaptchaToken(env, token, ip) {
+  if (!token) return false;
+  const row = await env.apex_db.prepare(
+    'SELECT id, expires_at, used, ip FROM captcha_tokens WHERE token = ?'
+  ).bind(token).first();
+  if (!row) return false;
+  if (row.used) return false;
+  if (new Date(row.expires_at) < new Date()) return false;
+  await env.apex_db.prepare('UPDATE captcha_tokens SET used = 1 WHERE id = ?').bind(row.id).run();
+  return true;
+}

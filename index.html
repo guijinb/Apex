@@ -1030,5 +1030,51 @@
   })();
   </script>
 
+
+  <script id="apex-captcha-real">
+  (function() {
+    window.startCaptcha = function(box) {
+      if (box.dataset.status === 'success' || box.dataset.status === 'verifying') return;
+      box.dataset.status = 'verifying';
+      box.classList.add('verifying');
+      let progress = 0;
+      const percent = box.querySelector('.apex-captcha-percent');
+      percent.textContent = '0%';
+
+      const interval = setInterval(() => {
+        progress += Math.floor(Math.random() * 15) + 5;
+        if (progress > 100) progress = 100;
+        percent.textContent = progress < 100 ? progress + '%' : '验证中...';
+        if (progress >= 100) {
+          clearInterval(interval);
+          fetch('/api/captcha/verify', { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                box.dataset.token = data.token;
+                box.dataset.status = 'success';
+                box.classList.remove('verifying');
+                box.classList.add('success');
+                percent.textContent = '验证成功';
+              } else {
+                box.dataset.status = 'idle';
+                box.classList.remove('verifying');
+                percent.textContent = '0%';
+                alert('人机验证失败：' + (data.message || '请重试'));
+              }
+            })
+            .catch(() => {
+              box.dataset.status = 'idle';
+              box.classList.remove('verifying');
+              percent.textContent = '0%';
+              alert('网络错误，请重试');
+            });
+        }
+      }, 100);
+    };
+    console.log('[Apex] 真实人机验证已启用');
+  })();
+  </script>
+
 </body>
 </html>
