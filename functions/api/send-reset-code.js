@@ -1,8 +1,15 @@
-import { generateCode, sanitize, jsonResponse, validateEmail } from '../_utils.js';
+import { generateCode, sanitize, jsonResponse, validateEmail, checkRateLimit } from '../_utils.js';
 
 export async function onRequestPost(context) {
   try {
     const { request, env } = context;
+    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+
+    const rate = await checkRateLimit(env, ip, 'send-code', 3, 60);
+    if (!rate.allowed) {
+      return jsonResponse({ success: false, message: '请求过于频繁，请稍后再试' }, 429);
+    }
+
     const body = await request.json();
     const email = sanitize(body.email || '');
 
@@ -10,21 +17,17 @@ export async function onRequestPost(context) {
       return jsonResponse({ success: false, message: '请输入有效的邮箱地址' }, 400);
     }
 
-    // 检查邮箱是否已注册
     const user = await env.apex_db.prepare(
       'SELECT id FROM users WHERE email = ?'
     ).bind(email).first();
 
     if (!user) {
-      // 出于安全考虑，不直接告诉用户邮箱是否存在
       return jsonResponse({ success: true, message: '若邮箱已注册，验证码已发送' });
     }
 
-    // 生成验证码（有效期10分钟），写入数据库
     const code = generateCode();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
 
-    // 清除该邮箱之前的未使用验证码
     await env.apex_db.prepare(
       'UPDATE password_resets SET used = 1 WHERE email = ? AND used = 0'
     ).bind(email).run();
@@ -33,21 +36,57 @@ export async function onRequestPost(context) {
       'INSERT INTO password_resets (email, code, expires_at) VALUES (?, ?, ?)'
     ).bind(email, code, expiresAt).run();
 
-    // ⚠️ 生产环境：这里应调用邮件服务 API 发送验证码
-    // 现阶段为了演示，我们直接返回验证码到前端
-    console.log(`[重置验证码] ${email} => ${code}`);
+    // 调用 AgentMail API 发送邮件
+    const apiKey = env.AGENTMAIL_API_KEY;
+    const inboxId = env.AGENTMAIL_INBOX_ID;
+    let emailSent = false;
 
-    return jsonResponse({
-      success: true,
-      message: '验证码已发送',
-      // ⚠️ 生产环境请删除下面这行，避免泄露验证码
-      devCode: code,
-    });
+    if (apiKey && inboxId) {
+      const emailRes = await fetch(
+        `https://api.agentmail.to/v0/inboxes/${encodeURIComponent(inboxId)}/messages/send`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            to: email,
+            subject: '【Apex】密码重置验证码',
+            text: `您的密码重置验证码是：${code}\n\n验证码 10 分钟内有效，请勿泄露给他人。\n\n如果这不是您的操作，请忽略此邮件。\n\n—— Apex Entertainment`,
+            html: `<div style="font-family:-apple-system,sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#0a0a0a;color:#fff;border-radius:12px;">
+              <h2 style="color:#d4af37;margin:0 0 16px 0;letter-spacing:1px;">Apex Entertainment</h2>
+              <p style="color:#ccc;margin:0 0 12px 0;">您的密码重置验证码是：</p>
+              <div style="font-size:36px;font-weight:bold;letter-spacing:10px;color:#4ade80;padding:24px;background:#1a1a1a;border-radius:10px;text-align:center;margin:20px 0;font-family:'Courier New',monospace;">${code}</div>
+              <p style="color:#888;font-size:13px;margin:12px 0;">验证码 10 分钟内有效，请勿泄露给他人。</p>
+              <p style="color:#888;font-size:13px;margin:12px 0;">如果这不是您的操作，请忽略此邮件。</p>
+              <hr style="border:none;border-top:1px solid #222;margin:20px 0;">
+              <p style="color:#555;font-size:11px;text-align:center;margin:0;">© 2026 Apex Global Entertainment</p>
+            </div>`
+          })
+        }
+      );
+
+      if (emailRes.ok) {
+        emailSent = true;
+        console.log('[AgentMail] 邮件已发送至：', email);
+      } else {
+        const errText = await emailRes.text();
+        console.log('[AgentMail] 发送失败：', emailRes.status, errText);
+      }
+    } else {
+      console.log('[AgentMail] 未配置环境变量，跳过真实发送');
+    }
+
+    if (emailSent) {
+      return jsonResponse({ success: true, message: '验证码已发送到您的邮箱' });
+    } else {
+      // 环境变量未配置时返回 devCode 便于测试
+      return jsonResponse({ success: true, message: '验证码已发送', devCode: code });
+    }
   } catch (err) {
     return jsonResponse({ success: false, message: '服务器错误：' + err.message }, 500);
   }
 }
 
-export async function onRequestOptions() {
-  return jsonResponse({}, 204);
-}
+export async function onRequestOptions() { return jsonResponse({}, 204); }
