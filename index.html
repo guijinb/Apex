@@ -4,122 +4,98 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Apex - Global Entertainment</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    :root { --bg:#050505; --card-bg:rgba(15,15,15,0.9); --gold:#d4af37; --text:#ffffff; --text-muted:#888888; --border:#333333; --green:#4ade80; }
+    :root { --bg:#050505; --card-bg:rgba(15,15,15,0.85); --gold:#d4af37; --text:#ffffff; --text-muted:#888888; --border:#333333; --green:#4ade80; }
     * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color: transparent; }
-    body { font-family:'Inter',system-ui,-apple-system,sans-serif; background-color:var(--bg); color:var(--text); display:flex; flex-direction:column; min-height:100vh; }
+    body { font-family:'Inter',system-ui,-apple-system,sans-serif; background:url('https://images.unsplash.com/photo-1596838132731-3301c3fd4317?auto=format&fit=crop&w=800&q=80') center/cover no-repeat fixed; color:var(--text); display:flex; flex-direction:column; min-height:100vh; }
+    body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(5,5,5,0.75) 0%, rgba(5,5,5,0.95) 100%); z-index: -1; }
     .container { max-width:480px; margin:0 auto; padding:16px; width:100%; }
-    .header { display:flex; justify-content:space-between; align-items:center; padding:8px 0 16px 0; }
     
-    
-    
-    
+    /* 顶部语言栏（绝对定位右上角） */
+    .header { position: relative; display: flex; justify-content: flex-end; padding: 8px 0 16px 0; }
     .lang-selector { position: relative; }
-    .lang-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 4px 10px; border-radius: 20px; display: flex; align-items: center; gap: 4px; cursor: pointer; font-size: 11px; }
-    .lang-menu { display: none; position: absolute; right: 0; top: calc(100% + 6px); width: 150px; max-height: 220px; overflow-y: auto; background: #0a0a0a; border: 1px solid var(--border); border-radius: 8px; z-index: 100; }
+    .lang-btn { background: rgba(0,0,0,0.5); border: 1px solid var(--border); color: #fff; padding: 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px; }
+    .lang-menu { display: none; position: absolute; right: 0; top: calc(100% + 6px); width: 150px; max-height: 220px; overflow-y: auto; background: rgba(10,10,10,0.95); border: 1px solid var(--border); border-radius: 8px; z-index: 100; backdrop-filter: blur(10px); }
     .lang-menu.show { display: block; }
     .lang-item { padding: 10px 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12px; color: var(--text-muted); border-bottom: 1px solid #1a1a1a; }
-    .banner-text { text-align:center; margin-bottom:8px; }
-    .banner-text .main-title { font-size:14px; font-weight:bold; }
-    .banner-text .sub-title { font-size:10px; color:var(--text-muted); }
-    .banner { width:100%; height:110px; background:url('https://images.unsplash.com/photo-1596838132731-3301c3fd4317?auto=format&fit=crop&w=800&q=80') center/cover; border-radius:10px; border:1px solid var(--border); margin-bottom:16px; }
-    .auth-card { background:var(--card-bg); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:20px; }
-    .tabs { display:flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-bottom:16px; }
-    .tab { flex:1; padding:10px; text-align:center; cursor:pointer; font-weight:bold; color:var(--text-muted); background:transparent; border:none; font-size:14px; }
-    .tab.active { background:#fff; color:#000; }
-    .input-group { margin-bottom:12px; }
-    .input-group label { display:block; font-size:11px; color:var(--text-muted); margin-bottom:4px; }
-    .input-group input { width:100%; padding:12px; background:#0a0a0a; border:1px solid var(--border); border-radius:6px; color:#fff; font-size:13px; outline:none; }
-    .input-group input:focus { border-color:#fff; }
-    .pwd-wrap { position: relative; width: 100%; }
-    .pwd-wrap input { padding-right: 75px !important; }
-    .pwd-actions { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); display: flex; gap: 18px; color: var(--text-muted); font-size: 14px; cursor: pointer; visibility: hidden; opacity: 0; transition: opacity 0.2s, visibility 0.2s; z-index: 10; }
-    .pwd-actions span { padding: 12px; margin: -12px; -webkit-tap-highlight-color: transparent !important; outline: none !important; user-select: none !important; }
-    .form-tip { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
-    .red-tip { color: #e63946; }
-    .checkbox-group { display:flex; align-items:center; gap:6px; margin:14px 0; font-size:11px; color:var(--text-muted); }
-    .checkbox-group input { accent-color:var(--gold); width:16px; height:16px; }
-    .checkbox-group a { color:#fff; text-decoration:none; }
-    .btn-primary { width:100%; padding:12px; background:#fff; color:#000; font-weight:700; font-size:14px; border:none; border-radius:8px; cursor:pointer; }
-    .apex-captcha-box { background: #0a0a0a; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; margin: 12px 0; cursor: pointer; position: relative; }
-    .apex-captcha-content { display: flex; align-items: center; gap: 10px; }
+    
+    /* 居中品牌英雄区 */
+    .hero { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 24px; }
+    .hero .logo-img { width: 64px; height: 64px; object-fit: contain; mix-blend-mode: screen; margin-bottom: 8px; }
+    .hero .brand-top { display: flex; align-items: center; gap: 12px; }
+    .hero .brand-en { font-family: 'Cinzel', 'Times New Roman', serif; font-size: 38px; font-weight: 700; letter-spacing: 2px; color: #ffffff; line-height: 1; text-shadow: 0 4px 15px rgba(255,255,255,0.15); }
+    .hero .brand-sub { font-size: 10px; color: var(--gold); letter-spacing: 5px; text-transform: uppercase; margin-top: 6px; }
+    .hero .main-title { font-size: 16px; font-weight: bold; color: #fff; margin-top: 20px; margin-bottom: 6px; }
+    .hero .sub-title { font-size: 11px; color: var(--text-muted); letter-spacing: 0.5px; }
+
+    /* 玻璃拟态卡片 */
+    .auth-card { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 20px; backdrop-filter: blur(16px); margin-bottom: 20px; }
+    .tabs { display: flex; background: rgba(255,255,255,0.05); border-radius: 12px; padding: 4px; margin-bottom: 20px; }
+    .tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; font-weight: bold; color: var(--text-muted); background: transparent; border: none; border-radius: 8px; font-size: 14px; transition: 0.3s; }
+    .tab.active { background: #fff; color: #000; box-shadow: 0 2px 10px rgba(255,255,255,0.1); }
+    
+    .input-group { margin-bottom: 16px; }
+    .input-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+    .input-wrap { position: relative; display: flex; align-items: center; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 10px; transition: 0.3s; }
+    .input-wrap:focus-within { border-color: #fff; }
+    .input-wrap .icon { padding-left: 14px; color: var(--text-muted); font-size: 16px; display: flex; align-items: center; }
+    .input-wrap input { flex: 1; padding: 14px 14px 14px 10px; background: transparent; border: none; color: #fff; font-size: 14px; outline: none; }
+    
+    .pwd-actions { position: absolute; right: 14px; display: flex; gap: 16px; color: var(--text-muted); cursor: pointer; font-size: 14px; visibility: hidden; opacity: 0; transition: 0.2s; }
+    .pwd-actions span { padding: 8px; margin: -8px; }
+    .pwd-actions span:hover { color: #fff; }
+    
+    .checkbox-group { display: flex; align-items: center; gap: 8px; margin: 16px 0; font-size: 12px; color: var(--text-muted); }
+    .checkbox-group input { accent-color: var(--gold); width: 16px; height: 16px; }
+    .checkbox-group a { color: #fff; text-decoration: none; }
+
+    /* 人机验证 */
+    .apex-captcha-box { background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; margin: 16px 0; cursor: pointer; }
+    .apex-captcha-content { display: flex; align-items: center; gap: 12px; }
     .apex-captcha-checkbox { width: 20px; height: 20px; border: 2px solid #555; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
     .apex-captcha-box.verifying .apex-captcha-checkbox { border-color: var(--green); }
     .apex-captcha-box.success .apex-captcha-checkbox { background: var(--green); border-color: var(--green); }
     .apex-checkmark { width: 10px; height: 10px; stroke: #000; stroke-width: 3; fill: none; display: none; }
     .apex-captcha-box.success .apex-checkmark { display: block; }
-    .apex-captcha-text { font-size: 12px; color: #ccc; }
-    .apex-captcha-percent { font-size: 12px; color: var(--green); font-weight: bold; display: none; white-space: nowrap; }
+    .apex-captcha-text { font-size: 13px; color: #ccc; }
+    .apex-captcha-percent { font-size: 13px; color: var(--green); font-weight: bold; display: none; }
     .apex-captcha-box.verifying .apex-captcha-text, .apex-captcha-box.success .apex-captcha-text { display: none; }
     .apex-captcha-box.verifying .apex-captcha-percent, .apex-captcha-box.success .apex-captcha-percent { display: block; }
-    .apex-captcha-footer { font-size: 9px; color: #555; position: absolute; right: 12px; bottom: 6px; }
-    .features-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px 12px; margin-top:16px; padding:0 8px; }
-    .feature-card { display:flex; align-items:center; gap:8px; }
-    .feature-card .icon { width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; color:#fff; }
-    .feature-card .icon svg { width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.8; }
-    .feature-card .zh { color:#fff; font-size:11px; font-weight:bold; }
-    .feature-card .desc { color:var(--text-muted); font-size:9px; }
-    .footer { text-align:center; color:var(--text-muted); font-size:11px; margin-top:20px; padding-bottom:16px; }
-  
-    /* 品牌名位置与间距修复 */
-    
-    
-    
+    .apex-captcha-footer { font-size: 10px; color: #555; }
 
+    /* 主按钮 */
+    .btn-primary { width: 100%; padding: 14px; background: #fff; color: #000; font-weight: 700; font-size: 15px; border: none; border-radius: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.3s; }
+    .btn-primary:hover { background: #e0e0e0; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,255,255,0.1); }
+    .btn-primary .arrow { font-size: 18px; font-weight: bold; }
 
-    /* 品牌区最终版布局 */
-    .brand { display: flex !important; flex-direction: column !important; align-items: flex-start !important; gap: 4px !important; padding: 0 !important; background: transparent !important; border: none !important; }
-    .brand-top { display: flex !important; align-items: center !important; gap: 12px !important; }
-    .brand .logo-img { width: 48px !important; height: 48px !important; object-fit: contain !important; mix-blend-mode: screen !important; }
-    .brand .en { font-family: 'Cinzel', 'Times New Roman', serif !important; font-size: 24px !important; font-weight: 700 !important; letter-spacing: 1.5px !important; color: #ffffff !important; line-height: 1 !important; }
-    .brand .sub { font-size: 9px !important; color: var(--text-muted) !important; letter-spacing: 0.5px !important; margin-top: 0 !important; margin-left: 0 !important; line-height: 1 !important; }
-
-
-    
-    /* 品牌区完美排版终极修复 V2 */
-    .brand { display: inline-flex !important; flex-direction: column !important; align-items: flex-start !important; gap: 2px !important; padding: 0 !important; background: transparent !important; border: none !important; }
-    .brand-top { display: flex !important; align-items: center !important; gap: 10px !important; }
-    /* Logo 放大到 44px */
-    .brand .logo-img { width: 44px !important; height: 44px !important; object-fit: contain !important; mix-blend-mode: screen !important; }
-    /* 品牌名放大到 32px，字距适中 */
-    .brand .en { font-family: 'Cinzel', 'Times New Roman', serif !important; font-size: 32px !important; font-weight: 700 !important; letter-spacing: 1.5px !important; color: #ffffff !important; line-height: 1 !important; }
-    /* 副标题字号 11px，大幅缩减上边距，紧贴上方 */
-    .brand .sub { font-size: 11px !important; color: var(--text-muted) !important; width: auto !important; text-align: left !important; line-height: 1.2 !important; margin-top: 0px !important; letter-spacing: 2px !important; padding-left: 2px !important; }
-
-
-    /* 品牌区居中布局重构 */
-    .header { display: flex !important; justify-content: center !important; align-items: center !important; position: relative !important; padding: 30px 0 !important; }
-    .lang-selector { position: absolute !important; right: 0 !important; top: 30px !important; }
-    .brand { display: flex !important; flex-direction: column !important; align-items: center !important; gap: 4px !important; text-align: center !important; }
-    .brand-top { display: flex !important; align-items: center !important; justify-content: center !important; gap: 14px !important; }
-    .brand .logo-img { width: 48px !important; height: 48px !important; object-fit: contain !important; mix-blend-mode: screen !important; }
-    .brand .en { font-family: 'Cinzel', 'Times New Roman', serif !important; font-size: 34px !important; font-weight: 700 !important; letter-spacing: 2px !important; color: #ffffff !important; line-height: 1 !important; }
-    .brand .sub { font-size: 10px !important; color: var(--text-muted) !important; letter-spacing: 4px !important; text-transform: uppercase !important; margin-top: 4px !important; padding: 0 !important; }
-
-</style>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+    .features-grid { display: none; }
+    .footer { text-align: center; color: var(--text-muted); font-size: 11px; margin-top: 20px; padding-bottom: 16px; }
+  </style>
 </head>
 <body>
   <div class="container">
+    <!-- 顶部语言栏 -->
     <div class="header">
-      
-    <div class="brand">
-      <div class="brand-top">
-        <img src="./logo.jpeg" alt="Apex Logo" class="logo-img">
-        <span class="en">APEX</span>
-      </div>
-      <span class="sub">ENTERTAINMENT</span>
-    </div>
       <div class="lang-selector" id="lang-selector">
-        <button class="lang-btn" id="lang-btn"><span id="current-flag">🇨🇳</span><span id="current-lang">简体中文</span><span class="arrow">▼</span></button>
+        <button class="lang-btn" id="lang-btn"><span id="current-flag">🇨🇳</span><span id="current-lang">简体中文</span><span style="font-size:10px;">▼</span></button>
         <div class="lang-menu" id="lang-menu"></div>
       </div>
     </div>
-    <div class="banner-text" style="display:block !important; margin-bottom:12px;">
-  <div class="main-title" style="font-size:15px; font-weight:bold; color:#fff; margin-bottom:4px;">全球娱乐游戏平台</div>
-  <div class="sub-title" style="font-size:10px; color:var(--text-muted);">一站式体验·电子游艺·真人娱乐·体育竞猜·极速存取</div>
-</div><div class="sub-title">一站式体验·玩法丰富·公平公正·极速存取</div></div>
-    <div class="banner"></div>
+    
+    <!-- 居中英雄区 (完全参照第二张图) -->
+    <div class="hero">
+      <img src="./logo.jpeg" alt="Apex Logo" class="logo-img">
+      <div class="brand-top">
+        <span class="brand-en">APEX</span>
+      </div>
+      <span class="brand-sub">GLOBAL ENTERTAINMENT</span>
+      
+      <div class="main-title">全球娱乐游戏平台</div>
+      <div class="sub-title">一站式体验·电子游艺·真人娱乐·体育竞猜·极速存取</div>
+    </div>
+
+    <!-- 玻璃拟态卡片 -->
     <div class="auth-card">
       <div class="tabs">
         <button class="tab active" id="tab-login">登录</button>
@@ -130,12 +106,16 @@
       <div id="login-form">
         <div class="input-group">
           <label>账号</label>
-          <div style="position:relative;"><span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:14px;">👤</span><input type="text" placeholder="请输入账号" style="padding-left:36px !important;"></div>
+          <div class="input-wrap">
+            <span class="icon">👤</span>
+            <input type="text" placeholder="请输入账号">
+          </div>
         </div>
         <div class="input-group">
           <label>登录密码</label>
-          <div class="pwd-wrap">
-            <div style="position:relative;"><span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:14px;">🔒</span><input type="password" placeholder="请输入密码" style="padding-left:36px !important;" oninput="this.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.nextElementSibling.style.opacity = this.value ? '1' : '0';">
+          <div class="input-wrap">
+            <span class="icon">🔒</span>
+            <input type="password" placeholder="请输入密码" oninput="this.parentElement.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.parentElement.nextElementSibling.style.opacity = this.value ? '1' : '0';">
             <div class="pwd-actions">
               <span class="btn-clear" onpointerdown="event.preventDefault(); this.parentElement.previousElementSibling.value=''; this.parentElement.style.visibility='hidden'; this.parentElement.style.opacity='0';">✕</span>
               <span class="btn-toggle" onpointerdown="event.preventDefault(); togglePwd(this)"></span>
@@ -143,7 +123,7 @@
           </div>
         </div>
         
-        <!-- 1. 人机验证 -->
+        <!-- 人机验证 -->
         <div class="apex-captcha-box" data-status="idle" onclick="startCaptcha(this)">
           <div class="apex-captcha-content">
             <div class="apex-captcha-checkbox"><svg class="apex-checkmark" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
@@ -153,31 +133,36 @@
           <div class="apex-captcha-footer">Apex 安全防护</div>
         </div>
         
-        <!-- 2. 用户协议在验证下方 -->
         <div class="checkbox-group">
           <input type="checkbox" id="agreement" checked>
           <label for="agreement">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label>
         </div>
         
-        <button class="btn-primary" style="background:var(--gold); color:#000; border-radius:8px; font-weight:bold;">登 录 <span style="margin-left:6px;">→</span></button>
+        <button class="btn-primary">登 录 <span class="arrow">→</span></button>
       </div>
-      
       <!-- 注册表单 -->
       <div id="register-form" style="display:none;">
         <div class="input-group">
           <label>账号</label>
-          <input type="text" placeholder="请输入账号">
+          <div class="input-wrap">
+            <span class="icon">👤</span>
+            <input type="text" placeholder="请输入账号">
+          </div>
           <div class="form-tip">6-20位字符，支持字母、数字、下划线</div>
         </div>
         <div class="input-group">
           <label>邮箱</label>
-          <input type="email" placeholder="请输入邮箱">
+          <div class="input-wrap">
+            <span class="icon">✉️</span>
+            <input type="email" placeholder="请输入邮箱">
+          </div>
           <div class="form-tip red-tip">⚠️：必须填写真实邮箱且自己长期使用的邮箱，以便于密码找回使用</div>
         </div>
         <div class="input-group">
           <label>密码</label>
-          <div class="pwd-wrap">
-            <div style="position:relative;"><span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:14px;">🔒</span><input type="password" placeholder="请输入密码" style="padding-left:36px !important;" oninput="this.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.nextElementSibling.style.opacity = this.value ? '1' : '0';">
+          <div class="input-wrap">
+            <span class="icon">🔒</span>
+            <input type="password" placeholder="请输入密码" oninput="this.parentElement.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.parentElement.nextElementSibling.style.opacity = this.value ? '1' : '0';">
             <div class="pwd-actions">
               <span class="btn-clear" onpointerdown="event.preventDefault(); this.parentElement.previousElementSibling.value=''; this.parentElement.style.visibility='hidden'; this.parentElement.style.opacity='0';">✕</span>
               <span class="btn-toggle" onpointerdown="event.preventDefault(); togglePwd(this)"></span>
@@ -187,8 +172,9 @@
         </div>
         <div class="input-group">
           <label>确认密码</label>
-          <div class="pwd-wrap">
-            <input type="password" placeholder="请再次输入密码" oninput="this.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.nextElementSibling.style.opacity = this.value ? '1' : '0';">
+          <div class="input-wrap">
+            <span class="icon">🔒</span>
+            <input type="password" placeholder="请再次输入密码" oninput="this.parentElement.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.parentElement.nextElementSibling.style.opacity = this.value ? '1' : '0';">
             <div class="pwd-actions">
               <span class="btn-clear" onpointerdown="event.preventDefault(); this.parentElement.previousElementSibling.value=''; this.parentElement.style.visibility='hidden'; this.parentElement.style.opacity='0';">✕</span>
               <span class="btn-toggle" onpointerdown="event.preventDefault(); togglePwd(this)"></span>
@@ -196,7 +182,6 @@
           </div>
         </div>
         
-        <!-- 注册区域的人机验证 -->
         <div class="apex-captcha-box" data-status="idle" onclick="startCaptcha(this)">
           <div class="apex-captcha-content">
             <div class="apex-captcha-checkbox"><svg class="apex-checkmark" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
@@ -206,21 +191,16 @@
           <div class="apex-captcha-footer">Apex 安全防护</div>
         </div>
         
-        <button class="btn-primary" style="background:var(--gold); color:#000; border-radius:8px; font-weight:bold;">注 册 <span style="margin-left:6px;">→</span></button>
+        <button class="btn-primary">注 册 <span class="arrow">→</span></button>
       </div>
     </div>
-    <div class="features-grid">
-      <div class="feature-card"><div class="icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div><div class="text-group"><div class="zh">安全可靠</div><div class="desc">顶级加密 资金保障</div></div></div>
-      <div class="feature-card"><div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M4 7h16"/><path d="M6 7l-3 6h6z"/><path d="M18 7l-3 6h6z"/><path d="M12 21h6"/></svg></div><div class="text-group"><div class="zh">公平公正</div><div class="desc">全球监管 透明公开</div></div></div>
-      <div class="feature-card"><div class="icon"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><div class="text-group"><div class="zh">极速开户</div><div class="desc">简单便捷 快速畅玩</div></div></div>
-      <div class="feature-card"><div class="icon"><svg viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></div><div class="text-group"><div class="zh">24/7客服</div><div class="desc">专业团队 随时在线</div></div></div>
-    </div>
+    
     <div class="footer">© 2026 Apex Global Entertainment. All rights reserved.</div>
   </div>
   
   <script>
-    const EYE_OPEN = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
-    const EYE_CLOSED = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+    const EYE_OPEN = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+    const EYE_CLOSED = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
     
     function togglePwd(el) {
       const p = el.parentElement.previousElementSibling;
