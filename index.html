@@ -77,14 +77,87 @@
 
 <meta name="theme-color" content="#050505"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
+
+
 <style id="apex-splash-style">
-  #apex-splash-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #050505; z-index: 99999; display: flex; justify-content: center; align-items: flex-start; transition: opacity 0.5s ease, visibility 0.5s; }
+  #apex-splash-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #050505; z-index: 99999; display: flex; flex-direction: column; align-items: center; padding-top: 2vh; transition: opacity 0.5s ease, visibility 0.5s; overflow: hidden; }
   #apex-splash-screen.hide { opacity: 0; visibility: hidden; }
-  .splash-top-img { width: 100%; max-height: 100vh; object-fit: contain; object-position: top center; display: block; }
+  .splash-top-img { width: 100%; max-height: 18vh; object-fit: contain; object-position: top center; display: block; margin-bottom: 2px; }
+  .splash-welcome { font-size: 13px; color: #fff; font-weight: bold; letter-spacing: 1px; margin-bottom: 6px; }
+  
+  /* 终端日志框 */
+  .splash-terminal-box { width: 92%; max-width: 420px; height: 22vh; display: flex; border: 1px solid #333; border-radius: 8px; background: #0a0a0a; margin-bottom: 12px; overflow: hidden; }
+  .splash-code-area { flex: 1.5; padding: 8px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 9px; line-height: 1.4; color: #4ade80; white-space: pre-wrap; word-break: break-all; border-right: 1px solid #222; }
+  .splash-code-area::-webkit-scrollbar { display: none; }
+  /* 代码颜色 */
+  .code-keyword { color: #c678dd; }
+  .code-string { color: #98c379; }
+  .code-func { color: #61afef; }
+  .code-success { color: #4ade80; font-weight: bold; }
+  
+  .splash-system-list { flex: 1; padding: 8px; display: flex; flex-direction: column; justify-content: space-around; font-size: 10px; color: #666; }
+  .splash-system-item { display: flex; align-items: center; gap: 6px; transition: 0.3s; }
+  .splash-system-item.active { color: #fff; }
+  .sys-dot { width: 6px; height: 6px; border-radius: 50%; border: 1px solid #666; background: transparent; transition: 0.3s; }
+  .splash-system-item.active .sys-dot { background: #4ade80; border-color: #4ade80; box-shadow: 0 0 6px rgba(74,222,128,0.6); }
+  .splash-system-item.checked .sys-dot { background: #4ade80; border-color: #4ade80; }
+  .splash-system-item.checked::after { content: '✓'; color: #4ade80; font-weight: bold; margin-left: auto; margin-right: 4px; }
+  
+  /* 进度条 */
+  .splash-progress-container { width: 92%; max-width: 420px; margin-bottom: 12px; }
+  .splash-progress-text { font-size: 10px; color: #aaa; margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .splash-progress-bar-bg { width: 100%; height: 4px; background: #222; border-radius: 2px; overflow: hidden; }
+  .splash-progress-bar { width: 0%; height: 100%; background: #fff; transition: width 0.1s linear; box-shadow: 0 0 8px rgba(255,255,255,0.5); }
+  
+  /* 底部四大组件 */
+  .splash-features { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; width: 92%; max-width: 420px; margin-top: 4px; }
+  .splash-feature-item { display: flex; align-items: center; gap: 8px; }
+  .splash-feature-icon { width: 28px; height: 28px; border-radius: 50%; background: rgba(230, 57, 70, 0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .splash-feature-icon svg { width: 14px; height: 14px; }
+  .splash-feature-text { display: flex; flex-direction: column; }
+  .splash-feature-text span { font-size: 11px; font-weight: bold; color: #fff; }
+  .splash-feature-text small { font-size: 9px; color: #888; }
 </style>
 </head>
 <body>
-<div id="apex-splash-screen"><img src="./splash-top.jpeg" alt="Splash" class="splash-top-img"></div>
+
+<div id="apex-splash-screen">
+  <img src="./splash-top.jpeg" alt="Splash" class="splash-top-img">
+  <div class="splash-welcome">欢迎来到 Apex Entertainment</div>
+  <div class="splash-terminal-box">
+    <div class="splash-code-area" id="splash-code-log"></div>
+    <div class="splash-system-list">
+      <div class="splash-system-item" id="sys-1"><span class="sys-dot"></span>网络通信系统</div>
+      <div class="splash-system-item" id="sys-2"><span class="sys-dot"></span>安全防护系统</div>
+      <div class="splash-system-item" id="sys-3"><span class="sys-dot"></span>后端服务系统</div>
+      <div class="splash-system-item" id="sys-4"><span class="sys-dot"></span>前端渲染系统</div>
+    </div>
+  </div>
+  <div class="splash-progress-container">
+    <div class="splash-progress-text" id="splash-progress-text">APEX 系统加载中...</div>
+    <div class="splash-progress-bar-bg">
+      <div class="splash-progress-bar" id="splash-progress-bar"></div>
+    </div>
+  </div>
+  <div class="splash-features">
+    <div class="splash-feature-item">
+      <div class="splash-feature-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#e63946" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div>
+      <div class="splash-feature-text"><span>安全可靠</span><small>顶级加密 资金保障</small></div>
+    </div>
+    <div class="splash-feature-item">
+      <div class="splash-feature-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#e63946" stroke-width="2"><path d="M12 3v18"/><path d="M4 7h16"/><path d="M6 7l-3 6h6z"/><path d="M18 7l-3 6h6z"/><path d="M12 21h6"/></svg></div>
+      <div class="splash-feature-text"><span>公平公正</span><small>全球监管 透明公开</small></div>
+    </div>
+    <div class="splash-feature-item">
+      <div class="splash-feature-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#e63946" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+      <div class="splash-feature-text"><span>极速开户</span><small>简单便捷 快速畅玩</small></div>
+    </div>
+    <div class="splash-feature-item">
+      <div class="splash-feature-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#e63946" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></div>
+      <div class="splash-feature-text"><span>24/7客服</span><small>专业团队 随时在线</small></div>
+    </div>
+  </div>
+</div>
 <div class="header">
     <div class="lang-selector" id="lang-selector">
       <button class="lang-btn" id="lang-btn"><span id="current-flag">🇨🇳</span><span id="current-lang">简体中文</span><span style="font-size:10px;">▼</span></button>
@@ -276,12 +349,85 @@ document.addEventListener('click', function(e) {
   });
 </script>
 
+
+
 <script>
   window.addEventListener('load', function() {
-    setTimeout(function() {
-      const splash = document.getElementById('apex-splash-screen');
-      if (splash) { splash.classList.add('hide'); }
-    }, 2500);
+    const codeLog = document.getElementById('splash-code-log');
+    const progressBar = document.getElementById('splash-progress-bar');
+    const progressText = document.getElementById('splash-progress-text');
+    const sysItems = [
+      document.getElementById('sys-1'),
+      document.getElementById('sys-2'),
+      document.getElementById('sys-3'),
+      document.getElementById('sys-4')
+    ];
+    
+    const codeSnippets = [
+      '<span class="code-keyword">import</span> { ApexCore } <span class="code-keyword">from</span> <span class="code-string">"@apex/core"</span>;',
+      '',
+      'async function initSystem() {',
+      '  const core = new ApexCore();',
+      '  await core.connect(<span class="code-string">"global-network"</span>);',
+      '  console.log(<span class="code-string">"网络通信已建立"</span>);',
+      '  await core.security.encrypt();',
+      '  console.log(<span class="code-string">"安全防护已启动"</span>);',
+      '  await core.backend.deploy();',
+      '  console.log(<span class="code-string">"后端服务已就绪"</span>);',
+      '  await core.frontend.render();',
+      '  console.log(<span class="code-string">"前端渲染已完成"</span>);',
+      '}',
+      '',
+      'initSystem().then(() => {',
+      '  console.log(<span class="code-success">"欢迎来到 Apex Entertainment 系统加载完毕"</span>);',
+      '});'
+    ];
+    
+    let lineIndex = 0;
+    let totalTime = 4600; // 总耗时4.6秒
+    let stepTime = totalTime / codeSnippets.length;
+    
+    // 打字机代码日志
+    function typeCode() {
+      if (lineIndex < codeSnippets.length) {
+        const line = document.createElement('div');
+        line.innerHTML = codeSnippets[lineIndex];
+        codeLog.appendChild(line);
+        codeLog.scrollTop = codeLog.scrollHeight;
+        lineIndex++;
+        setTimeout(typeCode, stepTime);
+      }
+    }
+    typeCode();
+
+    // 右侧系统打勾 (间隔 1.15 秒依次点亮)
+    sysItems.forEach((item, index) => {
+      setTimeout(() => {
+        item.classList.add('active');
+        setTimeout(() => {
+          item.classList.add('checked');
+        }, 800);
+      }, index * 1100 + 200);
+    });
+
+    // 进度条动画 (从 0% 到 100%)
+    let progress = 0 progressText.innerHTML;
+    const progressInterval = setInterval(() => {
+      progress += Math.floor(Math.random() * 5) + 2;
+      if (progress > 100) progress = 100;
+      progressBar.style.width = progress + '%';
+      progressText.innerHTML = 'APEX 系统加载中... <span>' + progress + '%</span>';
+      
+      if (progress === 100) {
+        clearInterval(progressInterval);
+        = 'APEX系统加载完成';
+        // 延迟一会儿后隐藏加载页
+        setTimeout(() => {
+          const splash = document.getElementById('apex-splash-screen');
+          if (splash) splash.classList.add('hide');
+        }, 600); // 进度条满后 0.6 秒隐藏
+      }
+    }, 80); // 每 80ms 增加一次进度
   });
 </script>
 </body>
