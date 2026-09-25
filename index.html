@@ -10,39 +10,21 @@
     * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color: transparent; }
     body { font-family:'Inter',system-ui,-apple-system,sans-serif; background-color:var(--bg); color:var(--text); display:flex; flex-direction:column; min-height:100vh; }
     .container { max-width:480px; margin:0 auto; padding:16px; width:100%; }
-
-    /* 顶部语言栏（绝对定位） */
     .header { position: absolute; top: 16px; right: 16px; z-index: 10; }
     .lang-btn { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px; backdrop-filter: blur(5px); }
-    .lang-menu { display: none; position: absolute; right: 0; top: calc(100% + 6px); width: 150px; max-height: 220px; overflow-y: auto; background: rgba(10,10,10,0.95); border: 1px solid var(--border); border-radius: 8px; z-index: 100; backdrop-filter: blur(10px); }
-    .lang-menu.show { display: block; }
-    .lang-item { padding: 10px 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12px; color: var(--text-muted); border-bottom: 1px solid #1a1a1a; }
-
-    /* 上半部分（约三分之一高度，带背景图） */
-    .hero { 
-      position: relative; width: 100%; height: 36vh; min-height: 280px;
-      background: url('https://images.unsplash.com/photo-1596838132731-3301c3fd4317?auto=format&fit=crop&w=1200&q=90') center/cover no-repeat;
-      display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding-top: 20px;
-    }
+    .hero { position: relative; width: 100%; height: 36vh; min-height: 280px; background: url('https://images.unsplash.com/photo-1596838132731-3301c3fd4317?auto=format&fit=crop&w=1200&q=90') center/cover no-repeat; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding-top: 20px; }
     .hero::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(5,5,5,0.5) 0%, rgba(5,5,5,0.95) 100%); z-index: 1; }
-    
     .hero-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; }
     .hero .logo-img { width: 52px; height: 52px; object-fit: contain; mix-blend-mode: screen; margin-bottom: 6px; }
     .hero .brand-en { font-family: 'Cinzel', 'Times New Roman', serif; font-size: 36px; font-weight: 700; letter-spacing: 2px; color: #ffffff; line-height: 1; text-shadow: 0 4px 15px rgba(0,0,0,0.8); }
     .hero .brand-sub { font-size: 9px; color: var(--gold); letter-spacing: 5px; text-transform: uppercase; margin-top: 6px; }
     .hero .main-title { font-size: 16px; font-weight: bold; color: #fff; margin-top: 16px; margin-bottom: 4px; }
     .hero .sub-title { font-size: 11px; color: #ccc; }
-
-    /* 下半部分卡片区域 */
     .card-section { max-width: 480px; margin: 0 auto; padding: 0 16px; width: 100%; margin-top: -20px; position: relative; z-index: 3; }
     .auth-card { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
-    
-    /* Tab 切换 */
     .tabs { display: flex; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 4px; margin-bottom: 20px; }
     .tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; font-weight: bold; color: var(--text-muted); background: transparent; border: none; border-radius: 8px; font-size: 14px; transition: 0.3s; }
     .tab.active { background: #fff; color: #000; box-shadow: 0 2px 10px rgba(255,255,255,0.1); }
-
-    /* 输入框 */
     .input-group { margin-bottom: 16px; }
     .input-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
     .input-wrap { position: relative; display: flex; align-items: center; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 10px; transition: 0.3s; }
@@ -51,12 +33,13 @@
     .input-wrap input { flex: 1; padding: 14px 14px 14px 10px; background: transparent; border: none; color: #fff; font-size: 14px; outline: none; }
     .form-tip { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
     .red-tip { color: #e63946; }
-
-    /* 密码操作按钮 */
     .pwd-actions { position: absolute; right: 14px; display: flex; gap: 16px; color: var(--text-muted); cursor: pointer; font-size: 14px; visibility: hidden; opacity: 0; transition: 0.2s; }
     .pwd-actions span { padding: 8px; margin: -8px; }
-    
-    /* 验证码与协议 */
+    .checkbox-group { display: flex; align-items: center; gap: 8px; margin: 16px 0; font-size: 12px; color: var(--text-muted); }
+    .checkbox-group input { accent-color: #ffffff; width: 16px; height: 16px; }
+    .checkbox-group a { color: #fff; text-decoration: none; }
+    .btn-primary { width: 100%; padding: 14px; background: #ffffff; color: #000000; font-weight: 700; font-size: 15px; border: none; border-radius: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; box-shadow: 0 4px 12px rgba(255,255,255,0.1); }
+    .btn-primary:hover { background: #e0e0e0; transform: translateY(-1px); }
     .apex-captcha-box { background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; margin: 16px 0; cursor: pointer; }
     .apex-captcha-content { display: flex; align-items: center; gap: 12px; }
     .apex-captcha-checkbox { width: 20px; height: 20px; border: 2px solid #555; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
@@ -69,53 +52,21 @@
     .apex-captcha-box.verifying .apex-captcha-text, .apex-captcha-box.success .apex-captcha-text { display: none; }
     .apex-captcha-box.verifying .apex-captcha-percent, .apex-captcha-box.success .apex-captcha-percent { display: block; }
     .apex-captcha-footer { font-size: 10px; color: #555; }
-    
-    .checkbox-group { display: flex; align-items: center; gap: 8px; margin: 16px 0; font-size: 12px; color: var(--text-muted); }
-    .checkbox-group input { accent-color: #ffffff; width: 16px; height: 16px; }
-    .checkbox-group a { color: #fff; text-decoration: none; }
-    
-    /* 金色主按钮 */
-    .btn-primary { width: 100%; padding: 14px; background: #ffffff; color: #000000; font-weight: 700; font-size: 15px; border: none; border-radius: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; box-shadow: 0 4px 12px rgba(255,255,255,0.1); }
-    .btn-primary:hover { background: #e0e0e0; transform: translateY(-1px); }
-    .btn-primary .arrow { font-size: 18px; font-weight: bold; }
-    
+    .link-row { display: flex; justify-content: space-between; margin-top: 12px; margin-bottom: 8px; }
+    .link-row a { color: var(--text-muted); font-size: 12px; text-decoration: none; transition: 0.3s; }
+    .link-row a:hover { color: #fff; }
+    .code-row { display: flex; gap: 10px; align-items: center; }
+    .code-boxes { display: flex; gap: 6px; flex: 1; }
+    .code-boxes input { width: 100%; height: 44px; text-align: center; font-size: 18px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none; }
+    .code-boxes input:focus { border-color: #fff; }
+    .btn-send-code { padding: 0 12px; height: 44px; background: transparent; border: 1px solid var(--border); color: var(--text-muted); border-radius: 8px; font-size: 12px; cursor: pointer; white-space: nowrap; transition: 0.3s; }
+    .btn-send-code:hover { border-color: #fff; color: #fff; }
+    .btn-send-code:disabled { opacity: 0.5; cursor: not-allowed; }
     .footer { text-align: center; color: var(--text-muted); font-size: 11px; margin-top: 20px; padding-bottom: 16px; }
-  
-    /* Logo 去黑底强力修复 */
-    .hero .logo-img {
-      
-      
-      background: transparent !important;
-    }
-
-
-  
-  
-  /* 忘记密码链接 */
-  .forgot-pwd-link { text-align: right; margin-bottom: 8px; margin-top: 0px; }
-  .forgot-pwd-link a { color: var(--text-muted); font-size: 12px; text-decoration: none; transition: 0.3s; }
-  .forgot-pwd-link a:hover { color: #fff; }
-
-
-  /* 双链接布局（在线客服 + 忘记密码） */
-  .link-row { display: flex !important; justify-content: space-between !important; align-items: center !important; margin-top: 12px !important; margin-bottom: 8px !important; }
-  .link-row a { color: var(--text-muted) !important; font-size: 12px !important; text-decoration: none !important; transition: 0.3s !important; }
-  .link-row a:hover { color: #ffffff !important; }
-  .online-support-link { text-align: left; }
-  .forgot-pwd-link { text-align: right; margin: 0 !important; }
-
-</style>
+  </style>
 </head>
 <body>
-  <!-- 顶部语言切换 -->
-  <div class="header">
-    <div class="lang-selector" id="lang-selector">
-      <button class="lang-btn" id="lang-btn"><span id="current-flag">🇨🇳</span><span id="current-lang">简体中文</span><span style="font-size:10px;">▼</span></button>
-      <div class="lang-menu" id="lang-menu"></div>
-    </div>
-  </div>
-
-  <!-- 上半部分（背景图+品牌区） -->
+  <div class="header"><div class="lang-selector" id="lang-selector"><button class="lang-btn" id="lang-btn"><span id="current-flag">🇨🇳</span><span id="current-lang">简体中文</span><span style="font-size:10px;">▼</span></button><div class="lang-menu" id="lang-menu"></div></div></div>
   <div class="hero">
     <div class="hero-content">
       <img src="./logo.png" alt="Apex Logo" class="logo-img">
@@ -125,8 +76,6 @@
       <div class="sub-title">一站式体验·电子游艺·真人娱乐·体育竞猜·极速存取</div>
     </div>
   </div>
-
-  <!-- 下半部分（卡片表单） -->
   <div class="card-section">
     <div class="auth-card">
       <div class="tabs">
@@ -136,102 +85,30 @@
       
       <!-- 登录表单 -->
       <div id="login-form">
-        <div class="input-group">
-          <label>账号</label>
-          <div class="input-wrap">
-            <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
-            <input type="text" placeholder="请输入账号">
-          </div>
-        </div>
-        <div class="input-group">
-          <label>登录密码</label>
-          <div class="input-wrap">
-            <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
-            <input type="password" placeholder="请输入密码" oninput="this.parentElement.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.parentElement.nextElementSibling.style.opacity = this.value ? '1' : '0';">
-            <div class="pwd-actions">
-              <span class="btn-clear" onpointerdown="event.preventDefault(); this.parentElement.previousElementSibling.value=''; this.parentElement.style.visibility='hidden'; this.parentElement.style.opacity='0';">✕</span>
-              <span class="btn-toggle" onpointerdown="event.preventDefault(); togglePwd(this)"></span>
-            </div>
-          </div>
-        </div>
-        
-        <div class="apex-captcha-box" data-status="idle" onclick="startCaptcha(this)">
-          <div class="apex-captcha-content">
-            <div class="apex-captcha-checkbox"><svg class="apex-checkmark" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
-            <div class="apex-captcha-text">点击进行人机验证</div>
-            <div class="apex-captcha-percent">0%</div>
-          </div>
-          <div class="apex-captcha-footer">Apex 安全防护</div>
-        </div>
-        
-        <div class="link-row">
-              <div class="online-support-link"><a href="#">在线客服</a></div>
-              <div class="forgot-pwd-link"><a href="#">忘记密码？</a></div>
-            </div>
-<div class="checkbox-group">
-          <input type="checkbox" id="agreement" checked>
-          <label for="agreement">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label>
-        </div>
-        
-        <button class="btn-primary">登 录 </button>
+        <div class="input-group"><label>账号</label><div class="input-wrap"><span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span><input type="text" placeholder="请输入账号"></div></div>
+        <div class="input-group"><label>登录密码</label><div class="input-wrap"><span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span><input type="password" placeholder="请输入密码" oninput="this.parentElement.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.parentElement.nextElementSibling.style.opacity = this.value ? '1' : '0';"><div class="pwd-actions"><span class="btn-clear" onpointerdown="event.preventDefault(); this.parentElement.previousElementSibling.value=''; this.parentElement.style.visibility='hidden'; this.parentElement.style.opacity='0';">✕</span><span class="btn-toggle" onpointerdown="event.preventDefault(); togglePwd(this)"></span></div></div></div>
+        <div class="apex-captcha-box" data-status="idle" onclick="startCaptcha(this)"><div class="apex-captcha-content"><div class="apex-captcha-checkbox"><svg class="apex-checkmark" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div><div class="apex-captcha-text">点击进行人机验证</div><div class="apex-captcha-percent">0%</div></div><div class="apex-captcha-footer">Apex 安全防护</div></div>
+        <div class="checkbox-group"><input type="checkbox" id="agreement" checked><label for="agreement">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label></div>
+        <div class="link-row"><div><a href="#" id="online-support">在线客服</a></div><div><a href="#" id="forgot-pwd">忘记密码？</a></div></div>
+        <button class="btn-primary">登 录</button>
       </div>
+
       <!-- 注册表单 -->
       <div id="register-form" style="display:none;">
-        <div class="input-group">
-          <label>账号</label>
-          <div class="input-wrap">
-            <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
-            <input type="text" placeholder="请输入账号">
-          </div>
-          <div class="form-tip">6-20位字符，支持字母、数字、下划线</div>
-        </div>
-        <div class="input-group">
-          <label>邮箱</label>
-          <div class="input-wrap">
-            <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></span>
-            <input type="email" placeholder="请输入邮箱">
-          </div>
-          <div class="form-tip red-tip">⚠️：必须填写真实邮箱且自己长期使用的邮箱，以便于密码找回使用</div>
-        </div>
-        <div class="input-group">
-          <label>密码</label>
-          <div class="input-wrap">
-            <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
-            <input type="password" placeholder="请输入密码" oninput="this.parentElement.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.parentElement.nextElementSibling.style.opacity = this.value ? '1' : '0';">
-            <div class="pwd-actions">
-              <span class="btn-clear" onpointerdown="event.preventDefault(); this.parentElement.previousElementSibling.value=''; this.parentElement.style.visibility='hidden'; this.parentElement.style.opacity='0';">✕</span>
-              <span class="btn-toggle" onpointerdown="event.preventDefault(); togglePwd(this)"></span>
-            </div>
-          </div>
-          <div class="form-tip">至少8位，包含大小写字母和数字</div>
-        </div>
-        <div class="input-group">
-          <label>确认密码</label>
-          <div class="input-wrap">
-            <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
-            <input type="password" placeholder="请再次输入密码" oninput="this.parentElement.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.parentElement.nextElementSibling.style.opacity = this.value ? '1' : '0';">
-            <div class="pwd-actions">
-              <span class="btn-clear" onpointerdown="event.preventDefault(); this.parentElement.previousElementSibling.value=''; this.parentElement.style.visibility='hidden'; this.parentElement.style.opacity='0';">✕</span>
-              <span class="btn-toggle" onpointerdown="event.preventDefault(); togglePwd(this)"></span>
-            </div>
-          </div>
-        </div>
-        
-        <div class="apex-captcha-box" data-status="idle" onclick="startCaptcha(this)">
-          <div class="apex-captcha-content">
-            <div class="apex-captcha-checkbox"><svg class="apex-checkmark" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
-            <div class="apex-captcha-text">点击进行人机验证</div>
-            <div class="apex-captcha-percent">0%</div>
-          </div>
-          <div class="apex-captcha-footer">Apex 安全防护</div>
-        </div>
-        
-        <div class="checkbox-group">
-          <input type="checkbox" id="agreement-reg" checked>
-          <label for="agreement-reg">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label>
-        </div>
-        
-        <button class="btn-primary">注 册 </button>
+        <div class="input-group"><label>账号</label><div class="input-wrap"><span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span><input type="text" placeholder="请输入账号"></div><div class="form-tip">6-20位字符，支持字母、数字、下划线</div></div>
+        <div class="input-group"><label>邮箱</label><div class="input-wrap"><span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></span><input type="email" placeholder="请输入邮箱"></div><div class="form-tip red-tip">⚠️：必须填写真实邮箱且自己长期使用的邮箱，以便于密码找回使用</div></div>
+        <div class="input-group"><label>密码</label><div class="input-wrap"><span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span><input type="password" placeholder="请输入密码" oninput="this.parentElement.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.parentElement.nextElementSibling.style.opacity = this.value ? '1' : '0';"><div class="pwd-actions"><span class="btn-clear" onpointerdown="event.preventDefault(); this.parentElement.previousElementSibling.value=''; this.parentElement.style.visibility='hidden'; this.parentElement.style.opacity='0';">✕</span><span class="btn-toggle" onpointerdown="event.preventDefault(); togglePwd(this)"></span></div></div><div class="form-tip">至少8位，包含大小写字母和数字</div></div>
+        <div class="input-group"><label>确认密码</label><div class="input-wrap"><span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span><input type="password" placeholder="请再次输入密码" oninput="this.parentElement.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.parentElement.nextElementSibling.style.opacity = this.value ? '1' : '0';"><div class="pwd-actions"><span class="btn-clear" onpointerdown="event.preventDefault(); this.parentElement.previousElementSibling.value=''; this.parentElement.style.visibility='hidden'; this.parentElement.style.opacity='0';">✕</span><span class="btn-toggle" onpointerdown="event.preventDefault(); togglePwd(this)"></span></div></div></div>
+        <div class="apex-captcha-box" data-status="idle" onclick="startCaptcha(this)"><div class="apex-captcha-content"><div class="apex-captcha-checkbox"><svg class="apex-checkmark" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div><div class="apex-captcha-text">点击进行人机验证</div><div class="apex-captcha-percent">0%</div></div><div class="apex-captcha-footer">Apex 安全防护</div></div>
+        <button class="btn-primary">注 册</button>
+      </div>
+      <!-- 忘记密码表单 -->
+      <div id="forgot-form" style="display:none;">
+        <div class="input-group"><label>邮箱 / 账号</label><div class="input-wrap"><span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></span><input type="text" placeholder="请输入邮箱或账号"></div></div>
+        <div class="input-group"><label>新密码</label><div class="input-wrap"><span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span><input type="password" placeholder="请输入新密码" oninput="this.parentElement.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.parentElement.nextElementSibling.style.opacity = this.value ? '1' : '0';"><div class="pwd-actions"><span class="btn-clear" onpointerdown="event.preventDefault(); this.parentElement.previousElementSibling.value=''; this.parentElement.style.visibility='hidden'; this.parentElement.style.opacity='0';">✕</span><span class="btn-toggle" onpointerdown="event.preventDefault(); togglePwd(this)"></span></div></div><div class="form-tip">至少8位，包含大小写字母和数字</div></div>
+        <div class="input-group"><label>邮箱验证码</label><div class="code-row"><div class="code-boxes"><input type="text" maxlength="1" oninput="if(this.value)this.nextElementSibling.focus()" onkeydown="if(event.key==='Backspace'&&!this.value)this.previousElementSibling.focus()"><input type="text" maxlength="1" oninput="if(this.value)this.nextElementSibling.focus()" onkeydown="if(event.key==='Backspace'&&!this.value)this.previousElementSibling.focus()"><input type="text" maxlength="1" oninput="if(this.value)this.nextElementSibling.focus()" onkeydown="if(event.key==='Backspace'&&!this.value)this.previousElementSibling.focus()"><input type="text" maxlength="1" oninput="if(this.value)this.nextElementSibling.focus()" onkeydown="if(event.key==='Backspace'&&!this.value)this.previousElementSibling.focus()"><input type="text" maxlength="1" oninput="if(this.value)this.nextElementSibling.focus()" onkeydown="if(event.key==='Backspace'&&!this.value)this.previousElementSibling.focus()"><input type="text" maxlength="1" oninput="if(this.value)this.nextElementSibling.focus()" onkeydown="if(event.key==='Backspace'&&!this.value)this.previousElementSibling.focus()"></div><button class="btn-send-code" id="btn-send-code">发送验证码</button></div><div class="form-tip">未收到邮件？请前往垃圾邮件查看。</div></div>
+        <button class="btn-primary">重置密码</button>
+        <div class="link-row" style="justify-content: center; margin-top: 16px;"><a href="#" id="back-to-login">返回登录</a></div>
       </div>
     </div>
     <div class="footer">© 2026 Apex Global Entertainment. All rights reserved.</div>
@@ -240,52 +117,38 @@
   <script>
     const EYE_OPEN = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
     const EYE_CLOSED = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
-    
-    function togglePwd(el) {
-      const p = el.parentElement.previousElementSibling;
-      p.type = p.type === 'password' ? 'text' : 'password';
-      el.innerHTML = p.type === 'password' ? EYE_OPEN : EYE_CLOSED;
-    }
-    
+    function togglePwd(el) { const p = el.parentElement.previousElementSibling; p.type = p.type === 'password' ? 'text' : 'password'; el.innerHTML = p.type === 'password' ? EYE_OPEN : EYE_CLOSED; }
     function startCaptcha(box) {
       if (box.dataset.status === 'success' || box.dataset.status === 'verifying') return;
-      box.dataset.status = 'verifying';
-      box.classList.add('verifying');
-      let progress = 0;
-      const percent = box.querySelector('.apex-captcha-percent');
-      percent.textContent = '0%';
+      box.dataset.status = 'verifying'; box.classList.add('verifying');
+      let progress = 0; const percent = box.querySelector('.apex-captcha-percent'); percent.textContent = '0%';
       const interval = setInterval(() => {
-        progress += Math.floor(Math.random() * 15) + 5;
-        if (progress > 100) progress = 100;
+        progress += Math.floor(Math.random() * 15) + 5; if (progress > 100) progress = 100;
         percent.textContent = progress < 100 ? progress + '%' : '验证成功';
-        if (progress === 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            box.classList.remove('verifying');
-            box.classList.add('success');
-            box.dataset.status = 'success';
-          }, 300);
-        }
+        if (progress === 100) { clearInterval(interval); setTimeout(() => { box.classList.remove('verifying'); box.classList.add('success'); box.dataset.status = 'success'; }, 300); }
       }, 100);
     }
-    
-    document.querySelectorAll('.tab').forEach(tab => {
-      tab.addEventListener('click', function() {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        this.classList.add('active');
-        document.getElementById('login-form').style.display = (this.id === 'tab-login') ? 'block' : 'none';
-        document.getElementById('register-form').style.display = (this.id === 'tab-register') ? 'block' : 'none';
-      });
+    function switchForm(showId) {
+      document.getElementById('login-form').style.display = (showId === 'login-form') ? 'block' : 'none';
+      document.getElementById('register-form').style.display = (showId === 'register-form') ? 'block' : 'none';
+      document.getElementById('forgot-form').style.display = (showId === 'forgot-form') ? 'block' : 'none';
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      if (showId === 'login-form') document.getElementById('tab-login').classList.add('active');
+      if (showId === 'register-form') document.getElementById('tab-register').classList.add('active');
+    }
+    document.getElementById('tab-login').addEventListener('click', () => switchForm('login-form'));
+    document.getElementById('tab-register').addEventListener('click', () => switchForm('register-form'));
+    document.getElementById('forgot-pwd').addEventListener('click', (e) => { e.preventDefault(); switchForm('forgot-form'); });
+    document.getElementById('back-to-login').addEventListener('click', (e) => { e.preventDefault(); switchForm('login-form'); });
+    document.getElementById('btn-send-code').addEventListener('click', function() {
+      const btn = this; btn.disabled = true; let countdown = 60; btn.textContent = countdown + '秒后重发';
+      const timer = setInterval(() => { countdown--; btn.textContent = countdown + '秒后重发'; if (countdown <= 0) { clearInterval(timer); btn.textContent = '发送验证码'; btn.disabled = false; } }, 1000);
     });
-
     document.addEventListener('DOMContentLoaded', () => { document.querySelectorAll('.btn-toggle').forEach(el => { el.innerHTML = EYE_OPEN; }); });
-    
     const languages = [{ code: 'zh-CN', flag: '🇨🇳', name: '简体中文' }, { code: 'en-US', flag: '🇺🇸', name: 'English' }];
     const langBtn = document.getElementById('lang-btn'), langMenu = document.getElementById('lang-menu'), currentFlag = document.getElementById('current-flag'), currentLang = document.getElementById('current-lang');
     languages.forEach(lang => {
-      const item = document.createElement('div');
-      item.className = 'lang-item';
-      item.innerHTML = `<span>${lang.flag}</span><span>${lang.name}</span>`;
+      const item = document.createElement('div'); item.className = 'lang-item'; item.innerHTML = `<span>${lang.flag}</span><span>${lang.name}</span>`;
       item.onclick = (e) => { e.stopPropagation(); currentFlag.textContent = lang.flag; currentLang.textContent = lang.name; langMenu.classList.remove('show'); };
       langMenu.appendChild(item);
     });
