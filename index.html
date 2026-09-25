@@ -80,7 +80,15 @@
     .btn-primary .arrow { font-size: 18px; font-weight: bold; }
     
     .footer { text-align: center; color: var(--text-muted); font-size: 11px; margin-top: 20px; padding-bottom: 16px; }
-  </style>
+  
+    /* Logo 去黑底强力修复 */
+    .hero .logo-img {
+      mix-blend-mode: screen !important;
+      filter: contrast(1.5) brightness(1.2) !important;
+      background: transparent !important;
+    }
+
+</style>
 </head>
 <body>
   <!-- 顶部语言切换 -->
@@ -96,7 +104,7 @@
     <div class="hero-content">
       <img src="./logo.jpeg" alt="Apex Logo" class="logo-img">
       <span class="brand-en">APEX</span>
-      <span class="brand-sub">GLOBAL ENTERTAINMENT</span>
+      <span class="brand-sub">ENTERTAINMENT</span>
       <div class="main-title">全球娱乐游戏平台</div>
       <div class="sub-title">一站式体验·电子游艺·真人娱乐·体育竞猜·极速存取</div>
     </div>
