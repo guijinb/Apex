@@ -42,7 +42,7 @@
     .checkbox-group input { accent-color:var(--gold); width:16px; height:16px; }
     .checkbox-group a { color:#fff; text-decoration:none; }
     .btn-primary { width:100%; padding:12px; background:#fff; color:#000; font-weight:700; font-size:14px; border:none; border-radius:8px; cursor:pointer; }
-    .apex-captcha-box { background: #1a1a1e; border: 1px solid #333; border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; margin: 12px 0; cursor: pointer; position: relative; }
+    .apex-captcha-box { background: #0a0a0a; border: 1px solid #333; border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; margin: 12px 0; cursor: pointer; position: relative; }
     .apex-captcha-content { display: flex; align-items: center; gap: 10px; }
     .apex-captcha-checkbox { width: 20px; height: 20px; border: 2px solid #555; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
     .apex-captcha-box.verifying .apex-captcha-checkbox { border-color: var(--green); }
@@ -50,7 +50,7 @@
     .apex-checkmark { width: 10px; height: 10px; stroke: #000; stroke-width: 3; fill: none; display: none; }
     .apex-captcha-box.success .apex-checkmark { display: block; }
     .apex-captcha-text { font-size: 12px; color: #ccc; }
-    .apex-captcha-percent { font-size: 12px; color: var(--green); font-weight: bold; display: none; }
+    .apex-captcha-percent { white-space: nowrap; font-size: 12px; color: var(--green); font-weight: bold; display: none; }
     .apex-captcha-box.verifying .apex-captcha-text, .apex-captcha-box.success .apex-captcha-text { display: none; }
     .apex-captcha-box.verifying .apex-captcha-percent, .apex-captcha-box.success .apex-captcha-percent { display: block; }
     .apex-captcha-footer { font-size: 9px; color: #555; position: absolute; right: 12px; bottom: 6px; }
@@ -99,11 +99,6 @@
             </div>
           </div>
         </div>
-        <div class="checkbox-group">
-          <input type="checkbox" id="agreement" checked>
-          <label for="agreement">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label>
-        </div>
-        
         <!-- 登录区域的人机验证 -->
         <div class="apex-captcha-box" data-status="idle" onclick="startCaptcha(this)">
           <div class="apex-captcha-content">
@@ -111,6 +106,10 @@
             <div class="apex-captcha-text">点击进行人机验证</div>
             <div class="apex-captcha-percent">0%</div>
           </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="agreement" checked>
+          <label for="agreement">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label>
+        </div>
           <div class="apex-captcha-footer">Apex 安全防护</div>
         </div>
         
@@ -193,7 +192,7 @@
       const interval = setInterval(() => {
         progress += Math.floor(Math.random() * 15) + 5;
         if (progress > 100) progress = 100;
-        percent.textContent = progress + '%';
+        percent.textContent = progress < 100 ? progress + '%' : '验证成功';
         if (progress === 100) {
           clearInterval(interval);
           setTimeout(() => {
