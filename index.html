@@ -1044,6 +1044,80 @@ document.addEventListener('click', function(e) {
   console.log('[Apex] 接管脚本就绪');
 })();
 </script>
+
+<script id="apex-tab-fix">
+(function() {
+  console.log('[Apex] 标签切换脚本已加载');
+
+  function switchTo(formId) {
+    ['login-form', 'register-form', 'forgot-form'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = (id === formId) ? 'block' : 'none';
+    });
+    // 隐藏成功页（如果显示中）
+    const successPage = document.getElementById('apex-success-page');
+    if (successPage) successPage.style.display = 'none';
+    // 显示/隐藏顶部Tab
+    const tabs = document.getElementById('auth-tabs');
+    if (tabs) tabs.style.display = (formId === 'forgot-form') ? 'none' : 'flex';
+  }
+
+  // 用最高优先级捕获所有点击
+  document.addEventListener('click', function(e) {
+    // 点击"注册"标签
+    if (e.target.id === 'tab-register' || e.target.closest('#tab-register')) {
+      console.log('[Apex] 切换到注册');
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const tabLogin = document.getElementById('tab-login');
+      const tabRegister = document.getElementById('tab-register');
+      if (tabLogin) tabLogin.classList.remove('active');
+      if (tabRegister) tabRegister.classList.add('active');
+      switchTo('register-form');
+      return;
+    }
+
+    // 点击"登录"标签
+    if (e.target.id === 'tab-login' || e.target.closest('#tab-login')) {
+      console.log('[Apex] 切换到登录');
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const tabLogin = document.getElementById('tab-login');
+      const tabRegister = document.getElementById('tab-register');
+      if (tabLogin) tabLogin.classList.add('active');
+      if (tabRegister) tabRegister.classList.remove('active');
+      switchTo('login-form');
+      return;
+    }
+
+    // 点击"忘记密码？"
+    if (e.target.id === 'forgot-pwd' || e.target.closest('#forgot-pwd')) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const tabLogin = document.getElementById('tab-login');
+      const tabRegister = document.getElementById('tab-register');
+      if (tabLogin) tabLogin.classList.remove('active');
+      if (tabRegister) tabRegister.classList.remove('active');
+      switchTo('forgot-form');
+      return;
+    }
+
+    // 点击"返回登录"
+    if (e.target.id === 'back-to-login' || e.target.closest('#back-to-login')) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const tabLogin = document.getElementById('tab-login');
+      const tabRegister = document.getElementById('tab-register');
+      if (tabLogin) tabLogin.classList.add('active');
+      if (tabRegister) tabRegister.classList.remove('active');
+      switchTo('login-form');
+      return;
+    }
+  }, true);
+
+  console.log('[Apex] 标签切换脚本就绪');
+})();
+</script>
 </body>
 </html>
 
