@@ -12,7 +12,6 @@
     .header { display:flex; justify-content:space-between; align-items:center; padding:8px 0 16px 0; }
     .brand { display:flex; align-items:center; gap:10px; }
     .brand .logo-img { width:40px; height:40px; object-fit:contain; }
-    .brand-text { display:flex; flex-direction:column; }
     .brand-text .en { font-size:20px; font-weight:900; letter-spacing:3px; background:linear-gradient(135deg, #ffffff 0%, #d4af37 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; line-height:1.1; }
     .brand-text .sub { font-size:9px; color:var(--text-muted); letter-spacing:1.5px; margin-top:2px; }
     .lang-selector { position: relative; }
@@ -42,7 +41,7 @@
     .checkbox-group input { accent-color:var(--gold); width:16px; height:16px; }
     .checkbox-group a { color:#fff; text-decoration:none; }
     .btn-primary { width:100%; padding:12px; background:#fff; color:#000; font-weight:700; font-size:14px; border:none; border-radius:8px; cursor:pointer; }
-    .apex-captcha-box { background: #0a0a0a; border: 1px solid #333; border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; margin: 12px 0; cursor: pointer; position: relative; }
+    .apex-captcha-box { background: #0a0a0a; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; margin: 12px 0; cursor: pointer; position: relative; }
     .apex-captcha-content { display: flex; align-items: center; gap: 10px; }
     .apex-captcha-checkbox { width: 20px; height: 20px; border: 2px solid #555; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
     .apex-captcha-box.verifying .apex-captcha-checkbox { border-color: var(--green); }
@@ -50,7 +49,7 @@
     .apex-checkmark { width: 10px; height: 10px; stroke: #000; stroke-width: 3; fill: none; display: none; }
     .apex-captcha-box.success .apex-checkmark { display: block; }
     .apex-captcha-text { font-size: 12px; color: #ccc; }
-    .apex-captcha-percent { white-space: nowrap; font-size: 12px; color: var(--green); font-weight: bold; display: none; }
+    .apex-captcha-percent { font-size: 12px; color: var(--green); font-weight: bold; display: none; white-space: nowrap; }
     .apex-captcha-box.verifying .apex-captcha-text, .apex-captcha-box.success .apex-captcha-text { display: none; }
     .apex-captcha-box.verifying .apex-captcha-percent, .apex-captcha-box.success .apex-captcha-percent { display: block; }
     .apex-captcha-footer { font-size: 9px; color: #555; position: absolute; right: 12px; bottom: 6px; }
@@ -99,22 +98,26 @@
             </div>
           </div>
         </div>
-        <!-- 登录区域的人机验证 -->
+        
+        <!-- 1. 人机验证 -->
         <div class="apex-captcha-box" data-status="idle" onclick="startCaptcha(this)">
           <div class="apex-captcha-content">
             <div class="apex-captcha-checkbox"><svg class="apex-checkmark" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
             <div class="apex-captcha-text">点击进行人机验证</div>
             <div class="apex-captcha-percent">0%</div>
           </div>
+          <div class="apex-captcha-footer">Apex 安全防护</div>
+        </div>
+        
+        <!-- 2. 用户协议在验证下方 -->
         <div class="checkbox-group">
           <input type="checkbox" id="agreement" checked>
           <label for="agreement">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label>
         </div>
-          <div class="apex-captcha-footer">Apex 安全防护</div>
-        </div>
         
         <button class="btn-primary">登 录</button>
       </div>
+      
       <!-- 注册表单 -->
       <div id="register-form" style="display:none;">
         <div class="input-group">
@@ -162,7 +165,6 @@
         <button class="btn-primary">注 册</button>
       </div>
     </div>
-    
     <div class="features-grid">
       <div class="feature-card"><div class="icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div><div class="text-group"><div class="zh">安全可靠</div><div class="desc">顶级加密 资金保障</div></div></div>
       <div class="feature-card"><div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M4 7h16"/><path d="M6 7l-3 6h6z"/><path d="M18 7l-3 6h6z"/><path d="M12 21h6"/></svg></div><div class="text-group"><div class="zh">公平公正</div><div class="desc">全球监管 透明公开</div></div></div>
@@ -215,7 +217,6 @@
 
     document.addEventListener('DOMContentLoaded', () => { document.querySelectorAll('.btn-toggle').forEach(el => { el.innerHTML = EYE_OPEN; }); });
     
-    // 语言切换逻辑
     const languages = [{ code: 'zh-CN', flag: '🇨🇳', name: '简体中文' }, { code: 'en-US', flag: '🇺🇸', name: 'English' }];
     const langBtn = document.getElementById('lang-btn'), langMenu = document.getElementById('lang-menu'), currentFlag = document.getElementById('current-flag'), currentLang = document.getElementById('current-lang');
     languages.forEach(lang => {
