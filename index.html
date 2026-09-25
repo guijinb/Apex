@@ -71,12 +71,12 @@
     .apex-captcha-footer { font-size: 10px; color: #555; }
     
     .checkbox-group { display: flex; align-items: center; gap: 8px; margin: 16px 0; font-size: 12px; color: var(--text-muted); }
-    .checkbox-group input { accent-color: var(--gold); width: 16px; height: 16px; }
+    .checkbox-group input { accent-color: #ffffff; width: 16px; height: 16px; }
     .checkbox-group a { color: #fff; text-decoration: none; }
     
     /* 金色主按钮 */
-    .btn-primary { width: 100%; padding: 14px; background: var(--gold); color: #000; font-weight: 700; font-size: 15px; border: none; border-radius: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.3s; }
-    .btn-primary:hover { background: #e6c24a; transform: translateY(-1px); }
+    .btn-primary { width: 100%; padding: 14px; background: #ffffff; color: #000000; font-weight: 700; font-size: 15px; border: none; border-radius: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; box-shadow: 0 4px 12px rgba(255,255,255,0.1); }
+    .btn-primary:hover { background: #e0e0e0; transform: translateY(-1px); }
     .btn-primary .arrow { font-size: 18px; font-weight: bold; }
     
     .footer { text-align: center; color: var(--text-muted); font-size: 11px; margin-top: 20px; padding-bottom: 16px; }
@@ -123,14 +123,14 @@
         <div class="input-group">
           <label>账号</label>
           <div class="input-wrap">
-            <span class="icon">👤</span>
+            <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
             <input type="text" placeholder="请输入账号">
           </div>
         </div>
         <div class="input-group">
           <label>登录密码</label>
           <div class="input-wrap">
-            <span class="icon">🔒</span>
+            <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
             <input type="password" placeholder="请输入密码" oninput="this.parentElement.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.parentElement.nextElementSibling.style.opacity = this.value ? '1' : '0';">
             <div class="pwd-actions">
               <span class="btn-clear" onpointerdown="event.preventDefault(); this.parentElement.previousElementSibling.value=''; this.parentElement.style.visibility='hidden'; this.parentElement.style.opacity='0';">✕</span>
@@ -153,14 +153,14 @@
           <label for="agreement">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label>
         </div>
         
-        <button class="btn-primary">登 录 <span class="arrow">→</span></button>
+        <button class="btn-primary">登 录 </button>
       </div>
       <!-- 注册表单 -->
       <div id="register-form" style="display:none;">
         <div class="input-group">
           <label>账号</label>
           <div class="input-wrap">
-            <span class="icon">👤</span>
+            <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
             <input type="text" placeholder="请输入账号">
           </div>
           <div class="form-tip">6-20位字符，支持字母、数字、下划线</div>
@@ -168,7 +168,7 @@
         <div class="input-group">
           <label>邮箱</label>
           <div class="input-wrap">
-            <span class="icon">✉️</span>
+            <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></span>
             <input type="email" placeholder="请输入邮箱">
           </div>
           <div class="form-tip red-tip">⚠️：必须填写真实邮箱且自己长期使用的邮箱，以便于密码找回使用</div>
@@ -176,7 +176,7 @@
         <div class="input-group">
           <label>密码</label>
           <div class="input-wrap">
-            <span class="icon">🔒</span>
+            <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
             <input type="password" placeholder="请输入密码" oninput="this.parentElement.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.parentElement.nextElementSibling.style.opacity = this.value ? '1' : '0';">
             <div class="pwd-actions">
               <span class="btn-clear" onpointerdown="event.preventDefault(); this.parentElement.previousElementSibling.value=''; this.parentElement.style.visibility='hidden'; this.parentElement.style.opacity='0';">✕</span>
@@ -188,7 +188,7 @@
         <div class="input-group">
           <label>确认密码</label>
           <div class="input-wrap">
-            <span class="icon">🔒</span>
+            <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
             <input type="password" placeholder="请再次输入密码" oninput="this.parentElement.nextElementSibling.style.visibility = this.value ? 'visible' : 'hidden'; this.parentElement.nextElementSibling.style.opacity = this.value ? '1' : '0';">
             <div class="pwd-actions">
               <span class="btn-clear" onpointerdown="event.preventDefault(); this.parentElement.previousElementSibling.value=''; this.parentElement.style.visibility='hidden'; this.parentElement.style.opacity='0';">✕</span>
@@ -211,7 +211,7 @@
           <label for="agreement-reg">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label>
         </div>
         
-        <button class="btn-primary">注 册 <span class="arrow">→</span></button>
+        <button class="btn-primary">注 册 </button>
       </div>
     </div>
     <div class="footer">© 2026 Apex Global Entertainment. All rights reserved.</div>
