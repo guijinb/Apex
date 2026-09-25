@@ -234,6 +234,29 @@
     });
 
   </script>
+
+<script>
+document.addEventListener('click', function(e) {
+  const loginBtn = e.target.closest('#login-form .btn-primary');
+  if (loginBtn) {
+    e.preventDefault();
+    // 隐藏页面上所有原本的元素（Header, Hero区, 卡片区）
+    document.querySelectorAll('body > div').forEach(el => el.style.display = 'none');
+    
+    // 动态创建一个全屏的“开发中”页面
+    let devPage = document.getElementById('dev-full-page');
+    if (!devPage) {
+      devPage = document.createElement('div');
+      devPage.id = 'dev-full-page';
+      // 强制固定定位、全屏、黑底、居中
+      devPage.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#050505;display:flex;align-items:center;justify-content:center;z-index:9999;';
+      devPage.innerHTML = '<h3 style="color:#fff;font-size:24px;font-weight:300;letter-spacing:4px;">正在开发中</h3>';
+      document.body.appendChild(devPage);
+    }
+    devPage.style.display = 'flex';
+  }
+});
+</script>
 </body>
 </html>
 <script>
@@ -365,30 +388,4 @@ document.addEventListener('click', function(e) {
   }
 });
 </script>
-<script>
-document.addEventListener('click', function(e) {
-  // 捕获登录按钮点击
-  const loginBtn = e.target.closest('#login-form .btn-primary');
-  if (loginBtn) {
-    e.preventDefault(); // 阻止真实提交
-    // 隐藏登录表单
-    document.getElementById('login-form').style.display = 'none';
-    // 隐藏顶部标签
-    document.getElementById('auth-tabs').style.display = 'none';
-    
-    // 动态生成开发中提示页
-    let devPage = document.getElementById('dev-page');
-    if (!devPage) {
-      devPage = document.createElement('div');
-      devPage.id = 'dev-page';
-      devPage.style.cssText = 'display:none; text-align:center; padding:40px 0;';
-      devPage.innerHTML = `
-        <h3 style="color:#fff; font-size:18px; letter-spacing:2px; font-weight:normal;">正在开发中</h3>
-      `;
-      document.querySelector('.auth-card').appendChild(devPage);
-    }
-    devPage.style.display = 'block';
-    return;
-  }
-});
-</script>
+
