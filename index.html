@@ -90,7 +90,13 @@
 
 
   
-  </style>
+  
+  /* 忘记密码链接 */
+  .forgot-pwd-link { text-align: right; margin-bottom: 8px; margin-top: 0px; }
+  .forgot-pwd-link a { color: var(--text-muted); font-size: 12px; text-decoration: none; transition: 0.3s; }
+  .forgot-pwd-link a:hover { color: #fff; }
+
+</style>
 </head>
 <body>
   <!-- 顶部语言切换 -->
@@ -150,7 +156,8 @@
           <div class="apex-captcha-footer">Apex 安全防护</div>
         </div>
         
-        <div class="checkbox-group">
+        <div class="forgot-pwd-link"><a href="#">忘记密码？</a></div>
+<div class="checkbox-group">
           <input type="checkbox" id="agreement" checked>
           <label for="agreement">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label>
         </div>
