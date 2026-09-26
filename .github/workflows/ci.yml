@@ -1,0 +1,28 @@
+name: CI - Test & Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Security Scan
+        run: node tests/security-scan.js
+
+      - name: Wait for deployment
+        run: sleep 45
+
+      - name: API Smoke Test
+        run: BASE_URL=https://apex-8rg.pages.dev node tests/api-smoke.test.js
+        continue-on-error: false

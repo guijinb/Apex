@@ -5,3 +5,8 @@ backups/*.sha256
 
 # Wrangler cache (contains account info)
 .wrangler/
+
+# Test outputs
+tests/.cache/
+coverage/
+*.log
