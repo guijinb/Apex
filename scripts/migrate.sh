@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/bash
 # Apex 迁移系统
 # 用法：bash scripts/migrate.sh [--local|--remote] [--dry-run]
-set -euo pipefail
+set -uo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 source "$PROJECT_ROOT/scripts/_migrate_helpers.sh"
@@ -40,8 +40,10 @@ while IFS='|' read -r v c; do
     APPLIED["$v"]=1
     APPLIED_CHECKSUMS["$v"]="$c"
   fi
-done < <(run_sql_raw "$MODE" "SELECT version || '|' || checksum FROM _migrations;" 2>/dev/null \
-  | grep -E '^[0-9]{4}\|' || true)
+# 从 wrangler JSON 输出中提取 "0001|abcdef0123456789" 形式
+done < <(run_sql_raw "$MODE" "SELECT version || '|' || checksum AS vc FROM _migrations;" 2>/dev/null \
+  | grep -oP '"\K[0-9]{4}\|[a-f0-9]{16}(?=")' \
+  || true)
 
 APPLIED_COUNT=0
 for _k in "${!APPLIED[@]}"; do APPLIED_COUNT=$((APPLIED_COUNT+1)); done
@@ -102,7 +104,10 @@ for f in $(list_migrations); do
   fi
 
   esc_name="${name//\'/\'\'}"
-  run_sql_raw "$MODE" "INSERT INTO _migrations (version, name, checksum) VALUES ('$v', '$esc_name', '$ck');" >/dev/null 2>&1
+  # 记录到 _migrations（幂等：即使记录写入失败，SQL 本身已成功执行，不阻断流程）
+  if ! run_sql_write "$MODE" "INSERT INTO _migrations (version, name, checksum) VALUES ('$v', '$esc_name', '$ck');" >/dev/null 2>&1; then
+    echo "[WARN] $name 已执行但未写入 _migrations 记录"
+  fi
 
   NEW_APPLIED=$((NEW_APPLIED+1))
   echo "[OK] $name applied"
