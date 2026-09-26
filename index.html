@@ -1053,50 +1053,7 @@
   </script>
 
 
-  <script id="apex-captcha-real">
-  (function() {
-    window.startCaptcha = function(box) {
-      if (box.dataset.status === 'success' || box.dataset.status === 'verifying') return;
-      box.dataset.status = 'verifying';
-      box.classList.add('verifying');
-      let progress = 0;
-      const percent = box.querySelector('.apex-captcha-percent');
-      percent.textContent = '0%';
-
-      const interval = setInterval(() => {
-        progress += Math.floor(Math.random() * 15) + 5;
-        if (progress > 100) progress = 100;
-        percent.textContent = progress < 100 ? progress + '%' : '验证中...';
-        if (progress >= 100) {
-          clearInterval(interval);
-          fetch('/api/captcha/verify', { credentials: 'include', method: 'POST' })
-            .then(res => res.json())
-            .then(data => {
-              if (data.success) {
-                box.dataset.token = data.token;
-                box.dataset.status = 'success';
-                box.classList.remove('verifying');
-                box.classList.add('success');
-                percent.textContent = '验证成功';
-              } else {
-                box.dataset.status = 'idle';
-                box.classList.remove('verifying');
-                percent.textContent = '0%';
-                alert('人机验证失败：' + (data.message || '请重试'));
-              }
-            })
-            .catch(() => {
-              box.dataset.status = 'idle';
-              box.classList.remove('verifying');
-              percent.textContent = '0%';
-              alert('网络错误，请重试');
-            });
-        }
-      }, 100);
-    };
-    console.log('[Apex] 真实人机验证已启用');
-  })();
-  </script>
+  
 
 
   <script>
@@ -1108,5 +1065,123 @@
       });
   };
   </script>
-  </body>
+  
+  <script id="apex-captcha-real">
+  (function() {
+    // ============ 行为信号采集 ============
+    const signals = {
+      mouseMoves: 0,
+      touches: 0,
+      keypresses: 0,
+      scrolls: 0,
+      startTime: Date.now(),
+    };
+
+    // 采集鼠标移动
+    document.addEventListener('mousemove', () => { signals.mouseMoves++; }, { passive: true });
+    // 采集触摸
+    document.addEventListener('touchmove', () => { signals.touches++; }, { passive: true });
+    // 采集键盘
+    document.addEventListener('keydown', () => { signals.keypresses++; }, { passive: true });
+    // 采集滚动
+    document.addEventListener('scroll', () => { signals.scrolls++; }, { passive: true });
+
+    // 计算环境指纹（一次性）
+    function getFingerprint() {
+      return {
+        webdriver: !!navigator.webdriver,
+        languages: navigator.languages || [],
+        platform: navigator.platform || '',
+        hardwareConcurrency: navigator.hardwareConcurrency || 0,
+        deviceMemory: navigator.deviceMemory || 0,
+        screenWidth: screen.width,
+        screenHeight: screen.height,
+      };
+    }
+
+    // ============ 挑战流程 ============
+    window.startCaptcha = async function(box) {
+      if (box.dataset.status === 'success' || box.dataset.status === 'verifying') return;
+
+      box.dataset.status = 'verifying';
+      box.classList.add('verifying');
+      const percent = box.querySelector('.apex-captcha-percent');
+      percent.textContent = '0%';
+
+      // 进度条动画（视觉反馈）
+      let progress = 0;
+      const progressInterval = setInterval(() => {
+        progress = Math.min(progress + Math.random() * 15 + 5, 90);
+        percent.textContent = Math.floor(progress) + '%';
+      }, 100);
+
+      try {
+        // Step 1: 向后端请求挑战（nonce + 签名）
+        const challengeRes = await fetch('/api/captcha/challenge', {
+          method: 'POST',
+          credentials: 'include',
+        });
+        const challengeData = await challengeRes.json();
+        if (!challengeData.success) throw new Error(challengeData.message || '无法获取验证挑战');
+
+        // Step 2: 汇总所有信号（环境 + 行为 + 停留时间）
+        const payload = {
+          ...getFingerprint(),
+          mouseMoves: signals.mouseMoves,
+          touches: signals.touches,
+          keypresses: signals.keypresses,
+          scrolls: signals.scrolls,
+          dwellTime: Date.now() - signals.startTime,
+        };
+
+        // Step 3: 提交信号给后端评分
+        const verifyRes = await fetch('/api/captcha/verify', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            signals: payload,
+            challenge: challengeData.challenge,
+            signature: challengeData.signature,
+          }),
+        });
+        const verifyData = await verifyRes.json();
+
+        clearInterval(progressInterval);
+
+        if (verifyData.success) {
+          // 通过
+          percent.textContent = '100%';
+          setTimeout(() => {
+            box.dataset.token = verifyData.token;
+            box.dataset.status = 'success';
+            box.classList.remove('verifying');
+            box.classList.add('success');
+            percent.textContent = '验证成功';
+          }, 200);
+        } else {
+          // 失败
+          percent.textContent = '验证失败';
+          setTimeout(() => {
+            box.dataset.status = 'idle';
+            box.classList.remove('verifying');
+            box.classList.remove('success');
+            percent.textContent = '0%';
+          }, 1500);
+        }
+      } catch (err) {
+        clearInterval(progressInterval);
+        percent.textContent = '网络错误';
+        setTimeout(() => {
+          box.dataset.status = 'idle';
+          box.classList.remove('verifying');
+          percent.textContent = '0%';
+        }, 1500);
+      }
+    };
+
+    console.log('[Apex] 自研行为验证已启用');
+  })();
+  </script>
+</body>
 </html>
