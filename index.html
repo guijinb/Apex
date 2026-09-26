@@ -431,7 +431,12 @@
           <a href="#" id="forgot-pwd" data-i18n="link.forgotPassword">忘记密码？</a>
         </div>
 
-        <div class="checkbox-group">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin:-4px 0 12px 0;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#aaa;cursor:pointer;">
+              <input type="checkbox" id="login-remember"> <span>记住我（7 天免登录）</span>
+            </label>
+          </div>
+          <div class="checkbox-group">
           <input type="checkbox" id="login-agreement" checked>
           <label for="login-agreement">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label>
         </div>
@@ -685,6 +690,18 @@
       });
     });
 
+    // ========== 多标签同步登出 ==========
+    try {
+      if (window.BroadcastChannel) {
+        var apexBC = new BroadcastChannel('apex_auth');
+        apexBC.addEventListener('message', function (e) {
+          if (e.data && e.data.type === 'logout') {
+            try { location.reload(); } catch (x) {}
+          }
+        });
+        window.__apexBroadcast = apexBC;
+      }
+    } catch (e) {}
     window.__apex = { toast, showSuccess, switchTo };
   })();
   </script>
@@ -731,6 +748,32 @@
     });
 
     // 注册密码 + 强度条
+    // ========== 草稿自动保存 ==========
+    var _draftKeys = {
+      'login-account': 'apex_draft_login_account',
+      'reg-username': 'apex_draft_reg_username',
+      'reg-email': 'apex_draft_reg_email'
+    };
+    (function () {
+      Object.keys(_draftKeys).forEach(function (id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        try {
+          var v = localStorage.getItem(_draftKeys[id]);
+          if (v && !el.value) el.value = v;
+        } catch (e) {}
+        el.addEventListener('input', function () {
+          try { localStorage.setItem(_draftKeys[id], el.value); } catch (e) {}
+        });
+      });
+    })();
+    function clearDrafts() {
+      try {
+        Object.keys(_draftKeys).forEach(function (id) { localStorage.removeItem(_draftKeys[id]); });
+      } catch (e) {}
+    }
+    window.clearDrafts = clearDrafts;
+
     const regPwd = document.getElementById('reg-password');
     if (regPwd) regPwd.addEventListener('input', function() {
       const bars = document.querySelectorAll('#reg-strength .bar');
@@ -1092,6 +1135,11 @@
       const pwdEl = document.getElementById('login-password');
       const account = accEl.value.trim();
       const password = pwdEl.value;
+      // 记住我：自动勾选
+      try {
+        var rm = document.getElementById('login-remember');
+        if (rm && localStorage.getItem('apex_remember') === '1') rm.checked = true;
+      } catch (e) {}
       if (!account) { showFieldError(accEl, '请输入账号', true); _formErr = true; if (!_formFirst) _formFirst = accEl; }
       if (!password) { showFieldError(pwdEl, '请输入密码', true); _formErr = true; if (!_formFirst) _formFirst = pwdEl; }
       if (!document.getElementById('login-agreement').checked) {
@@ -1113,6 +1161,11 @@
       if (result.success) {
         // 认证状态唯一可信来源：Session Cookie + /api/me
         // 此处不再写入 localStorage（避免「本地显示已登录，但 Session 已过期」错位）
+        try {
+          var rmEl2 = document.getElementById('login-remember');
+          if (rmEl2 && rmEl2.checked) localStorage.setItem('apex_remember', '1');
+          else localStorage.removeItem('apex_remember');
+        } catch (e) {}
         toast('登录成功', 'success');
         setTimeout(() => {
           window.showHomepage && window.showHomepage(result.user);
@@ -1528,6 +1581,8 @@
   window.apexLogout = function() {
     window.apiClient.post('/api/logout', {}).then(() => {
       // 认证状态唯一来源是 Cookie，登出后刷新即可回到登录页
+      try { if (window.__apexBroadcast) window.__apexBroadcast.postMessage({ type: 'logout' }); } catch (e) {}
+      try { localStorage.removeItem('apex_remember'); } catch (e) {}
       location.reload();
     });
   };
