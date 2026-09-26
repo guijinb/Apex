@@ -137,15 +137,6 @@
     .checkbox-group .checkbox-error.show { display: block; }
     .capslock-warn { font-size: 11px; color: #e6a817; margin-top: 4px; display: none; }
     .capslock-warn.show { display: block; }
-    body.theme-light { background: #f5f5f5; color: #222; }
-    body.theme-light .auth-card { background: #fff; border-color: #ddd; }
-    body.theme-light .input-wrap { background: #fafafa; border-color: #ccc; }
-    body.theme-light .input-wrap input { color: #222; }
-    body.theme-light .tab { color: #666; }
-    body.theme-light .tab.active { background: #000; color: #fff; }
-    body.theme-light .form-tip, body.theme-light .updated { color: #666; }
-    .theme-toggle { position: fixed; top: 16px; left: 16px; width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); color: #fff; cursor: pointer; z-index: 999; display: flex; align-items: center; justify-content: center; font-size: 18px; backdrop-filter: blur(5px); }
-    .theme-toggle:hover { background: rgba(0,0,0,0.7); }
     .form-fade-in { animation: apexFadeIn 0.25s ease-in-out; }
     @keyframes apexFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     @media (prefers-reduced-motion: reduce) { .form-fade-in, .shake { animation: none !important; } }
@@ -213,116 +204,6 @@
   <link rel="apple-touch-icon" href="/logo.png">
 </head>
 <body>
-<button class="theme-toggle" id="theme-toggle" aria-label="切换主题" title="切换主题">🌙</button>
-
-<!-- apex-global-error: 全局错误捕获（诊断用，后期删除） -->
-<div id="apex-error-overlay" style="display:none;position:fixed;top:0;left:0;right:0;background:#e63946;color:#fff;padding:12px 16px;font-family:monospace;font-size:12px;z-index:99999999;white-space:pre-wrap;word-break:break-all;max-height:40vh;overflow-y:auto;">
-  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
-    <div id="apex-error-text" style="flex:1;"></div>
-    <button onclick="document.getElementById('apex-error-overlay').style.display='none'" style="background:#fff;color:#e63946;border:none;padding:2px 8px;border-radius:4px;font-weight:bold;cursor:pointer;font-size:11px;">✕</button>
-  </div>
-</div>
-
-<!-- apex-diagnose-button: 诊断按钮 -->
-<button id="apex-diagnose-btn" onclick="window.__apex_diagnose && window.__apex_diagnose()"
-  style="position:fixed;bottom:40px;right:6px;font-size:10px;color:#fff;background:#d4af37;border:none;padding:4px 8px;border-radius:6px;cursor:pointer;z-index:9999998;font-family:monospace;">
-  诊断
-</button>
-
-<script id="apex-global-error-logic">
-(function() {
-  'use strict';
-  
-  // ========== 1) 全局错误捕获 ==========
-  window.addEventListener('error', function(e) {
-    try {
-      var ov = document.getElementById('apex-error-overlay');
-      var tx = document.getElementById('apex-error-text');
-      if (!ov || !tx) return;
-      var src = e.filename ? e.filename.split('/').pop() : '?';
-      tx.textContent = '❌ 错误 @ ' + src + ':' + e.lineno + ':' + e.colno + '\n' + e.message;
-      ov.style.display = 'block';
-    } catch (x) {}
-  });
-  
-  window.addEventListener('unhandledrejection', function(e) {
-    try {
-      var ov = document.getElementById('apex-error-overlay');
-      var tx = document.getElementById('apex-error-text');
-      if (!ov || !tx) return;
-      var reason = e.reason;
-      tx.textContent = '❌ Promise 拒绝\n' + (reason && reason.message ? reason.message : String(reason));
-      ov.style.display = 'block';
-    } catch (x) {}
-  });
-  
-  // ========== 2) 点击心跳：记录所有 click ==========
-  window.__apexClickLog = [];
-  document.addEventListener('click', function(e) {
-    try {
-      var t = e.target;
-      var id = t && t.id ? '#' + t.id : (t && t.className ? '.' + String(t.className).split(' ')[0] : t.tagName);
-      window.__apexClickLog.push({ t: Date.now(), id: id });
-      if (window.__apexClickLog.length > 20) window.__apexClickLog.shift();
-    } catch (x) {}
-  }, true);
-  
-  // ========== 3) 诊断函数 ==========
-  window.__apex_diagnose = function() {
-    var lines = [];
-    lines.push('=== 诊断信息 ===');
-    lines.push('BUILD: v20260926-2055 (see badge)');
-    lines.push('URL: ' + location.href);
-    lines.push('SW: ' + (navigator.serviceWorker && navigator.serviceWorker.controller ? '有(❌ 应清)' : '无(✓)'));
-    lines.push('');
-    lines.push('--- Helper 函数 ---');
-    ['showFieldError', 'clearAllFieldErrors', 'showCaptchaError', 'showCheckboxError', 'shakeElement', 'attachCapsLockWarn'].forEach(function(n) {
-      lines.push('  ' + n + ': ' + (typeof window[n] === 'function' ? '✓' : 'type=' + typeof window[n]));
-    });
-    lines.push('');
-    lines.push('--- 关键 DOM ---');
-    ['btn-login', 'btn-register', 'btn-send-code', 'btn-reset', 'reg-username', 'reg-email', 'reg-password', 'reg-confirm'].forEach(function(id) {
-      lines.push('  #' + id + ': ' + (document.getElementById(id) ? '✓' : '❌ 不存在'));
-    });
-    lines.push('');
-    lines.push('--- 最近点击 (最多 10 条) ---');
-    (window.__apexClickLog || []).slice(-10).forEach(function(c, i) {
-      lines.push('  ' + i + ': ' + c.id + ' @ ' + new Date(c.t).toLocaleTimeString());
-    });
-    lines.push('');
-    lines.push('--- 提示 ---');
-    lines.push('点击"复制"后粘贴给我');
-    
-    // 弹出可复制对话框
-    var text = lines.join('\n');
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function() {
-        alert('诊断信息已复制到剪贴板！\n\n' + text);
-      }).catch(function() {
-        alert('诊断信息：\n\n' + text);
-      });
-    } else {
-      alert('诊断信息：\n\n' + text);
-    }
-  };
-  
-  // ========== 4) 测试按钮：手动触发 showFieldError ==========
-  window.__apex_test = function() {
-    try {
-      var el = document.getElementById('reg-username');
-      if (!el) { alert('reg-username 不存在'); return; }
-      if (typeof showFieldError !== 'function') { alert('showFieldError 不是函数: ' + typeof showFieldError); return; }
-      showFieldError(el, '【测试】这是字段错误提示');
-      alert('showFieldError 已调用，请看账号字段下方');
-    } catch (e) {
-      alert('调用 showFieldError 抛错：' + e.message + '\n\n' + (e.stack || ''));
-    }
-  };
-  
-  console.log('[Apex] 全局错误捕获已启用，点击右下角"诊断"按钮查看详情');
-})();
-</script>
-
 <!-- apex-refresh-banner: 提示用户清理旧 SW -->
 <div id="apex-refresh-banner" style="display:none;position:fixed;top:0;left:0;right:0;background:#d4af37;color:#000;padding:10px 16px;text-align:center;font-size:13px;z-index:9999999;box-shadow:0 2px 8px rgba(0,0,0,0.3);">
   <strong>🔄 检测到旧版本缓存</strong> — 请点击
@@ -441,34 +322,10 @@
 
         <!-- 在线客服 / 忘记密码 -->
         <div class="link-row">
-          <a href="#" id="online-support" data-i18n="link.onlineSupport">在线客服</a>
-          <a href="#" id="forgot-pwd" data-i18n="link.forgotPassword">忘记密码？</a>
+          <a href="#" id="online-support"><span style="margin-right:4px;">💬</span><span data-i18n="link.onlineSupport">在线客服</span></a>
+          <a href="#" id="forgot-pwd"><span style="margin-right:4px;">🔑</span><span data-i18n="link.forgotPassword">忘记密码？</span></a>
         </div>
 
-        <div style="display:flex;justify-content:space-between;align-items:center;margin:-4px 0 12px 0;">
-            <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#aaa;cursor:pointer;">
-              <input type="checkbox" id="login-remember"> <span>记住我（7 天免登录）</span>
-            </label>
-          </div>
-          <div class="checkbox-group">
-          <input type="checkbox" id="login-agreement" checked>
-          <label for="login-agreement">我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a></label>
-        </div>
-
-        <button class="btn-primary" id="btn-login" data-i18n="btn.login">登 录</button>
-      </div>
-
-      <!-- ============ 注册表单 ============ -->
-      <div id="register-form" style="display:none;">
-        <div class="input-group">
-          <label>账号</label>
-          <div class="input-wrap">
-            <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
-            <input type="text" id="reg-username" autocomplete="username" spellcheck="false" autocapitalize="off" data-i18n-placeholder="placeholder.account" placeholder="请输入账号">
-          </div>
-          <div class="form-tip">6-20 位字符，支持字母、数字、下划线</div>
-          <div class="field-error" role="alert" aria-live="polite"></div>
-        </div>
         <div class="input-group">
           <label>邮箱</label>
           <div class="input-wrap">
@@ -723,25 +580,6 @@
         window.__apexBroadcast = apexBC;
       }
     } catch (e) {}
-    // ========== 主题切换 ==========
-    (function () {
-      try {
-        var savedTheme = localStorage.getItem('apex_theme');
-        var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
-        var theme = savedTheme || (prefersLight ? 'light' : 'dark');
-        if (theme === 'light') document.body.classList.add('theme-light');
-        var btn = document.getElementById('theme-toggle');
-        if (btn) {
-          btn.textContent = theme === 'light' ? '☀️' : '🌙';
-          btn.addEventListener('click', function () {
-            var nowLight = document.body.classList.toggle('theme-light');
-            btn.textContent = nowLight ? '☀️' : '🌙';
-            try { localStorage.setItem('apex_theme', nowLight ? 'light' : 'dark'); } catch (e) {}
-          });
-        }
-      } catch (e) {}
-    })();
-
     window.__apex = { toast, showSuccess, switchTo };
   })();
   </script>
@@ -883,7 +721,7 @@
     // ========== Caps Lock 提示（所有密码框）==========
     ['login-password','reg-password','reg-confirm','forgot-newpwd','forgot-confirm'].forEach(function (id) {
       var el = document.getElementById(id);
-      if (el) attachCapsLockWarn(el);
+      if (el && typeof window.attachCapsLockWarn === "function") window.attachCapsLockWarn(el);
     });
 
         console.log('[Apex] 表单验证已加载');
@@ -1175,11 +1013,6 @@
       const pwdEl = document.getElementById('login-password');
       const account = accEl.value.trim();
       const password = pwdEl.value;
-      // 记住我：自动勾选
-      try {
-        var rm = document.getElementById('login-remember');
-        if (rm && localStorage.getItem('apex_remember') === '1') rm.checked = true;
-      } catch (e) {}
       if (!account) { showFieldError(accEl, '请输入账号', true); _formErr = true; if (!_formFirst) _formFirst = accEl; }
       if (!password) { showFieldError(pwdEl, '请输入密码', true); _formErr = true; if (!_formFirst) _formFirst = pwdEl; }
       if (!document.getElementById('login-agreement').checked) {
@@ -1201,11 +1034,6 @@
       if (result.success) {
         // 认证状态唯一可信来源：Session Cookie + /api/me
         // 此处不再写入 localStorage（避免「本地显示已登录，但 Session 已过期」错位）
-        try {
-          var rmEl2 = document.getElementById('login-remember');
-          if (rmEl2 && rmEl2.checked) localStorage.setItem('apex_remember', '1');
-          else localStorage.removeItem('apex_remember');
-        } catch (e) {}
         toast('登录成功', 'success');
         setTimeout(() => {
           window.showHomepage && window.showHomepage(result.user);
@@ -1622,7 +1450,6 @@
     window.apiClient.post('/api/logout', {}).then(() => {
       // 认证状态唯一来源是 Cookie，登出后刷新即可回到登录页
       try { if (window.__apexBroadcast) window.__apexBroadcast.postMessage({ type: 'logout' }); } catch (e) {}
-      try { localStorage.removeItem('apex_remember'); } catch (e) {}
       location.reload();
     });
   };
@@ -1845,31 +1672,6 @@
     console.log('[Apex] i18n 已启用，当前语言：', window.__currentLang);
   })();
   </script>
-
-<!-- apex-build-badge: 版本号用于诊断缓存 -->
-<div id="apex-build-badge" style {
-="position:fixed;bottom:4px;right:6px ;font-size:10px;color:#444;z-index:9999999;pointer //-events:none;font-family:monospace;letter-spacing:0.5px ;background:rgba(0,0,0,0.4显示);padding:2px 6px;border-radius:4px;">v20260926-2055</div>
-
-<script id="apex-build-badge-logic">
-  (function() {
-  // 显示：版本号 + SW 状态
-  setTimeout(function() {
-    var b = document.getElementById('apex-build-badge');
-    if (!b) return;
-    var swText = 'SW:?';
-    try {
-      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-        swText = 'SW:有';
-      } else if ('serviceWorker' in navigator) {
-        swText = 'SW:无';
-      } else {
-        swText = 'SW:不支持';
-      }
-    } catch (e) { swText = 'SW:err'; }
-    b.textContent = 'BUILD v20260926-2055 | ' + swText;
-  }, 500);
-})();
-</script>
 
 </body>
 </html>
