@@ -673,11 +673,6 @@
       });
     });
 
-    // ========== Caps Lock 提示（所有密码框）==========
-    ['login-password','reg-password','reg-confirm','forgot-newpwd','forgot-confirm'].forEach(function (id) {
-      var el = document.getElementById(id);
-      if (el) attachCapsLockWarn(el);
-    });
     window.__apex = { toast, showSuccess, switchTo };
   })();
   </script>
@@ -788,7 +783,13 @@
       });
     });
 
-    console.log('[Apex] 表单验证已加载');
+    // ========== Caps Lock 提示（所有密码框）==========
+    ['login-password','reg-password','reg-confirm','forgot-newpwd','forgot-confirm'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) attachCapsLockWarn(el);
+    });
+
+        console.log('[Apex] 表单验证已加载');
   })();
   </script>
 
