@@ -639,7 +639,7 @@
         localStorage.setItem('apex_user', JSON.stringify(result.user));
         toast('登录成功', 'success');
         setTimeout(() => {
-          document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#050505;color:#fff;font-size:24px;letter-spacing:4px;">正在开发中</div>';
+          window.showHomepage && window.showHomepage();
         }, 800);
       } else {
         toast(result.message || '登录失败', 'error');
@@ -981,7 +981,7 @@
       .then(data => {
         if (data && data.success) {
           console.log('[Apex] 自动登录成功：', data.user.username);
-          document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#050505;color:#fff;font-size:24px;letter-spacing:4px;">正在开发中</div>';
+          window.showHomepage && window.showHomepage();
         } else {
           console.log('[Apex] 未登录或登录已过期');
           localStorage.removeItem('apex_user');
@@ -1182,6 +1182,126 @@
 
     console.log('[Apex] 自研行为验证已启用');
   })();
+  </script>
+<div id="apex-homepage" style="display:none;">
+  <div style="max-width:480px;margin:0 auto;padding:16px;">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #2a2a2a;margin-bottom:20px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#d4af37,#8b6508);display:flex;align-items:center;justify-content:center;color:#000;font-weight:bold;font-size:16px;" id="user-avatar">A</div>
+        <div>
+          <div style="font-size:13px;font-weight:bold;color:#fff;" id="user-name">用户</div>
+          <div style="font-size:10px;color:#888;" id="user-email">email@example.com</div>
+        </div>
+      </div>
+      <button onclick="window.apexLogout && window.apexLogout()" style="background:transparent;border:1px solid #333;color:#888;padding:6px 12px;border-radius:20px;font-size:11px;cursor:pointer;">登出</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+      <a href="#" style="background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.3);border-radius:12px;padding:16px;text-decoration:none;color:#fff;display:flex;flex-direction:column;gap:6px;">
+        <span style="font-size:24px;">🎮</span>
+        <span style="font-size:13px;font-weight:bold;">游戏大厅</span>
+        <span style="font-size:10px;color:#888;">即将开放</span>
+      </a>
+      <a href="#" style="background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.3);border-radius:12px;padding:16px;text-decoration:none;color:#fff;display:flex;flex-direction:column;gap:6px;">
+        <span style="font-size:24px;">💰</span>
+        <span style="font-size:13px;font-weight:bold;">我的钱包</span>
+        <span style="font-size:10px;color:#888;">即将开放</span>
+      </a>
+      <a href="#" style="background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.3);border-radius:12px;padding:16px;text-decoration:none;color:#fff;display:flex;flex-direction:column;gap:6px;">
+        <span style="font-size:24px;">🎁</span>
+        <span style="font-size:13px;font-weight:bold;">活动中心</span>
+        <span style="font-size:10px;color:#888;">即将开放</span>
+      </a>
+      <a href="#" id="security-center-link" style="background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.3);border-radius:12px;padding:16px;text-decoration:none;color:#fff;display:flex;flex-direction:column;gap:6px;">
+        <span style="font-size:24px;">🛡️</span>
+        <span style="font-size:13px;font-weight:bold;">安全中心</span>
+        <span style="font-size:10px;color:#4ade80;">查看设备</span>
+      </a>
+    </div>
+
+    <div style="background:#0f0f0f;border:1px solid #2a2a2a;border-radius:12px;padding:16px;margin-bottom:20px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="font-size:16px;">📢</span>
+        <span style="font-size:13px;font-weight:bold;color:#fff;">系统公告</span>
+      </div>
+      <p style="font-size:12px;color:#888;line-height:1.6;">欢迎使用 Apex Entertainment。我们的游戏平台正在开发中，即将上线。</p>
+    </div>
+
+    <div style="background:#0f0f0f;border:1px solid #2a2a2a;border-radius:12px;padding:16px;margin-bottom:20px;">
+      <div style="font-size:13px;font-weight:bold;color:#fff;margin-bottom:12px;">账户信息</div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1a1a1a;font-size:12px;">
+        <span style="color:#888;">邮箱状态</span>
+        <span style="color:#4ade80;">已验证</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1a1a1a;font-size:12px;">
+        <span style="color:#888;">账户等级</span>
+        <span style="color:#d4af37;">标准用户</span>
+      </div>
+    </div>
+
+    <div style="text-align:center;color:#555;font-size:11px;padding:20px 0;">
+      © 2026 Apex Global Entertainment
+    </div>
+  </div>
+</div>
+
+<div id="security-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.8);z-index:9999;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#0f0f0f;border:1px solid #2a2a2a;border-radius:12px;max-width:420px;width:100%;padding:20px;max-height:80vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <span style="font-size:15px;font-weight:bold;color:#fff;">🛡️ 安全中心</span>
+      <button onclick="document.getElementById('security-modal').style.display='none'" style="background:transparent;border:none;color:#888;font-size:20px;cursor:pointer;">×</button>
+    </div>
+    <div style="font-size:12px;color:#888;margin-bottom:12px;">当前活跃设备：</div>
+    <div id="session-list" style="margin-bottom:16px;"></div>
+    <button onclick="revokeAllSessions()" style="width:100%;padding:10px;background:#e63946;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:bold;cursor:pointer;">撤销所有其他设备</button>
+  </div>
+</div>
+
+
+  <script id="apex-homepage-logic">
+  window.showHomepage = function() {
+    const user = JSON.parse(localStorage.getItem('apex_user') || '{}');
+    // 隐藏所有顶层元素
+    document.querySelectorAll('body > div').forEach(el => {
+      if (el.id === 'apex-homepage' || el.id === 'apex-toast' || el.id === 'security-modal') return;
+      el.style.display = 'none';
+    });
+    const hp = document.getElementById('apex-homepage');
+    if (!hp) return;
+    hp.style.display = 'block';
+    document.getElementById('user-name').textContent = user.username || '用户';
+    document.getElementById('user-email').textContent = user.email || '';
+    document.getElementById('user-avatar').textContent = (user.username || 'A')[0].toUpperCase();
+  };
+
+  document.addEventListener('click', async function(e) {
+    if (e.target.closest('#security-center-link')) {
+      e.preventDefault();
+      document.getElementById('security-modal').style.display = 'flex';
+      const res = await fetch('/api/sessions', { credentials: 'include' });
+      const data = await res.json();
+      const list = document.getElementById('session-list');
+      if (data.success && data.sessions) {
+        list.innerHTML = data.sessions.map(s =>
+          '<div style="padding:10px;background:#1a1a1a;border-radius:8px;margin-bottom:8px;font-size:11px;">' +
+          '<div style="color:' + (s.isCurrent ? '#4ade80' : '#fff') + ';font-weight:bold;">' + (s.isCurrent ? '当前设备' : '其他设备') + '</div>' +
+          '<div style="color:#666;margin-top:4px;">' + s.createdAt + '</div>' +
+          '</div>'
+        ).join('');
+      } else {
+        list.innerHTML = '<div style="color:#888;font-size:11px;">无法加载设备列表</div>';
+      }
+    }
+  });
+
+  window.revokeAllSessions = async function() {
+    if (!confirm('确认撤销所有其他设备？')) return;
+    const res = await fetch('/api/sessions', { method: 'DELETE', credentials: 'include' });
+    const data = await res.json();
+    alert(data.message || '操作完成');
+    if (data.success) document.getElementById('security-modal').style.display = 'none';
+  };
   </script>
 </body>
 </html>
