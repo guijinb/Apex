@@ -7,8 +7,3 @@ compatibility_flags = ["nodejs_compat"]
 binding = "apex_db"
 database_name = "apex-db"
 database_id = "1b144350-08a0-40cb-b4a5-1356ca53fadb"
-
-[vars]
-ENVIRONMENT = "production"
-PUBLIC_BASE_URL = "https://apex-8rg.pages.dev"
-EMAIL_FROM = "Apex Entertainment <noreply@notify.apextop.cc.cd>"
