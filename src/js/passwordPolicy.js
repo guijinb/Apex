@@ -7,7 +7,7 @@
 (function () {
   'use strict';
 
-  const STRONG_PASSWORD_RE = /^(?=.{8,128}$)(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).*$/;
+  const STRONG_PASSWORD_RE = /^(?=.{12,128}$)(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).*$/;
 
   const COMMON_PASSWORDS = new Set([
     'password', 'password1', 'password123', 'password1234', 'passw0rd', 'p@ssword', 'p@ssw0rd',
@@ -110,7 +110,7 @@
     const value = String(password || '');
 
     if (!STRONG_PASSWORD_RE.test(value)) {
-      return { valid: false, message: '密码需 8-128 位，含大小写字母、数字和特殊字符' };
+      return { valid: false, message: '密码需 12-128 位，含大小写字母、数字和特殊字符' };
     }
     const commonCandidates = [value.toLowerCase()].concat(normalizeLeetCandidates(value));
     for (let ci = 0; ci < commonCandidates.length; ci += 1) {

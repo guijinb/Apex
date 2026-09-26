@@ -84,7 +84,7 @@
     .btn-send-code { padding:0 12px; height:44px; background:transparent; border:1px solid var(--border); color:var(--text-muted); border-radius:8px; font-size:12px; cursor:pointer; white-space:nowrap; }
     .btn-send-code:disabled { opacity:0.5; }
     /* ============ 加载页 ============ */
-    #apex-splash-screen { position:fixed; top:0; left:0; width:100vw; height:100dvh; height:100vh; background:#050505; z-index:99999; display:none; flex-direction:column; align-items:center; justify-content:flex-start; padding:8px 0 10px 0; gap:6px; box-sizing:border-box; overflow:hidden; }
+    #apex-splash-screen { position:fixed; top:0; left:0; right:0; bottom:0; width:100vw; height:100vh; height:100dvh; min-height:100vh; min-height:100dvh; background:#050505; z-index:99999; display:none; flex-direction:column; align-items:center; justify-content:flex-start; padding:8px 0 10px 0; gap:6px; box-sizing:border-box; overflow:hidden; overscroll-behavior:none; touch-action:none; }
     #apex-splash-screen.hide { opacity:0; visibility:hidden; transition:opacity 0.5s, visibility 0.5s; }
     .splash-top-img { width:100%; height:30vh; object-fit:contain; margin-bottom:2px; background-color:#050505; }
     .splash-welcome { font-family:'Cinzel','Times New Roman',serif; font-size:16px; font-weight:700; letter-spacing:1px; background:linear-gradient(to bottom, #ffffff 0%, #d4af37 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:2px; text-align:center; }
@@ -365,7 +365,7 @@
           </div>
           <div class="pwd-strength" id="reg-strength"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
             <div class="pwd-checklist" id="reg-pwd-checklist"></div>
-          <div class="form-tip">至少 8 位，含大小写字母、数字和特殊字符</div>
+          <div class="form-tip">至少 12 位，含大小写字母、数字和特殊字符</div>
           <div class="field-error" role="alert" aria-live="polite"></div>
         </div>
         <div class="input-group">
@@ -417,7 +417,7 @@
             <div class="pwd-checklist" id="forgot-pwd-checklist"></div>
             <div class="pwd-actions"><span class="btn-toggle" onpointerdown="event.preventDefault(); window.togglePwd(this)"></span></div>
           </div>
-          <div class="form-tip">至少 8 位，含大小写字母、数字和特殊字符</div>
+          <div class="form-tip">至少 12 位，含大小写字母、数字和特殊字符</div>
           <div class="field-error" role="alert" aria-live="polite"></div>
         </div>
 
@@ -611,7 +611,7 @@ window.__apex = { toast, showSuccess, switchTo };
 
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const userRe = /^[a-zA-Z0-9_]{6,20}$/;
-    const strongPwdRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+    const strongPwdRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{12,}$/;
 
     function setErr(input, msg) {
       const wrap = input.closest('.input-wrap');
@@ -677,13 +677,14 @@ window.__apex = { toast, showSuccess, switchTo };
     if (regPwd) regPwd.addEventListener('input', function() {
       const bars = document.querySelectorAll('#reg-strength .bar');
       bars.forEach(b => b.className = 'bar');
+      renderPwdChecklist('reg-pwd-checklist', this.value);
       if (!this.value) return clearState(this);
       const regUserName = document.getElementById('reg-username');
       const ident = regUserName ? regUserName.value.trim() : '';
       const policy = window.ApexPasswordPolicy;
       const result = policy
         ? policy.scorePassword(this.value, ident)
-        : { level: strongPwdRe.test(this.value) ? 3 : (this.value.length >= 8 ? 2 : 1), valid: strongPwdRe.test(this.value), message: '需至少 8 位，含大小写字母、数字和特殊字符' };
+        : { level: strongPwdRe.test(this.value) ? 3 : (this.value.length >= 8 ? 2 : 1), valid: strongPwdRe.test(this.value), message: '需至少 12 位，含大小写字母、数字和特殊字符' };
       bars.forEach((b, i) => {
         if (i < result.level) b.classList.add(result.level === 1 ? 'active-weak' : (result.level === 2 ? 'active-medium' : 'active-strong'));
       });
@@ -710,12 +711,13 @@ window.__apex = { toast, showSuccess, switchTo };
     // 忘记密码 - 新密码
     const forgotNew = document.getElementById('forgot-newpwd');
     if (forgotNew) forgotNew.addEventListener('input', function() {
+      renderPwdChecklist('forgot-pwd-checklist', this.value);
       if (!this.value) return clearState(this);
       const forgotEmailEl = document.getElementById('forgot-email');
       const ident = forgotEmailEl ? forgotEmailEl.value.trim() : '';
       const policy = window.ApexPasswordPolicy;
       const r = policy ? policy.validatePassword(this.value, ident)
-                       : { valid: strongPwdRe.test(this.value), message: '需至少 8 位，含大小写字母、数字和特殊字符' };
+                       : { valid: strongPwdRe.test(this.value), message: '需至少 12 位，含大小写字母、数字和特殊字符' };
       r.valid ? setOk(this) : setErr(this, r.message || '密码强度不足');
       renderPwdChecklist('forgot-pwd-checklist', this.value);
     });
@@ -830,7 +832,7 @@ window.__apex = { toast, showSuccess, switchTo };
       if (!el) return;
       var v = String(password || '');
       var items = [
-        { label: '8 位以上',    ok: v.length >= 8 && v.length <= 128 },
+        { label: '12 位以上',    ok: v.length >= 12 && v.length <= 128 },
         { label: '含小写',       ok: /[a-z]/.test(v) },
         { label: '含大写',       ok: /[A-Z]/.test(v) },
         { label: '含数字',       ok: /[0-9]/.test(v) },
@@ -1047,7 +1049,7 @@ window.__apex = { toast, showSuccess, switchTo };
 
       const captchaToken = document.getElementById('login-captcha').dataset.token || '';
       if (!captchaToken) { showCaptchaError(document.getElementById('forgot-captcha'), '请先完成人机验证'); return; }
-      if (_formErr) { if (_formFirst) _formFirst.focus(); return; }
+      if (_formErr) return;
       setLoading(this, true);
       const result = await apiPost('/api/login', { account, password, captchaToken });
       setLoading(this, false);
@@ -1086,7 +1088,7 @@ window.__apex = { toast, showSuccess, switchTo };
       const confirm = confirmEl.value;
       const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       const userRe = /^[a-zA-Z0-9_]{6,20}$/;
-      const strongPwdRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+      const strongPwdRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{12,}$/;
       if (!username) { showFieldError(userEl, '请输入账号', true); _formErr = true; if (!_formFirst) _formFirst = userEl; }
       if (!userRe.test(username)) { showFieldError(userEl, '账号需 6-20 位，仅限字母、数字、下划线', true); _formErr = true; if (!_formFirst) _formFirst = userEl; }
       if (!email) { showFieldError(emailEl, '请输入邮箱', true); _formErr = true; if (!_formFirst) _formFirst = emailEl; }
@@ -1099,7 +1101,7 @@ window.__apex = { toast, showSuccess, switchTo };
       if (!pwdCheck.valid) { showFieldError(regPwdEl, pwdCheck.message || '密码强度不足'); return; }
       if (!confirm) { showFieldError(confirmEl, '请再次输入密码', true); _formErr = true; if (!_formFirst) _formFirst = confirmEl; }
       else if (password !== confirm) { showFieldError(confirmEl, '两次密码不一致', true); _formErr = true; if (!_formFirst) _formFirst = confirmEl; }
-      if (_formErr) { if (_formFirst) try { _formFirst.focus(); } catch (e) {} return; }
+      if (_formErr) return;
       if (!document.getElementById('reg-agreement').checked) {
         showCheckboxError(document.getElementById('reg-agreement'), '请先阅读并同意用户协议与隐私政策');
         return;
@@ -1183,7 +1185,7 @@ window.__apex = { toast, showSuccess, switchTo };
 
       const captchaToken = document.getElementById('forgot-captcha').dataset.token || '';
       if (!captchaToken) { showCaptchaError(document.getElementById('login-captcha'), '请先完成人机验证'); return; }
-      if (_formErr) { if (_formFirst) _formFirst.focus(); return; }
+      if (_formErr) return;
       setLoading(this, true);
       const result = await apiPost('/api/reset-password', { email, code, newPassword, captchaToken });
       setLoading(this, false);
@@ -1261,6 +1263,10 @@ window.__apex = { toast, showSuccess, switchTo };
       }
 
       splash.style.display = 'flex';
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
 
       const codeLog = document.getElementById('splash-code-log');
       const progressBar = document.getElementById('splash-progress-bar');
@@ -1326,6 +1332,10 @@ window.__apex = { toast, showSuccess, switchTo };
           setTimeout(() => {
             splash.classList.add('hide');
             sessionStorage.setItem('apex_splash_shown', 'true');
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
           }, 800);
         }
       }, 100);

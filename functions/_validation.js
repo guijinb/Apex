@@ -7,7 +7,7 @@
 export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const USERNAME_RE = /^[a-zA-Z0-9_]{6,20}$/;
 // 长度 8-128，至少含小写/大写/数字/特殊四类
-export const STRONG_PASSWORD_RE = /^(?=.{8,128}$)(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).*$/;
+export const STRONG_PASSWORD_RE = /^(?=.{12,128}$)(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).*$/;
 
 // 常见弱密码黑名单（小写比对）
 const COMMON_PASSWORDS = new Set([
@@ -132,7 +132,7 @@ export function validatePassword(password, identifier = '') {
 
   // 1) 基础规则：长度 + 4 类字符
   if (!STRONG_PASSWORD_RE.test(value)) {
-    return { valid: false, message: '密码需 8-128 位，含大小写字母、数字和特殊字符' };
+    return { valid: false, message: '密码需 12-128 位，含大小写字母、数字和特殊字符' };
   }
 
   // 2) 常见弱密码黑名单
