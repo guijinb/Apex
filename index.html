@@ -1155,7 +1155,9 @@
         ? policy.validatePassword(password, username)
         : { valid: strongPwdRe.test(password), message: '密码强度不足' };
       if (!pwdCheck.valid) { showFieldError(regPwdEl, pwdCheck.message || '密码强度不足'); return; }
-      if (password !== confirm) { showFieldError(confirmEl, '两次密码不一致'); return; }
+      if (!confirm) { showFieldError(confirmEl, '请再次输入密码', true); _formErr = true; if (!_formFirst) _formFirst = confirmEl; }
+      else if (password !== confirm) { showFieldError(confirmEl, '两次密码不一致', true); _formErr = true; if (!_formFirst) _formFirst = confirmEl; }
+      if (_formErr) { if (_formFirst) try { _formFirst.focus(); } catch (e) {} return; }
       if (!document.getElementById('reg-agreement').checked) {
         showCheckboxError(document.getElementById('reg-agreement'), '请先阅读并同意用户协议与隐私政策');
         return;
@@ -1167,7 +1169,6 @@
 
       const captchaToken = document.getElementById('reg-captcha').dataset.token || '';
       if (!captchaToken) { showCaptchaError(document.getElementById('reg-captcha'), '请先完成人机验证'); return; }
-      if (_formErr) { if (_formFirst) _formFirst.focus(); return; }
       setLoading(this, true);
       const result = await apiPost('/api/register', { username, email, password, captchaToken });
       setLoading(this, false);
