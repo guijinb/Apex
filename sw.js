@@ -1,54 +1,44 @@
-// Apex Service Worker - 离线缓存
-// 每次部署前后端不兼容变更时，请手动更新 CACHE_VERSION。
-// 变更后浏览器会自动重新安装 SW 并清理旧缓存，
-// 避免出现"旧 HTML + 新 API"的兼容性问题。
-const CACHE_VERSION = '20260926b';
-const CACHE_NAME = 'apex-' + CACHE_VERSION;
-const CACHE_URLS = [
-  '/',
-  '/index.html',
-  '/logo.png',
-  '/splash-top.webp'
-];
+// Apex Service Worker — 自杀/注销版
+//
+// 说明：旧版 SW 会缓存 HTML 导致用户看到过期内容。
+// 本版本负责：
+//   1. 清空所有缓存
+//   2. 注销自己（unregister）
+//   3. 通知所有客户端重新加载
+//
+// 一旦所有用户设备升级到此版本，Apex 将不再使用 Service Worker。
 
-// 安装：预缓存核心资源
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(CACHE_URLS))
-  );
+self.addEventListener('install', function (event) {
+  // 立即激活，不等待旧版本
   self.skipWaiting();
 });
 
-// 激活：清理旧缓存
-self.addEventListener('activate', event => {
+self.addEventListener('activate', function (event) {
   event.waitUntil(
-    caches.keys().then(names => Promise.all(
-      names.filter(n => n !== CACHE_NAME).map(n => caches.delete(n))
-    ))
+    (async function () {
+      // 1) 清空所有缓存
+      try {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(function (k) { return caches.delete(k); }));
+      } catch (e) {}
+
+      // 2) 注销自己
+      try {
+        await self.registration.unregister();
+      } catch (e) {}
+
+      // 3) 通知所有客户端重新加载（让用户看到最新 HTML）
+      try {
+        const clients = await self.clients.matchAll({ type: 'window' });
+        clients.forEach(function (c) {
+          try { c.navigate(c.url); } catch (e) {}
+        });
+      } catch (e) {}
+    })()
   );
-  self.clients.claim();
 });
 
-// 拦截请求
-self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
-
-  // API 请求直接走网络，不缓存
-  if (url.pathname.startsWith('/api/')) {
-    return;
-  }
-
-  // 其他请求：网络优先，失败时回退缓存
-  event.respondWith(
-    fetch(event.request)
-      .then(response => {
-        // 成功响应，更新缓存
-        if (response.ok && event.request.method === 'GET') {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-        }
-        return response;
-      })
-      .catch(() => caches.match(event.request))
-  );
+// fetch 直接走网络（不做任何缓存）
+self.addEventListener('fetch', function () {
+  // 不调用 respondWith → 走浏览器默认行为
 });
