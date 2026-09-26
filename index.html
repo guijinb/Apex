@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#050505">
   <title>Apex - Global Entertainment</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
     :root { --bg:#050505; --card-bg:#0f0f0f; --gold:#d4af37; --text:#ffffff; --text-muted:#888888; --border:#2a2a2a; --green:#4ade80; --red:#e63946; }
     * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
@@ -89,6 +90,15 @@
     .splash-top-img { width:100%; height:30vh; object-fit:contain; margin-bottom:2px; background-color:#050505; }
     .splash-welcome { font-family:'Cinzel','Times New Roman',serif; font-size:16px; font-weight:700; letter-spacing:1px; background:linear-gradient(to bottom, #ffffff 0%, #d4af37 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:2px; text-align:center; }
     .splash-terminal-box { width:95%; height:36vh; display:flex; border:1px solid #444; border-radius:8px; background:#0a0a0a; margin-bottom:4px; overflow:hidden; }
+    /* ============ 老虎机 A-P-E-X ============ */
+    .apex-slot { display:flex; gap:14px; justify-content:center; align-items:center; width:100%; height:100%; padding:16px; }
+    .apex-reel { width:64px; height:100px; overflow:hidden; position:relative; border:1px solid rgba(212,175,55,0.35); border-radius:10px; background:linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(30,22,0,0.85) 50%, rgba(0,0,0,0.7) 100%); box-shadow: inset 0 6px 14px rgba(0,0,0,0.85), 0 0 24px rgba(212,175,55,0.15); }
+    .apex-reel::before, .apex-reel::after { content:''; position:absolute; left:0; right:0; height:26px; z-index:2; pointer-events:none; }
+    .apex-reel::before { top:0; background:linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0) 100%); }
+    .apex-reel::after { bottom:0; background:linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0) 100%); }
+    .apex-reel-strip { position:absolute; top:0; left:0; right:0; display:flex; flex-direction:column; animation: apex-reel-spin 4.2s cubic-bezier(0.15, 0.85, 0.25, 1) forwards; animation-delay: var(--delay, 0s); }
+    .apex-reel-strip span { flex:0 0 100px; height:100px; line-height:100px; text-align:center; font-family:'Press Start 2P', 'Courier New', monospace; font-size:36px; background:linear-gradient(180deg, #f5e6a8 0%, #d4af37 45%, #8b6508 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    @keyframes apex-reel-spin { 0% { transform: translateY(-4800px); } 100% { transform: translateY(0); } }
     .splash-code-area { flex:1.5; padding:8px; overflow-y:auto; font-family:'Courier New',monospace; font-size:11px; line-height:1.5; color:#4ade80; white-space:pre-wrap; word-break:break-all; border-right:1px solid #222; }
     .splash-code-area::-webkit-scrollbar { display:none; }
     .code-keyword { color:#c678dd; }
@@ -237,13 +247,21 @@
   <div id="apex-splash-screen">
     <img src="./splash-top.webp" alt="Splash" class="splash-top-img" fetchpriority="high" loading="eager" decoding="async">
     <div class="splash-welcome">欢迎来到 APEX ENTERTAINMENT</div>
+    <!-- 老虎机滚动 A-P-E-X -->
     <div class="splash-terminal-box">
-      <div class="splash-code-area" id="splash-code-log"></div>
-      <div class="splash-system-list">
-        <div class="splash-system-item" id="sys-1"><span class="sys-dot"></span>网络通信系统</div>
-        <div class="splash-system-item" id="sys-2"><span class="sys-dot"></span>安全防护系统</div>
-        <div class="splash-system-item" id="sys-3"><span class="sys-dot"></span>后端服务系统</div>
-        <div class="splash-system-item" id="sys-4"><span class="sys-dot"></span>前端渲染系统</div>
+      <div class="apex-slot">
+        <div class="apex-reel" style="--delay:0s"><div class="apex-reel-strip">
+          <span>A</span>          <span>V</span>          <span>Y</span>          <span>B</span>          <span>E</span>          <span>H</span>          <span>B</span>          <span>E</span>          <span>H</span>          <span>K</span>          <span>N</span>          <span>Q</span>          <span>T</span>          <span>W</span>          <span>Z</span>          <span>C</span>          <span>F</span>          <span>I</span>          <span>L</span>          <span>O</span>          <span>R</span>          <span>U</span>          <span>X</span>          <span>A</span>          <span>D</span>          <span>G</span>          <span>J</span>          <span>M</span>          <span>P</span>          <span>S</span>          <span>V</span>          <span>Y</span>          <span>B</span>          <span>E</span>          <span>H</span>          <span>K</span>          <span>N</span>          <span>Q</span>          <span>T</span>          <span>W</span>          <span>Z</span>          <span>C</span>          <span>F</span>          <span>I</span>          <span>L</span>          <span>O</span>          <span>R</span>          <span>U</span>
+        </div></div>
+        <div class="apex-reel" style="--delay:0.25s"><div class="apex-reel-strip">
+          <span>P</span>          <span>X</span>          <span>E</span>          <span>L</span>          <span>S</span>          <span>Z</span>          <span>L</span>          <span>S</span>          <span>Z</span>          <span>G</span>          <span>N</span>          <span>U</span>          <span>B</span>          <span>I</span>          <span>P</span>          <span>W</span>          <span>D</span>          <span>K</span>          <span>R</span>          <span>Y</span>          <span>F</span>          <span>M</span>          <span>T</span>          <span>A</span>          <span>H</span>          <span>O</span>          <span>V</span>          <span>C</span>          <span>J</span>          <span>Q</span>          <span>X</span>          <span>E</span>          <span>L</span>          <span>S</span>          <span>Z</span>          <span>G</span>          <span>N</span>          <span>U</span>          <span>B</span>          <span>I</span>          <span>P</span>          <span>W</span>          <span>D</span>          <span>K</span>          <span>R</span>          <span>Y</span>          <span>F</span>          <span>M</span>
+        </div></div>
+        <div class="apex-reel" style="--delay:0.5s"><div class="apex-reel-strip">
+          <span>E</span>          <span>Z</span>          <span>K</span>          <span>V</span>          <span>G</span>          <span>R</span>          <span>V</span>          <span>G</span>          <span>R</span>          <span>C</span>          <span>N</span>          <span>Y</span>          <span>J</span>          <span>U</span>          <span>F</span>          <span>Q</span>          <span>B</span>          <span>M</span>          <span>X</span>          <span>I</span>          <span>T</span>          <span>E</span>          <span>P</span>          <span>A</span>          <span>L</span>          <span>W</span>          <span>H</span>          <span>S</span>          <span>D</span>          <span>O</span>          <span>Z</span>          <span>K</span>          <span>V</span>          <span>G</span>          <span>R</span>          <span>C</span>          <span>N</span>          <span>Y</span>          <span>J</span>          <span>U</span>          <span>F</span>          <span>Q</span>          <span>B</span>          <span>M</span>          <span>X</span>          <span>I</span>          <span>T</span>          <span>E</span>
+        </div></div>
+        <div class="apex-reel" style="--delay:0.75s"><div class="apex-reel-strip">
+          <span>X</span>          <span>P</span>          <span>G</span>          <span>X</span>          <span>O</span>          <span>F</span>          <span>X</span>          <span>O</span>          <span>F</span>          <span>W</span>          <span>N</span>          <span>E</span>          <span>V</span>          <span>M</span>          <span>D</span>          <span>U</span>          <span>L</span>          <span>C</span>          <span>T</span>          <span>K</span>          <span>B</span>          <span>S</span>          <span>J</span>          <span>A</span>          <span>R</span>          <span>I</span>          <span>Z</span>          <span>Q</span>          <span>H</span>          <span>Y</span>          <span>P</span>          <span>G</span>          <span>X</span>          <span>O</span>          <span>F</span>          <span>W</span>          <span>N</span>          <span>E</span>          <span>V</span>          <span>M</span>          <span>D</span>          <span>U</span>          <span>L</span>          <span>C</span>          <span>T</span>          <span>K</span>          <span>B</span>          <span>S</span>
+        </div></div>
       </div>
     </div>
     <div class="splash-progress-container">
@@ -1281,57 +1299,8 @@ window.__apex = { toast, showSuccess, switchTo };
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
 
-      const codeLog = document.getElementById('splash-code-log');
       const progressBar = document.getElementById('splash-progress-bar');
       const progressText = document.getElementById('splash-progress-text');
-      const sysItems = [
-        document.getElementById('sys-1'), document.getElementById('sys-2'),
-        document.getElementById('sys-3'), document.getElementById('sys-4')
-      ];
-
-      const codeSnippets = [
-        '<span class="code-keyword">import</span> { ApexCore } <span class="code-keyword">from</span> <span class="code-string">"@apex/core"</span>;',
-        '<span class="code-keyword">import</span> { NetworkModule } <span class="code-keyword">from</span> <span class="code-string">"@apex/network"</span>;',
-        '',
-        'async function initSystem() {',
-        '  console.log(<span class="code-string">"初始化 Apex 核心引擎..."</span>);',
-        '  const core = new ApexCore();',
-        '  const net = new NetworkModule();',
-        '  await net.connect(<span class="code-string">"global-network"</span>);',
-        '  console.log(<span class="code-string">"网络通信已建立"</span>);',
-        '  await core.security.encrypt();',
-        '  console.log(<span class="code-string">"安全防护已启动"</span>);',
-        '  await core.backend.deploy();',
-        '  console.log(<span class="code-string">"后端服务已就绪"</span>);',
-        '  await core.frontend.render();',
-        '  console.log(<span class="code-string">"前端渲染已完成"</span>);',
-        '}',
-        '',
-        'initSystem().then(() => {',
-        '  console.log(<span class="code-success">"欢迎来到 Apex Entertainment 系统加载完毕"</span>);',
-        '});'
-      ];
-
-      let lineIndex = 0;
-      const stepTime = 6500 / codeSnippets.length;
-      function typeCode() {
-        if (lineIndex < codeSnippets.length) {
-          const line = document.createElement('div');
-          line.innerHTML = codeSnippets[lineIndex];
-          codeLog.appendChild(line);
-          codeLog.scrollTop = codeLog.scrollHeight;
-          lineIndex++;
-          setTimeout(typeCode, stepTime);
-        }
-      }
-      typeCode();
-
-      sysItems.forEach((item, index) => {
-        setTimeout(() => {
-          item.classList.add('active');
-          setTimeout(() => item.classList.add('checked'), 1000);
-        }, index * 1600 + 500);
-      });
 
       let progress = 0;
       const interval = setInterval(() => {
