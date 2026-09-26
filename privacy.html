@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>隐私政策 · Apex</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, system-ui, sans-serif; background: #050505; color: #e0e0e0; min-height: 100vh; padding: 24px; line-height: 1.7; }
+  .container { max-width: 720px; margin: 0 auto; }
+  h1 { color: #d4af37; font-size: 24px; letter-spacing: 2px; margin-bottom: 8px; }
+  .updated { color: #666; font-size: 12px; margin-bottom: 32px; }
+  h2 { color: #d4af37; font-size: 16px; margin-top: 28px; margin-bottom: 12px; }
+  p, li { font-size: 14px; color: #b0b0b0; margin-bottom: 10px; }
+  ul { padding-left: 20px; }
+  a { color: #d4af37; text-decoration: none; }
+  .footer { text-align: center; color: #555; font-size: 11px; margin-top: 40px; padding: 20px 0; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>隐私政策</h1>
+    <div class="updated">最后更新：2026 年 9 月</div>
+
+    <h2>1. 我们收集的信息</h2>
+    <p>当您使用 Apex Entertainment 平台时，我们可能收集以下信息：</p>
+    <ul>
+      <li>账号信息：用户名、邮箱地址</li>
+      <li>登录凭证：加密后的密码哈希（我们无法读取您的明文密码）</li>
+      <li>技术信息：IP 地址、User-Agent、设备类型</li>
+      <li>行为数据：用于安全验证的鼠标/触摸行为信号</li>
+      <li>日志数据：登录时间、API 请求、错误信息</li>
+    </ul>
+
+    <h2>2. 信息使用方式</h2>
+    <p>我们收集的信息仅用于：</p>
+    <ul>
+      <li>提供、维护和改进我们的服务</li>
+      <li>验证您的身份并保护账号安全</li>
+      <li>防止欺诈、滥用和机器人攻击</li>
+      <li>遵守法律和监管要求</li>
+    </ul>
+
+    <h2>3. 信息存储与保护</h2>
+    <p>您的数据存储在 Cloudflare 全球分布式网络（D1 数据库）中，采用以下安全措施：</p>
+    <ul>
+      <li>密码使用 PBKDF2-SHA256 加盐哈希（600,000 次迭代）</li>
+      <li>Session Token 在服务端仅存储哈希值</li>
+      <li>全站 HTTPS 加密传输（HSTS 强制）</li>
+      <li>严格的 CSP、CORS 安全响应头</li>
+    </ul>
+
+    <h2>4. 信息共享</h2>
+    <p>我们不会出售、交易或出租您的个人信息。仅在以下情况下可能共享：</p>
+    <ul>
+      <li>法律要求或合法请求</li>
+      <li>保护用户或公众的安全</li>
+      <li>与信任的第三方服务商（邮件服务）共享必要信息</li>
+    </ul>
+
+    <h2>5. 您的权利</h2>
+    <p>您有权：</p>
+    <ul>
+      <li>访问、更正或删除您的个人信息</li>
+      <li>随时删除您的账号（通过安全中心）</li>
+      <li>退出所有登录设备</li>
+      <li>联系我们了解数据使用情况</li>
+    </ul>
+
+    <h2>6. Cookie 使用</h2>
+    <p>我们使用以下 Cookie：</p>
+    <ul>
+      <li><strong>apex_session</strong>：登录状态（HttpOnly + Secure + SameSite）</li>
+      <li><strong>apex_csrf</strong>：CSRF 防护 Token</li>
+    </ul>
+    <p>我们不使用第三方追踪 Cookie。</p>
+
+    <h2>7. 数据保留期限</h2>
+    <p>账号数据在您的账号存续期间保留。日志数据保留 30-90 天。删除账号后，相关数据将被永久删除。</p>
+
+    <h2>8. 政策更新</h2>
+    <p>我们可能不时更新本政策。重大变更会通过邮件或站内通知告知您。</p>
+
+    <h2>9. 联系我们</h2>
+    <p>如有疑问，请联系：<a href="mailto:privacy@apex-entertainment.com">privacy@apex-entertainment.com</a></p>
+
+    <div class="footer">
+      <a href="/">← 返回首页</a> · <a href="/terms.html">用户协议</a>
+      <br><br>© 2026 Apex Global Entertainment
+    </div>
+  </div>
+</body>
+</html>
