@@ -1,4 +1,4 @@
-import { verifyPassword, generateToken, sanitize, jsonResponse, checkRateLimit, verifyCaptchaToken, buildSessionCookie } from '../_utils.js';
+import { verifyPassword, hashPassword, needsRehash, generateToken, sanitize, jsonResponse, checkRateLimit, verifyCaptchaToken, buildSessionCookie } from '../_utils.js';
 
 export async function onRequestPost(context) {
   try {
@@ -23,6 +23,19 @@ export async function onRequestPost(context) {
     ).bind(account, account).first();
     if (!user || !(await verifyPassword(password, user.password_hash))) {
       return jsonResponse({ success: false, message: '账号或密码错误' }, 401);
+    }
+
+    // 自动升级旧密码哈希（用户无感知）
+    if (needsRehash(user.password_hash)) {
+      try {
+        const newHash = await hashPassword(password);
+        await env.apex_db.prepare(
+          'UPDATE users SET password_hash = ? WHERE id = ?'
+        ).bind(newHash, user.id).run();
+        console.log('[Apex] 密码哈希已升级：user_id=' + user.id);
+      } catch (e) {
+        console.error('[Apex] 哈希升级失败：', e.message);
+      }
     }
 
     const sessionToken = generateToken();

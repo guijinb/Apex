@@ -1,35 +1,55 @@
 // 密码哈希（PBKDF2 + SHA-256，10万次迭代）
 export async function hashPassword(password) {
+  const ITERATIONS = 600000;
   const encoder = new TextEncoder();
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const keyMaterial = await crypto.subtle.importKey(
     'raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']
   );
   const hash = await crypto.subtle.deriveBits(
-    { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+    { name: 'PBKDF2', salt, iterations: ITERATIONS, hash: 'SHA-256' },
     keyMaterial, 256
   );
   const saltHex = Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join('');
   const hashHex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-  return `${saltHex}:${hashHex}`;
+  return `v1:${ITERATIONS}:${saltHex}:${hashHex}`;
 }
 
 export async function verifyPassword(password, stored) {
-  const [saltHex, hashHex] = stored.split(':');
-  const salt = new Uint8Array(saltHex.match(/.{1,2}/g).map(b => parseInt(b, 16)));
   const encoder = new TextEncoder();
+  let saltHex, hashHex, iterations;
+
+  if (stored.startsWith('v1:')) {
+    const parts = stored.split(':');
+    iterations = parseInt(parts[1]);
+    saltHex = parts[2];
+    hashHex = parts[3];
+  } else {
+    const [oldSalt, oldHash] = stored.split(':');
+    saltHex = oldSalt;
+    hashHex = oldHash;
+    iterations = 100000;
+  }
+
+  const salt = new Uint8Array(saltHex.match(/.{1,2}/g).map(b => parseInt(b, 16)));
   const keyMaterial = await crypto.subtle.importKey(
     'raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']
   );
   const hash = await crypto.subtle.deriveBits(
-    { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+    { name: 'PBKDF2', salt, iterations, hash: 'SHA-256' },
     keyMaterial, 256
   );
   const newHashHex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
   return newHashHex === hashHex;
 }
 
-// 生成安全的会话 Token
+export function needsRehash(stored) {
+  if (!stored) return true;
+  if (!stored.startsWith('v1:')) return true;
+  const parts = stored.split(':');
+  return parseInt(parts[1]) < 600000;
+}
+
 export function generateToken() {
   const bytes = crypto.getRandomValues(new Uint8Array(32));
   return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
