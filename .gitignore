@@ -2,3 +2,6 @@
 backups/*.sql
 backups/*.sql.gz
 backups/*.sha256
+
+# Wrangler cache (contains account info)
+.wrangler/
