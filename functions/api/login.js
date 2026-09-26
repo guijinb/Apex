@@ -1,3 +1,4 @@
+import { hashSessionToken } from '../_session.js';
 import { verifyPassword, hashPassword, needsRehash, generateToken, sanitize, jsonResponse, checkRateLimit, verifyCaptchaTokenV2, buildSessionCookie } from '../_utils.js';
 
 export async function onRequestPost(context) {
@@ -39,10 +40,11 @@ export async function onRequestPost(context) {
     }
 
     const sessionToken = generateToken();
+    const tokenHash = await hashSessionToken(sessionToken);
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
     await env.apex_db.prepare(
       'INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)'
-    ).bind(sessionToken, user.id, expiresAt).run();
+    ).bind(tokenHash, user.id, expiresAt).run();
 
     return new Response(JSON.stringify({
       success: true,

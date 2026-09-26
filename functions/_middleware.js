@@ -1,0 +1,32 @@
+// Pages Functions 中间件：为每个请求生成 Request ID
+export async function onRequest(context) {
+  const requestId = 'apx_' + Date.now().toString(36) + '_' +
+    Math.random().toString(36).substring(2, 10);
+
+  context.data = context.data || {};
+  context.data.requestId = requestId;
+
+  try {
+    const response = await context.next();
+    const newHeaders = new Headers(response.headers);
+    newHeaders.set('X-Request-ID', requestId);
+    newHeaders.set('X-Content-Type-Options', 'nosniff');
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: newHeaders,
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({
+      success: false,
+      message: '服务器内部错误',
+      request_id: requestId,
+    }), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'X-Request-ID': requestId,
+      },
+    });
+  }
+}

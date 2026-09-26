@@ -1,3 +1,4 @@
+import { hashSessionToken } from '../_session.js';
 import { jsonResponse, parseCookies } from '../_utils.js';
 
 export async function onRequestGet(context) {
@@ -10,11 +11,12 @@ export async function onRequestGet(context) {
       return jsonResponse({ success: false, message: '未登录' }, 401);
     }
 
+    const tokenHash = await hashSessionToken(token);
     const session = await env.apex_db.prepare(
       `SELECT s.id, s.expires_at, u.id as user_id, u.username, u.email
        FROM sessions s JOIN users u ON s.user_id = u.id
        WHERE s.id = ?`
-    ).bind(token).first();
+    ).bind(tokenHash).first();
 
     if (!session || new Date(session.expires_at) < new Date()) {
       return new Response(JSON.stringify({ success: false, message: '登录已过期' }), {

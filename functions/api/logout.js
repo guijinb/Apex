@@ -1,3 +1,4 @@
+import { hashSessionToken } from '../_session.js';
 import { jsonResponse, parseCookies, buildClearCookie } from '../_utils.js';
 
 export async function onRequestPost(context) {
@@ -7,8 +8,8 @@ export async function onRequestPost(context) {
     const token = cookies['apex_session'];
 
     if (token) {
-      // 从数据库中删除这个 Session
-      await env.apex_db.prepare('DELETE FROM sessions WHERE id = ?').bind(token).run();
+      const tokenHash = await hashSessionToken(token);
+      await env.apex_db.prepare('DELETE FROM sessions WHERE id = ?').bind(tokenHash).run();
     }
 
     return new Response(JSON.stringify({ success: true, message: '已登出' }), {

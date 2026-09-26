@@ -5,7 +5,15 @@ export async function onRequestPost(context) {
     const { request, env } = context;
     const body = await request.json();
     const type = sanitize(body.type || 'unknown').substring(0, 20);
-    const message = sanitize(body.message || '').substring(0, 500);
+    // 日志脱敏：过滤敏感关键词
+    const rawMessage = String(body.message || '');
+    const message = rawMessage
+      .replace(/password[=:][^\s,}]*/gi, 'password=[REDACTED]')
+      .replace(/token[=:][^\s,}]*/gi, 'token=[REDACTED]')
+      .replace(/Bearer\s+[A-Za-z0-9_\-]+/g, 'Bearer [REDACTED]')
+      .replace(/cookie[=:][^\s,}]*/gi, 'cookie=[REDACTED]')
+      .replace(/am_us_[A-Za-z0-9]+/g, 'am_us_[REDACTED]')
+      .substring(0, 500);
     const url = sanitize(body.url || '').substring(0, 300);
     const ua = (request.headers.get('User-Agent') || '').substring(0, 200);
     const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
