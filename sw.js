@@ -2,7 +2,7 @@
 // 每次部署前后端不兼容变更时，请手动更新 CACHE_VERSION。
 // 变更后浏览器会自动重新安装 SW 并清理旧缓存，
 // 避免出现"旧 HTML + 新 API"的兼容性问题。
-const CACHE_VERSION = '20260926';
+const CACHE_VERSION = '20260926b';
 const CACHE_NAME = 'apex-' + CACHE_VERSION;
 const CACHE_URLS = [
   '/',

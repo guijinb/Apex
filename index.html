@@ -1185,42 +1185,6 @@
   })();
   </script>
 
-  <script id="apex-client-rate-limit">
-  (function() {
-    const clickHistory = {};
-    function checkClientRate(key, maxCount, windowMs) {
-      const now = Date.now();
-      if (!clickHistory[key]) clickHistory[key] = [];
-      clickHistory[key] = clickHistory[key].filter(t => now - t < windowMs);
-      if (clickHistory[key].length >= maxCount) return false;
-      clickHistory[key].push(now);
-      return true;
-    }
-
-    document.addEventListener('click', function(e) {
-      const btn = e.target.closest('.btn-primary, #btn-send-code');
-      if (!btn || btn.disabled) return;
-      const key = btn.id || btn.className;
-      if (!checkClientRate(key, 3, 2000)) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        // 使用 toast 代替 alert，避免打断体验
-        let t = document.getElementById('apex-toast');
-        if (!t) { t = document.createElement('div'); t.id = 'apex-toast'; document.body.appendChild(t); }
-        t.textContent = '操作过于频繁，请 2 秒后再试';
-        t.style.background = '#e63946';
-        t.style.color = '#fff';
-        t.style.opacity = '1';
-        clearTimeout(t._timer);
-        t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2000);
-      }
-    }, true);
-
-    console.log('[Apex] 前端速率限制已启用');
-  })();
-  </script>
-
-
   <script id="apex-sw-register">
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
