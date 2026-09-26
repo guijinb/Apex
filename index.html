@@ -137,6 +137,18 @@
     .checkbox-group .checkbox-error.show { display: block; }
     .capslock-warn { font-size: 11px; color: #e6a817; margin-top: 4px; display: none; }
     .capslock-warn.show { display: block; }
+    body.theme-light { background: #f5f5f5; color: #222; }
+    body.theme-light .auth-card { background: #fff; border-color: #ddd; }
+    body.theme-light .input-wrap { background: #fafafa; border-color: #ccc; }
+    body.theme-light .input-wrap input { color: #222; }
+    body.theme-light .tab { color: #666; }
+    body.theme-light .tab.active { background: #000; color: #fff; }
+    body.theme-light .form-tip, body.theme-light .updated { color: #666; }
+    .theme-toggle { position: fixed; top: 16px; left: 16px; width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); color: #fff; cursor: pointer; z-index: 999; display: flex; align-items: center; justify-content: center; font-size: 18px; backdrop-filter: blur(5px); }
+    .theme-toggle:hover { background: rgba(0,0,0,0.7); }
+    .form-fade-in { animation: apexFadeIn 0.25s ease-in-out; }
+    @keyframes apexFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @media (prefers-reduced-motion: reduce) { .form-fade-in, .shake { animation: none !important; } }
     .pwd-checklist { font-size: 11px; color: #888; margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px 10px; }
     .pwd-checklist .item { display: inline-flex; align-items: center; gap: 3px; transition: color 0.2s; }
     .pwd-checklist .item::before { content: "\25CB"; color: #555; }
@@ -201,6 +213,8 @@
   <link rel="apple-touch-icon" href="/logo.png">
 </head>
 <body>
+<button class="theme-toggle" id="theme-toggle" aria-label="切换主题" title="切换主题">🌙</button>
+
 <!-- apex-global-error: 全局错误捕获（诊断用，后期删除） -->
 <div id="apex-error-overlay" style="display:none;position:fixed;top:0;left:0;right:0;background:#e63946;color:#fff;padding:12px 16px;font-family:monospace;font-size:12px;z-index:99999999;white-space:pre-wrap;word-break:break-all;max-height:40vh;overflow-y:auto;">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
@@ -403,7 +417,7 @@
             <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
             <input type="text" id="login-account" autocomplete="username" spellcheck="false" autocapitalize="off" data-i18n-placeholder="placeholder.account" placeholder="请输入账号">
           </div>
-          <div class="field-error"></div>
+          <div class="field-error" role="alert" aria-live="polite"></div>
         </div>
         <div class="input-group">
           <label>登录密码</label>
@@ -412,7 +426,7 @@
             <input type="password" id="login-password" autocomplete="current-password" spellcheck="false" data-i18n-placeholder="placeholder.password" placeholder="请输入密码">
             <div class="pwd-actions"><span class="btn-toggle" onpointerdown="event.preventDefault(); window.togglePwd(this)"></span></div>
           </div>
-          <div class="field-error"></div>
+          <div class="field-error" role="alert" aria-live="polite"></div>
         </div>
 
         <!-- 人机验证 -->
@@ -453,7 +467,7 @@
             <input type="text" id="reg-username" autocomplete="username" spellcheck="false" autocapitalize="off" data-i18n-placeholder="placeholder.account" placeholder="请输入账号">
           </div>
           <div class="form-tip">6-20 位字符，支持字母、数字、下划线</div>
-          <div class="field-error"></div>
+          <div class="field-error" role="alert" aria-live="polite"></div>
         </div>
         <div class="input-group">
           <label>邮箱</label>
@@ -462,7 +476,7 @@
             <input type="email" id="reg-email" autocomplete="email" inputmode="email" spellcheck="false" autocapitalize="off" data-i18n-placeholder="placeholder.email" placeholder="请输入邮箱">
           </div>
           <div class="form-tip" style="color:#e63946;">⚠️ 必须填写真实邮箱且长期使用的邮箱，以便于密码找回</div>
-          <div class="field-error"></div>
+          <div class="field-error" role="alert" aria-live="polite"></div>
         </div>
         <div class="input-group">
           <label>密码</label>
@@ -474,7 +488,7 @@
           <div class="pwd-strength" id="reg-strength"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
             <div class="pwd-checklist" id="reg-pwd-checklist"></div>
           <div class="form-tip">至少 8 位，含大小写字母、数字和特殊字符</div>
-          <div class="field-error"></div>
+          <div class="field-error" role="alert" aria-live="polite"></div>
         </div>
         <div class="input-group">
           <label>确认密码</label>
@@ -483,7 +497,7 @@
             <input type="password" id="reg-confirm" autocomplete="new-password" spellcheck="false" data-i18n-placeholder="placeholder.confirmPassword" placeholder="请再次输入密码">
             <div class="pwd-actions"><span class="btn-toggle" onpointerdown="event.preventDefault(); window.togglePwd(this)"></span></div>
           </div>
-          <div class="field-error"></div>
+          <div class="field-error" role="alert" aria-live="polite"></div>
         </div>
 
         <!-- 人机验证 -->
@@ -514,7 +528,7 @@
             <input type="email" id="forgot-email" autocomplete="email" inputmode="email" spellcheck="false" autocapitalize="off" data-i18n-placeholder="placeholder.email" placeholder="请输入邮箱">
           </div>
           <div class="form-tip" style="color:#e63946;">⚠️ 填写注册账号时所绑定的邮箱</div>
-          <div class="field-error"></div>
+          <div class="field-error" role="alert" aria-live="polite"></div>
         </div>
 
         <div class="input-group">
@@ -526,7 +540,7 @@
             <div class="pwd-actions"><span class="btn-toggle" onpointerdown="event.preventDefault(); window.togglePwd(this)"></span></div>
           </div>
           <div class="form-tip">至少 8 位，含大小写字母、数字和特殊字符</div>
-          <div class="field-error"></div>
+          <div class="field-error" role="alert" aria-live="polite"></div>
         </div>
 
         <div class="input-group">
@@ -536,7 +550,7 @@
             <input type="password" id="forgot-confirm" autocomplete="new-password" spellcheck="false" data-i18n-placeholder="placeholder.confirmPassword" placeholder="请再次输入新密码">
             <div class="pwd-actions"><span class="btn-toggle" onpointerdown="event.preventDefault(); window.togglePwd(this)"></span></div>
           </div>
-          <div class="field-error"></div>
+          <div class="field-error" role="alert" aria-live="polite"></div>
         </div>
 
         <div class="input-group">
@@ -660,7 +674,14 @@
       } catch (e) {}
       ['login-form','register-form','forgot-form'].forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.style.display = (id === formId) ? 'block' : 'none';
+        if (!el) return;
+        const show = (id === formId);
+        el.style.display = show ? 'block' : 'none';
+        if (show) {
+          el.classList.remove('form-fade-in');
+          void el.offsetWidth;
+          el.classList.add('form-fade-in');
+        }
       });
       const sp = document.getElementById('apex-success-page');
       if (sp) sp.style.display = 'none';
@@ -702,6 +723,25 @@
         window.__apexBroadcast = apexBC;
       }
     } catch (e) {}
+    // ========== 主题切换 ==========
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem('apex_theme');
+        var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        var theme = savedTheme || (prefersLight ? 'light' : 'dark');
+        if (theme === 'light') document.body.classList.add('theme-light');
+        var btn = document.getElementById('theme-toggle');
+        if (btn) {
+          btn.textContent = theme === 'light' ? '☀️' : '🌙';
+          btn.addEventListener('click', function () {
+            var nowLight = document.body.classList.toggle('theme-light');
+            btn.textContent = nowLight ? '☀️' : '🌙';
+            try { localStorage.setItem('apex_theme', nowLight ? 'light' : 'dark'); } catch (e) {}
+          });
+        }
+      } catch (e) {}
+    })();
+
     window.__apex = { toast, showSuccess, switchTo };
   })();
   </script>
@@ -1660,7 +1700,9 @@
     </div>
     <div style="font-size:12px;color:#888;margin-bottom:12px;">当前活跃设备：</div>
     <div id="session-list" style="margin-bottom:16px;"></div>
-    <button onclick="revokeAllSessions()" style="width:100%;padding:10px;background:#e63946;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:bold;cursor:pointer;">撤销所有其他设备</button>
+    <button onclick="revokeAllSessions()" style="width:100%;padding:10px;background:#e63946;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:bold;cursor:pointer;margin-bottom:8px;">撤销所有其他设备</button>
+    <button onclick="document.getElementById('security-modal').style.display='none'; if(window.__apex&&window.__apex.switchTo)window.__apex.switchTo('forgot-form');" style="width:100%;padding:10px;background:#2a2a2a;color:#fff;border:1px solid #333;border-radius:8px;font-size:12px;font-weight:bold;cursor:pointer;margin-bottom:8px;">修改密码</button>
+    <button onclick="alert('登录日志功能即将开放');" style="width:100%;padding:10px;background:#2a2a2a;color:#fff;border:1px solid #333;border-radius:8px;font-size:12px;font-weight:bold;cursor:pointer;">查看登录日志</button>
   </div>
 </div>
 
