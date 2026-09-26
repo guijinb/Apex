@@ -1,9 +1,10 @@
-import { verifyPassword, generateToken, sanitize, jsonResponse, checkRateLimit, verifyCaptchaToken } from '../_utils.js';
+import { verifyPassword, generateToken, sanitize, jsonResponse, checkRateLimit, verifyCaptchaToken, buildSessionCookie } from '../_utils.js';
 
 export async function onRequestPost(context) {
   try {
     const { request, env } = context;
     const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+
     const rate = await checkRateLimit(env, ip, 'login', 10, 60);
     if (!rate.allowed) return jsonResponse({ success: false, message: '请求过于频繁，请稍后再试' }, 429);
 
@@ -30,7 +31,18 @@ export async function onRequestPost(context) {
       'INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)'
     ).bind(sessionToken, user.id, expiresAt).run();
 
-    return jsonResponse({ success: true, message: '登录成功', token: sessionToken, user: { id: user.id, username: user.username, email: user.email } });
+    // 关键：通过 Set-Cookie 返回 Session，而不是放在 JSON 里
+    return new Response(JSON.stringify({
+      success: true,
+      message: '登录成功',
+      user: { id: user.id, username: user.username, email: user.email }
+    }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Set-Cookie': buildSessionCookie(sessionToken),
+      }
+    });
   } catch (err) {
     return jsonResponse({ success: false, message: '服务器错误：' + err.message }, 500);
   }

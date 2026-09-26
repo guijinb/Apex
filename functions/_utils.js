@@ -96,3 +96,24 @@ export async function verifyCaptchaToken(env, token, ip) {
   await env.apex_db.prepare('UPDATE captcha_tokens SET used = 1 WHERE id = ?').bind(row.id).run();
   return true;
 }
+
+// Cookie 解析
+export function parseCookies(request) {
+  const cookieHeader = request.headers.get('Cookie') || '';
+  const cookies = {};
+  cookieHeader.split(';').forEach(cookie => {
+    const [name, ...rest] = cookie.trim().split('=');
+    if (name) cookies[name] = rest.join('=');
+  });
+  return cookies;
+}
+
+// 生成 Set-Cookie 头（HttpOnly + Secure + SameSite=Strict）
+export function buildSessionCookie(token, maxAgeSec = 7 * 24 * 60 * 60) {
+  return `apex_session=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${maxAgeSec}`;
+}
+
+// 生成清除 Cookie 的头
+export function buildClearCookie() {
+  return 'apex_session=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0';
+}

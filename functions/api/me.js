@@ -1,13 +1,13 @@
-import { jsonResponse } from '../_utils.js';
+import { jsonResponse, parseCookies } from '../_utils.js';
 
 export async function onRequestGet(context) {
   try {
     const { request, env } = context;
-    const auth = request.headers.get('Authorization') || '';
-    const token = auth.replace('Bearer ', '').trim();
+    const cookies = parseCookies(request);
+    const token = cookies['apex_session'];
 
     if (!token) {
-      return jsonResponse({ success: false, message: '未提供登录凭证' }, 401);
+      return jsonResponse({ success: false, message: '未登录' }, 401);
     }
 
     const session = await env.apex_db.prepare(
@@ -17,7 +17,13 @@ export async function onRequestGet(context) {
     ).bind(token).first();
 
     if (!session || new Date(session.expires_at) < new Date()) {
-      return jsonResponse({ success: false, message: '登录已过期' }, 401);
+      return new Response(JSON.stringify({ success: false, message: '登录已过期' }), {
+        status: 401,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Set-Cookie': 'apex_session=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0',
+        }
+      });
     }
 
     return jsonResponse({
@@ -28,7 +34,4 @@ export async function onRequestGet(context) {
     return jsonResponse({ success: false, message: '服务器错误：' + err.message }, 500);
   }
 }
-
-export async function onRequestOptions() {
-  return jsonResponse({}, 204);
-}
+export async function onRequestOptions() { return jsonResponse({}, 204); }
