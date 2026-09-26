@@ -868,7 +868,7 @@
     }
 
     // ========== 字段级错误显示 ==========
-    window.showFieldError = function showFieldError(inputEl, msg) {
+    window.showFieldError = function showFieldError(inputEl, msg, skipFocus) {
       if (!inputEl) return;
       const wrap = inputEl.closest ? inputEl.closest('.input-wrap') : null;
       const grp = inputEl.closest ? inputEl.closest('.input-group') : null;
@@ -884,7 +884,9 @@
         }
       }
       try { inputEl.setAttribute('aria-invalid', 'true'); } catch (e) {}
-      try { inputEl.focus(); } catch (e) {}
+      if (!skipFocus) {
+        try { inputEl.focus(); } catch (e) {}
+      }
     }
 
     window.clearAllFieldErrors = function clearAllFieldErrors(rootEl) {
@@ -1011,12 +1013,13 @@
     document.getElementById('btn-login').addEventListener('click', async function() {
       const loginForm = document.getElementById('login-form');
       clearAllFieldErrors(loginForm);
+      var _formErr = false, _formFirst = null;
       const accEl = document.getElementById('login-account');
       const pwdEl = document.getElementById('login-password');
       const account = accEl.value.trim();
       const password = pwdEl.value;
-      if (!account) { showFieldError(accEl, '请输入账号'); return; }
-      if (!password) { showFieldError(pwdEl, '请输入密码'); return; }
+      if (!account) { showFieldError(accEl, '请输入账号', true); _formErr = true; if (!_formFirst) _formFirst = accEl; }
+      if (!password) { showFieldError(pwdEl, '请输入密码', true); _formErr = true; if (!_formFirst) _formFirst = pwdEl; }
       if (!document.getElementById('login-agreement').checked) {
         showCheckboxError(document.getElementById('login-agreement'), '请先阅读并同意用户协议与隐私政策');
         return;
@@ -1028,6 +1031,7 @@
 
       const captchaToken = document.getElementById('login-captcha').dataset.token || '';
       if (!captchaToken) { showCaptchaError(document.getElementById('forgot-captcha'), '请先完成人机验证'); return; }
+      if (_formErr) { if (_formFirst) _formFirst.focus(); return; }
       setLoading(this, true);
       const result = await apiPost('/api/login', { account, password, captchaToken });
       setLoading(this, false);
@@ -1055,6 +1059,7 @@
     // ========== 注册 ==========
     document.getElementById('btn-register').addEventListener('click', async function() {
       clearAllFieldErrors(null);
+      var _formErr = false, _formFirst = null;
       const userEl = document.getElementById('reg-username');
       const emailEl = document.getElementById('reg-email');
       const regPwdEl = document.getElementById('reg-password');
@@ -1066,11 +1071,11 @@
       const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       const userRe = /^[a-zA-Z0-9_]{6,20}$/;
       const strongPwdRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
-      if (!username) { showFieldError(userEl, '请输入账号'); return; }
-      if (!userRe.test(username)) { showFieldError(userEl, '账号需 6-20 位，仅限字母、数字、下划线'); return; }
-      if (!email) { showFieldError(emailEl, '请输入邮箱'); return; }
-      if (!emailRe.test(email)) { showFieldError(emailEl, '邮箱格式错误'); return; }
-      if (!password) { showFieldError(regPwdEl, '请输入密码'); return; }
+      if (!username) { showFieldError(userEl, '请输入账号', true); _formErr = true; if (!_formFirst) _formFirst = userEl; }
+      if (!userRe.test(username)) { showFieldError(userEl, '账号需 6-20 位，仅限字母、数字、下划线', true); _formErr = true; if (!_formFirst) _formFirst = userEl; }
+      if (!email) { showFieldError(emailEl, '请输入邮箱', true); _formErr = true; if (!_formFirst) _formFirst = emailEl; }
+      if (!emailRe.test(email)) { showFieldError(emailEl, '邮箱格式错误', true); _formErr = true; if (!_formFirst) _formFirst = emailEl; }
+      if (!password) { showFieldError(regPwdEl, '请输入密码', true); _formErr = true; if (!_formFirst) _formFirst = regPwdEl; }
       const policy = window.ApexPasswordPolicy;
       const pwdCheck = policy
         ? policy.validatePassword(password, username)
@@ -1088,6 +1093,7 @@
 
       const captchaToken = document.getElementById('reg-captcha').dataset.token || '';
       if (!captchaToken) { showCaptchaError(document.getElementById('reg-captcha'), '请先完成人机验证'); return; }
+      if (_formErr) { if (_formFirst) _formFirst.focus(); return; }
       setLoading(this, true);
       const result = await apiPost('/api/register', { username, email, password, captchaToken });
       setLoading(this, false);
@@ -1139,6 +1145,7 @@
     // ========== 重置密码 ==========
     document.getElementById('btn-reset').addEventListener('click', async function() {
       clearAllFieldErrors(null);
+      var _formErr = false, _formFirst = null;
       const fEmailEl = document.getElementById('forgot-email');
       const fPwdEl = document.getElementById('forgot-newpwd');
       const fConfirmEl = document.getElementById('forgot-confirm');
@@ -1148,8 +1155,8 @@
       let code = '';
       document.querySelectorAll('#code-boxes input').forEach(i => code += i.value);
 
-      if (!email) { showFieldError(fEmailEl, '请输入邮箱'); return; }
-      if (!newPassword) { showFieldError(fPwdEl, '请输入新密码'); return; }
+      if (!email) { showFieldError(fEmailEl, '请输入邮箱', true); _formErr = true; if (!_formFirst) _formFirst = fEmailEl; }
+      if (!newPassword) { showFieldError(fPwdEl, '请输入新密码', true); _formErr = true; if (!_formFirst) _formFirst = fPwdEl; }
       if (code.length !== 6) { showCodeBoxError(document.getElementById('code-boxes'), '请输入 6 位验证码'); return; }
       if (newPassword !== confirm) { showFieldError(fConfirmEl, '两次密码不一致'); return; }
       if (document.getElementById('forgot-captcha').dataset.status !== 'success') {
@@ -1159,6 +1166,7 @@
 
       const captchaToken = document.getElementById('forgot-captcha').dataset.token || '';
       if (!captchaToken) { showCaptchaError(document.getElementById('login-captcha'), '请先完成人机验证'); return; }
+      if (_formErr) { if (_formFirst) _formFirst.focus(); return; }
       setLoading(this, true);
       const result = await apiPost('/api/reset-password', { email, code, newPassword, captchaToken });
       setLoading(this, false);
