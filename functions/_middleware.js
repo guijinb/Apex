@@ -19,6 +19,15 @@ export async function onRequest(context) {
       newHeaders.append('Set-Cookie', buildCsrfCookie(generateCsrfToken()));
     }
 
+    // 204/304 响应不能有 body
+    if (response.status === 204 || response.status === 304) {
+      return new Response(null, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: newHeaders,
+      });
+    }
+
     return new Response(response.body, {
       status: response.status,
       statusText: response.statusText,
