@@ -1,9 +1,9 @@
 // 临时诊断端点：显示运行时实际可见的环境变量
+// 路径: /debug-env （非 /api 前缀，绕过 middleware 的 config 检查）
 // ⚠️ 部署后必须删除
 export async function onRequestGet(context) {
-  const { env } = context;
+  const { env, request } = context;
 
-  // 只显示"是否存在"，不显示值
   const check = {
     ENVIRONMENT: env.ENVIRONMENT || null,
     CAPTCHA_SECRET: Boolean(env.CAPTCHA_SECRET),
@@ -24,9 +24,26 @@ export async function onRequestGet(context) {
   // 列出所有 env 的 key（只列名，不列值）
   const allKeys = Object.keys(env || {}).sort();
 
+  // 手动复现 assertProductionConfig 的逻辑，看看到底缺什么
+  const isProduction = (env.ENVIRONMENT || 'production') === 'production';
+  const missing = [];
+  if (isProduction) {
+    if (!env.CAPTCHA_SECRET) missing.push('CAPTCHA_SECRET');
+    if (!env.PUBLIC_BASE_URL) missing.push('PUBLIC_BASE_URL');
+    if (!env.EMAIL_FROM) missing.push('EMAIL_FROM');
+    const hasResend = Boolean(env.RESEND_API_KEY);
+    const hasAgentmail = Boolean(env.AGENTMAIL_API_KEY && env.AGENTMAIL_INBOX_ID);
+    if (!hasResend && !hasAgentmail) missing.push('RESEND_API_KEY_or_AGENTMAIL_API_KEY');
+  }
+
   return new Response(JSON.stringify({
     check,
     allKeys,
+    config_assert: {
+      isProduction,
+      missing,
+      ok: missing.length === 0,
+    },
   }, null, 2), {
     status: 200,
     headers: {
