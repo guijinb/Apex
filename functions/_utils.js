@@ -70,13 +70,24 @@ export function sanitize(str) {
 
 // 统一 JSON 响应格式
 export function jsonResponse(data, status = 200) {
+  // 204 No Content / 304 Not Modified 不允许有 body
+  if (status === 204 || status === 304) {
+    return new Response(null, {
+      status,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, X-CSRF-Token',
+      },
+    });
+  }
   return new Response(JSON.stringify(data), {
     status,
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Headers': 'Content-Type, X-CSRF-Token',
     },
   });
 }
