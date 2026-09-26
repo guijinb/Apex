@@ -5,6 +5,9 @@ const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
 // 统一 API 响应安全头（防御纵深：即使脱离 Cloudflare Pages 的 _headers 也生效）
 const API_SECURITY_HEADERS = {
+  // 覆盖 Cloudflare Pages 默认的 ACAO: *（同源架构，禁止跨域读）
+  'Access-Control-Allow-Origin': 'https://apex-8rg.pages.dev',
+  'Vary': 'Origin',
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
