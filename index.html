@@ -137,6 +137,16 @@
     .checkbox-group .checkbox-error.show { display: block; }
     .capslock-warn { font-size: 11px; color: #e6a817; margin-top: 4px; display: none; }
     .capslock-warn.show { display: block; }
+    .pwd-checklist { font-size: 11px; color: #888; margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px 10px; }
+    .pwd-checklist .item { display: inline-flex; align-items: center; gap: 3px; transition: color 0.2s; }
+    .pwd-checklist .item::before { content: "\25CB"; color: #555; }
+    .pwd-checklist .item.ok { color: #4ade80; }
+    .pwd-checklist .item.ok::before { content: "\2713"; color: #4ade80; }
+    .pwd-checklist .item.err { color: #e63946; }
+    .pwd-checklist .item.err::before { content: "\2717"; color: #e63946; }
+    .form-retry-box { display: none; margin-top: 10px; padding: 10px; background: rgba(230,57,70,0.08); border: 1px solid rgba(230,57,70,0.3); border-radius: 8px; font-size: 12px; color: #e63946; text-align: center; }
+    .form-retry-box.show { display: block; }
+    .form-retry-box button { margin-top: 8px; padding: 6px 16px; background: #e63946; color: #fff; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: bold; }
   </style>
 
 <!-- APEX-PRELOAD-START -->
@@ -391,7 +401,7 @@
           <label>账号</label>
           <div class="input-wrap">
             <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
-            <input type="text" id="login-account" data-i18n-placeholder="placeholder.account" placeholder="请输入账号">
+            <input type="text" id="login-account" autocomplete="username" spellcheck="false" autocapitalize="off" data-i18n-placeholder="placeholder.account" placeholder="请输入账号">
           </div>
           <div class="field-error"></div>
         </div>
@@ -399,7 +409,7 @@
           <label>登录密码</label>
           <div class="input-wrap">
             <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
-            <input type="password" id="login-password" data-i18n-placeholder="placeholder.password" placeholder="请输入密码">
+            <input type="password" id="login-password" autocomplete="current-password" spellcheck="false" data-i18n-placeholder="placeholder.password" placeholder="请输入密码">
             <div class="pwd-actions"><span class="btn-toggle" onpointerdown="event.preventDefault(); window.togglePwd(this)"></span></div>
           </div>
           <div class="field-error"></div>
@@ -435,7 +445,7 @@
           <label>账号</label>
           <div class="input-wrap">
             <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
-            <input type="text" id="reg-username" data-i18n-placeholder="placeholder.account" placeholder="请输入账号">
+            <input type="text" id="reg-username" autocomplete="username" spellcheck="false" autocapitalize="off" data-i18n-placeholder="placeholder.account" placeholder="请输入账号">
           </div>
           <div class="form-tip">6-20 位字符，支持字母、数字、下划线</div>
           <div class="field-error"></div>
@@ -444,7 +454,7 @@
           <label>邮箱</label>
           <div class="input-wrap">
             <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></span>
-            <input type="email" id="reg-email" data-i18n-placeholder="placeholder.email" placeholder="请输入邮箱">
+            <input type="email" id="reg-email" autocomplete="email" inputmode="email" spellcheck="false" autocapitalize="off" data-i18n-placeholder="placeholder.email" placeholder="请输入邮箱">
           </div>
           <div class="form-tip" style="color:#e63946;">⚠️ 必须填写真实邮箱且长期使用的邮箱，以便于密码找回</div>
           <div class="field-error"></div>
@@ -453,10 +463,11 @@
           <label>密码</label>
           <div class="input-wrap">
             <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
-            <input type="password" id="reg-password" data-i18n-placeholder="placeholder.password" placeholder="请输入密码">
+            <input type="password" id="reg-password" autocomplete="new-password" spellcheck="false" data-i18n-placeholder="placeholder.password" placeholder="请输入密码">
             <div class="pwd-actions"><span class="btn-toggle" onpointerdown="event.preventDefault(); window.togglePwd(this)"></span></div>
           </div>
           <div class="pwd-strength" id="reg-strength"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+            <div class="pwd-checklist" id="reg-pwd-checklist"></div>
           <div class="form-tip">至少 8 位，含大小写字母、数字和特殊字符</div>
           <div class="field-error"></div>
         </div>
@@ -464,7 +475,7 @@
           <label>确认密码</label>
           <div class="input-wrap">
             <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
-            <input type="password" id="reg-confirm" data-i18n-placeholder="placeholder.confirmPassword" placeholder="请再次输入密码">
+            <input type="password" id="reg-confirm" autocomplete="new-password" spellcheck="false" data-i18n-placeholder="placeholder.confirmPassword" placeholder="请再次输入密码">
             <div class="pwd-actions"><span class="btn-toggle" onpointerdown="event.preventDefault(); window.togglePwd(this)"></span></div>
           </div>
           <div class="field-error"></div>
@@ -495,7 +506,7 @@
           <label>输入邮箱</label>
           <div class="input-wrap">
             <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></span>
-            <input type="email" id="forgot-email" data-i18n-placeholder="placeholder.email" placeholder="请输入邮箱">
+            <input type="email" id="forgot-email" autocomplete="email" inputmode="email" spellcheck="false" autocapitalize="off" data-i18n-placeholder="placeholder.email" placeholder="请输入邮箱">
           </div>
           <div class="form-tip" style="color:#e63946;">⚠️ 填写注册账号时所绑定的邮箱</div>
           <div class="field-error"></div>
@@ -506,6 +517,7 @@
           <div class="input-wrap">
             <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
             <input type="password" id="forgot-newpwd" data-i18n-placeholder="placeholder.newPassword" placeholder="请输入新密码">
+            <div class="pwd-checklist" id="forgot-pwd-checklist"></div>
             <div class="pwd-actions"><span class="btn-toggle" onpointerdown="event.preventDefault(); window.togglePwd(this)"></span></div>
           </div>
           <div class="form-tip">至少 8 位，含大小写字母、数字和特殊字符</div>
@@ -516,7 +528,7 @@
           <label>确认密码</label>
           <div class="input-wrap">
             <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
-            <input type="password" id="forgot-confirm" data-i18n-placeholder="placeholder.confirmPassword" placeholder="请再次输入新密码">
+            <input type="password" id="forgot-confirm" autocomplete="new-password" spellcheck="false" data-i18n-placeholder="placeholder.confirmPassword" placeholder="请再次输入新密码">
             <div class="pwd-actions"><span class="btn-toggle" onpointerdown="event.preventDefault(); window.togglePwd(this)"></span></div>
           </div>
           <div class="field-error"></div>
@@ -735,6 +747,7 @@
       });
       if (result.valid) setOk(this);
       else setErr(this, result.message || '密码强度不足');
+      renderPwdChecklist('reg-pwd-checklist', this.value);
     });
 
     // 确认密码
@@ -762,6 +775,7 @@
       const r = policy ? policy.validatePassword(this.value, ident)
                        : { valid: strongPwdRe.test(this.value), message: '需至少 8 位，含大小写字母、数字和特殊字符' };
       r.valid ? setOk(this) : setErr(this, r.message || '密码强度不足');
+      renderPwdChecklist('forgot-pwd-checklist', this.value);
     });
 
     // 忘记密码 - 确认密码
@@ -868,6 +882,57 @@
     }
 
     // ========== 字段级错误显示 ==========
+    // ========== 密码清单渲染 ==========
+    function renderPwdChecklist(containerId, password) {
+      var el = document.getElementById(containerId);
+      if (!el) return;
+      var v = String(password || '');
+      var items = [
+        { label: '8 位以上',    ok: v.length >= 8 && v.length <= 128 },
+        { label: '含小写',       ok: /[a-z]/.test(v) },
+        { label: '含大写',       ok: /[A-Z]/.test(v) },
+        { label: '含数字',       ok: /[0-9]/.test(v) },
+        { label: '含特殊字符',   ok: /[!@#$%^&*()_+\-=\[\]{};\':"\\|,.<>\/?]/.test(v) }
+      ];
+      var html = items.map(function (it) {
+        var cls = !v ? 'item' : (it.ok ? 'item ok' : 'item err');
+        return '<span class="' + cls + '">' + it.label + '</span>';
+      }).join('');
+      el.innerHTML = html;
+    }
+    window.renderPwdChecklist = renderPwdChecklist;
+
+    // ========== 网络错误重试框 ==========
+    function showRetryBox(formSelector, retryFn) {
+      try {
+        var form = document.querySelector(formSelector);
+        if (!form) return;
+        var box = form.querySelector('.form-retry-box');
+        if (!box) {
+          box = document.createElement('div');
+          box.className = 'form-retry-box';
+          form.appendChild(box);
+        }
+        box.innerHTML = '网络异常，请检查后重试 <button type="button">重试</button>';
+        box.classList.add('show');
+        box.querySelector('button').onclick = function () {
+          box.classList.remove('show');
+          try { retryFn(); } catch (e) {}
+        };
+      } catch (e) {}
+    }
+    window.showRetryBox = showRetryBox;
+
+    function clearRetryBox(formSelector) {
+      try {
+        var form = document.querySelector(formSelector);
+        if (!form) return;
+        var box = form.querySelector('.form-retry-box');
+        if (box) box.classList.remove('show');
+      } catch (e) {}
+    }
+    window.clearRetryBox = clearRetryBox;
+
     window.showFieldError = function showFieldError(inputEl, msg, skipFocus) {
       if (!inputEl) return;
       const wrap = inputEl.closest ? inputEl.closest('.input-wrap') : null;
@@ -1007,6 +1072,15 @@
         btn.textContent = btn.dataset.orig;
         btn.disabled = false;
       }
+      try {
+        var form = btn.closest('#login-form, #register-form, #forgot-form') || btn.closest('.auth-card');
+        if (form) {
+          form.querySelectorAll('input, textarea, select').forEach(function (el) {
+            if (el === btn) return;
+            el.disabled = !!loading;
+          });
+        }
+      } catch (e) {}
     }
 
     // ========== 登录 ==========
