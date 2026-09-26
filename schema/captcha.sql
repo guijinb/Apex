@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS captcha_tokens (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  token TEXT UNIQUE NOT NULL,
+  ip TEXT,
+  used INTEGER DEFAULT 0,
+  expires_at DATETIME NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_captcha_token ON captcha_tokens(token);
