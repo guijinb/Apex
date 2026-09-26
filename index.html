@@ -230,6 +230,7 @@
 
   <script src="/src/js/apiClient.js"></script>
   <script src="/src/js/passwordPolicy.js"></script>
+  <script src="/src/js/passkey.js"></script>
   <script src="/src/js/captcha.js"></script>
 
   <!-- ============ 加载页 ============ -->
@@ -334,6 +335,18 @@
         </div>
 
         <button class="btn-primary" id="btn-login" data-i18n="btn.login">登 录</button>
+
+        <!-- Passkey 登录 -->
+        <div id="passkey-login-wrap" style="margin-top:14px;">
+          <div style="display:flex;align-items:center;gap:8px;color:#555;font-size:11px;margin-bottom:10px;">
+            <div style="flex:1;height:1px;background:#222;"></div>
+            <span>或</span>
+            <div style="flex:1;height:1px;background:#222;"></div>
+          </div>
+          <button id="btn-login-passkey" type="button" style="width:100%;padding:12px;background:#0f0f0f;color:#fff;border:1px solid #333;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+            <span>🔐</span><span>使用 Passkey 登录</span>
+          </button>
+        </div>
       </div>
 
       <!-- ============ 注册表单 ============ -->
@@ -1561,6 +1574,13 @@ window.__apex = { toast, showSuccess, switchTo };
     <button onclick="revokeAllSessions()" style="width:100%;padding:10px;background:#e63946;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:bold;cursor:pointer;margin-bottom:8px;">撤销所有其他设备</button>
     <button onclick="document.getElementById('security-modal').style.display='none'; if(window.__apex&&window.__apex.switchTo)window.__apex.switchTo('forgot-form');" style="width:100%;padding:10px;background:#2a2a2a;color:#fff;border:1px solid #333;border-radius:8px;font-size:12px;font-weight:bold;cursor:pointer;margin-bottom:8px;">修改密码</button>
     <button onclick="alert('登录日志功能即将开放');" style="width:100%;padding:10px;background:#2a2a2a;color:#fff;border:1px solid #333;border-radius:8px;font-size:12px;font-weight:bold;cursor:pointer;">查看登录日志</button>
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid #2a2a2a;">
+        <div style="font-size:12px;color:#888;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+          <span>Passkey 设备</span>
+          <button id="btn-register-passkey" type="button" style="background:transparent;border:1px solid #4ade80;color:#4ade80;padding:3px 10px;border-radius:6px;font-size:10px;cursor:pointer;">+ 绑定新设备</button>
+        </div>
+        <div id="passkey-list" style="margin-bottom:8px;"></div>
+      </div>
   </div>
 </div>
 
