@@ -867,7 +867,7 @@
     }
 
     // ========== 字段级错误显示 ==========
-    function showFieldError(inputEl, msg) {
+    window.showFieldError = function showFieldError(inputEl, msg) {
       if (!inputEl) return;
       const wrap = inputEl.closest ? inputEl.closest('.input-wrap') : null;
       const grp = inputEl.closest ? inputEl.closest('.input-group') : null;
@@ -886,7 +886,7 @@
       try { inputEl.focus(); } catch (e) {}
     }
 
-    function clearAllFieldErrors(rootEl) {
+    window.clearAllFieldErrors = function clearAllFieldErrors(rootEl) {
       const scope = rootEl || document;
       try {
         scope.querySelectorAll('.input-group').forEach(function (g) {
@@ -904,7 +904,7 @@
       } catch (e) {}
     }
 
-    function shakeElement(el) {
+    window.shakeElement = function shakeElement(el) {
       if (!el) return;
       el.classList.remove('shake');
       void el.offsetWidth;
@@ -912,7 +912,7 @@
       setTimeout(function () { el.classList.remove('shake'); }, 500);
     }
 
-    function showCaptchaError(boxEl, msg) {
+    window.showCaptchaError = function showCaptchaError(boxEl, msg) {
       if (!boxEl) return;
       boxEl.classList.add('error');
       shakeElement(boxEl);
@@ -926,7 +926,7 @@
       errEl.classList.add('show');
     }
 
-    function clearCaptchaError(boxEl) {
+    window.clearCaptchaError = function clearCaptchaError(boxEl) {
       if (!boxEl) return;
       boxEl.classList.remove('error');
       var errEl = boxEl.nextElementSibling;
@@ -936,7 +936,7 @@
       }
     }
 
-    function showCheckboxError(cbEl, msg) {
+    window.showCheckboxError = function showCheckboxError(cbEl, msg) {
       if (!cbEl) return;
       var grp = cbEl.closest('.checkbox-group');
       if (!grp) return;
@@ -952,7 +952,7 @@
       try { cbEl.focus(); } catch (e) {}
     }
 
-    function clearCheckboxError(cbEl) {
+    window.clearCheckboxError = function clearCheckboxError(cbEl) {
       if (!cbEl) return;
       var grp = cbEl.closest('.checkbox-group');
       if (!grp) return;
@@ -961,19 +961,19 @@
       if (errEl) { errEl.classList.remove('show'); errEl.textContent = ''; }
     }
 
-    function showCodeBoxError(containerEl, msg) {
+    window.showCodeBoxError = function showCodeBoxError(containerEl, msg) {
       if (!containerEl) return;
       containerEl.classList.add('error');
       shakeElement(containerEl);
       toast(msg, 'error');
     }
 
-    function clearCodeBoxError(containerEl) {
+    window.clearCodeBoxError = function clearCodeBoxError(containerEl) {
       if (!containerEl) return;
       containerEl.classList.remove('error');
     }
 
-    function attachCapsLockWarn(inputEl) {
+    window.attachCapsLockWarn = function attachCapsLockWarn(inputEl) {
       if (!inputEl) return;
       var wrap = inputEl.closest('.input-wrap');
       if (!wrap) return;
