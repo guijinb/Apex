@@ -636,7 +636,6 @@
       setLoading(this, false);
 
       if (result.success) {
-        localStorage.setItem('apex_token', result.token);
         localStorage.setItem('apex_user', JSON.stringify(result.user));
         toast('登录成功', 'success');
         setTimeout(() => {
@@ -935,7 +934,7 @@
   (function() {
     function report(type, message) {
       try {
-        fetch('/api/log', {
+        fetch('/api/log', { credentials: 'include',
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ type: type, message: message, url: location.href }),
@@ -970,41 +969,28 @@
   </script>
 
 
+  
   <script id="apex-auto-login">
   (function() {
-    // 检查本地是否有登录凭证
-    const token = localStorage.getItem('apex_token');
-    if (!token) return;
-
-    // 显示"正在恢复登录状态"提示
-    const notice = document.createElement('div');
-    notice.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.9);color:#fff;padding:20px 32px;border-radius:12px;font-size:14px;z-index:99999;border:1px solid #333;';
-    notice.textContent = '正在恢复登录状态...';
-    document.body.appendChild(notice);
-
-    // 调用 /api/me 验证 token
-    fetch('/api/me', {
-      headers: { 'Authorization': 'Bearer ' + token }
-    })
-      .then(res => res.json())
+    // 直接调用 /api/me（Cookie 会自动发送）
+    fetch('/api/me', { credentials: 'include' })
+      .then(res => {
+        if (res.status === 401) return { success: false };
+        return res.json();
+      })
       .then(data => {
-        notice.remove();
-        if (data.success) {
-          // Token 有效，直接进入主页
+        if (data && data.success) {
           console.log('[Apex] 自动登录成功：', data.user.username);
           document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#050505;color:#fff;font-size:24px;letter-spacing:4px;">正在开发中</div>';
         } else {
-          // Token 失效，清除并显示登录页
-          localStorage.removeItem('apex_token');
+          console.log('[Apex] 未登录或登录已过期');
           localStorage.removeItem('apex_user');
-          console.log('[Apex] 登录已过期');
         }
       })
-      .catch(() => {
-        notice.remove();
-      });
+      .catch(() => {});
   })();
   </script>
+
 
 
   <script id="apex-a11y">
@@ -1083,7 +1069,7 @@
         percent.textContent = progress < 100 ? progress + '%' : '验证中...';
         if (progress >= 100) {
           clearInterval(interval);
-          fetch('/api/captcha/verify', { method: 'POST' })
+          fetch('/api/captcha/verify', { credentials: 'include', method: 'POST' })
             .then(res => res.json())
             .then(data => {
               if (data.success) {
@@ -1112,5 +1098,15 @@
   })();
   </script>
 
-</body>
+
+  <script>
+  window.apexLogout = function() {
+    fetch('/api/logout', { method: 'POST', credentials: 'include' })
+      .then(() => {
+        localStorage.removeItem('apex_user');
+        location.reload();
+      });
+  };
+  </script>
+  </body>
 </html>
