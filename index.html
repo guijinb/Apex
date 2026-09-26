@@ -120,6 +120,23 @@
     /* ============ 页脚 & Toast ============ */
     .footer { text-align:center; color:var(--text-muted); font-size:11px; margin-top:20px; padding-bottom:16px; }
     #apex-toast { position:fixed; top:20px; left:50%; transform:translateX(-50%); padding:12px 24px; border-radius:8px; font-size:14px; z-index:999999; transition:opacity 0.3s; max-width:90%; text-align:center; }
+    /* ============ 字段错误增强 ============ */
+    @keyframes apex-shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .shake { animation: apex-shake 0.4s ease-in-out; }
+    .apex-captcha-box.error { border-color: var(--red); background: rgba(230,57,70,0.08); }
+    .apex-captcha-box.error .apex-captcha-text { color: var(--red); }
+    .captcha-error { font-size: 11px; color: var(--red); margin: 6px 0 0 0; display: none; }
+    .captcha-error.show { display: block; }
+    .code-boxes.error input { border-color: var(--red); background: rgba(230,57,70,0.08); }
+    .checkbox-group.error label { color: var(--red); }
+    .checkbox-group .checkbox-error { font-size: 11px; color: var(--red); margin-top: 4px; display: none; }
+    .checkbox-group .checkbox-error.show { display: block; }
+    .capslock-warn { font-size: 11px; color: #e6a817; margin-top: 4px; display: none; }
+    .capslock-warn.show { display: block; }
   </style>
 
 <!-- APEX-PRELOAD-START -->
@@ -483,6 +500,17 @@
 
     // ========== 5. 表单切换 ==========
     function switchTo(formId) {
+      // 切换表单时清空所有错误状态
+      try {
+        clearAllFieldErrors(null);
+        ['login-captcha','reg-captcha','forgot-captcha'].forEach(function (id) {
+          clearCaptchaError(document.getElementById(id));
+        });
+        ['login-agreement','reg-agreement'].forEach(function (id) {
+          clearCheckboxError(document.getElementById(id));
+        });
+        clearCodeBoxError(document.getElementById('code-boxes'));
+      } catch (e) {}
       ['login-form','register-form','forgot-form'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = (id === formId) ? 'block' : 'none';
@@ -500,6 +528,26 @@
     document.getElementById('forgot-pwd').addEventListener('click', (e) => { e.preventDefault(); switchTo('forgot-form'); });
     document.getElementById('back-to-login').addEventListener('click', (e) => { e.preventDefault(); switchTo('login-form'); });
 
+
+    // ========== Enter 提交（各表单字段 → 对应按钮）==========
+    [["login-account","btn-login"],["login-password","btn-login"],
+     ["reg-username","btn-register"],["reg-email","btn-register"],
+     ["reg-password","btn-register"],["reg-confirm","btn-register"],
+     ["forgot-email","btn-send-code"],["forgot-newpwd","btn-reset"],
+     ["forgot-confirm","btn-reset"]].forEach(function (pair) {
+      var inp = document.getElementById(pair[0]);
+      var btn = document.getElementById(pair[1]);
+      if (!inp || !btn) return;
+      inp.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); btn.click(); }
+      });
+    });
+
+    // ========== Caps Lock 提示（所有密码框）==========
+    ['login-password','reg-password','reg-confirm','forgot-newpwd','forgot-confirm'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) attachCapsLockWarn(el);
+    });
     window.__apex = { toast, showSuccess, switchTo };
   })();
   </script>
@@ -688,6 +736,135 @@
       return payload;
     }
 
+    // ========== 字段级错误显示 ==========
+    function showFieldError(inputEl, msg) {
+      if (!inputEl) return;
+      const wrap = inputEl.closest ? inputEl.closest('.input-wrap') : null;
+      const grp = inputEl.closest ? inputEl.closest('.input-group') : null;
+      if (wrap) {
+        wrap.classList.add('error');
+        wrap.classList.remove('success');
+      }
+      if (grp) {
+        const errEl = grp.querySelector('.field-error');
+        if (errEl) {
+          errEl.textContent = msg;
+          errEl.classList.add('show');
+        }
+      }
+      try { inputEl.setAttribute('aria-invalid', 'true'); } catch (e) {}
+      try { inputEl.focus(); } catch (e) {}
+    }
+
+    function clearAllFieldErrors(rootEl) {
+      const scope = rootEl || document;
+      try {
+        scope.querySelectorAll('.input-group').forEach(function (g) {
+          g.querySelectorAll('.field-error').forEach(function (el) {
+            el.classList.remove('show');
+            el.textContent = '';
+          });
+        });
+        scope.querySelectorAll('.input-wrap').forEach(function (w) {
+          w.classList.remove('error', 'success');
+        });
+        scope.querySelectorAll('input[aria-invalid]').forEach(function (i) {
+          i.removeAttribute('aria-invalid');
+        });
+      } catch (e) {}
+    }
+
+    function shakeElement(el) {
+      if (!el) return;
+      el.classList.remove('shake');
+      void el.offsetWidth;
+      el.classList.add('shake');
+      setTimeout(function () { el.classList.remove('shake'); }, 500);
+    }
+
+    function showCaptchaError(boxEl, msg) {
+      if (!boxEl) return;
+      boxEl.classList.add('error');
+      shakeElement(boxEl);
+      var errEl = boxEl.nextElementSibling;
+      if (!errEl || !errEl.classList.contains('captcha-error')) {
+        errEl = document.createElement('div');
+        errEl.className = 'captcha-error';
+        boxEl.parentNode.insertBefore(errEl, boxEl.nextSibling);
+      }
+      errEl.textContent = msg;
+      errEl.classList.add('show');
+    }
+
+    function clearCaptchaError(boxEl) {
+      if (!boxEl) return;
+      boxEl.classList.remove('error');
+      var errEl = boxEl.nextElementSibling;
+      if (errEl && errEl.classList.contains('captcha-error')) {
+        errEl.classList.remove('show');
+        errEl.textContent = '';
+      }
+    }
+
+    function showCheckboxError(cbEl, msg) {
+      if (!cbEl) return;
+      var grp = cbEl.closest('.checkbox-group');
+      if (!grp) return;
+      grp.classList.add('error');
+      var errEl = grp.querySelector('.checkbox-error');
+      if (!errEl) {
+        errEl = document.createElement('div');
+        errEl.className = 'checkbox-error';
+        grp.appendChild(errEl);
+      }
+      errEl.textContent = msg;
+      errEl.classList.add('show');
+      try { cbEl.focus(); } catch (e) {}
+    }
+
+    function clearCheckboxError(cbEl) {
+      if (!cbEl) return;
+      var grp = cbEl.closest('.checkbox-group');
+      if (!grp) return;
+      grp.classList.remove('error');
+      var errEl = grp.querySelector('.checkbox-error');
+      if (errEl) { errEl.classList.remove('show'); errEl.textContent = ''; }
+    }
+
+    function showCodeBoxError(containerEl, msg) {
+      if (!containerEl) return;
+      containerEl.classList.add('error');
+      shakeElement(containerEl);
+      toast(msg, 'error');
+    }
+
+    function clearCodeBoxError(containerEl) {
+      if (!containerEl) return;
+      containerEl.classList.remove('error');
+    }
+
+    function attachCapsLockWarn(inputEl) {
+      if (!inputEl) return;
+      var wrap = inputEl.closest('.input-wrap');
+      if (!wrap) return;
+      var warn = wrap.parentNode.querySelector('.capslock-warn');
+      if (!warn) {
+        warn = document.createElement('div');
+        warn.className = 'capslock-warn';
+        warn.textContent = '⚠️ 大写锁定已开启';
+        wrap.parentNode.insertBefore(warn, wrap.nextSibling);
+      }
+      function check(e) {
+        try {
+          if (e.getModifierState && e.getModifierState('CapsLock')) warn.classList.add('show');
+          else warn.classList.remove('show');
+        } catch (err) {}
+      }
+      inputEl.addEventListener('keydown', check);
+      inputEl.addEventListener('keyup', check);
+      inputEl.addEventListener('blur', function () { warn.classList.remove('show'); });
+    }
+
     function setLoading(btn, loading) {
       if (loading) {
         btn.dataset.orig = btn.textContent;
@@ -701,15 +878,25 @@
 
     // ========== 登录 ==========
     document.getElementById('btn-login').addEventListener('click', async function() {
-      const account = document.getElementById('login-account').value.trim();
-      const password = document.getElementById('login-password').value;
-      if (!account || !password) { toast('请填写账号和密码', 'error'); return; }
+      const loginForm = document.getElementById('login-form');
+      clearAllFieldErrors(loginForm);
+      const accEl = document.getElementById('login-account');
+      const pwdEl = document.getElementById('login-password');
+      const account = accEl.value.trim();
+      const password = pwdEl.value;
+      if (!account) { showFieldError(accEl, '请输入账号'); return; }
+      if (!password) { showFieldError(pwdEl, '请输入密码'); return; }
+      if (!document.getElementById('login-agreement').checked) {
+        showCheckboxError(document.getElementById('login-agreement'), '请先阅读并同意用户协议与隐私政策');
+        return;
+      }
       if (document.getElementById('login-captcha').dataset.status !== 'success') {
-        toast('请先完成人机验证', 'error'); return;
+        showCaptchaError(document.getElementById('login-captcha'), '请先完成人机验证');
+        return;
       }
 
       const captchaToken = document.getElementById('login-captcha').dataset.token || '';
-      if (!captchaToken) { toast('请先完成人机验证', 'error'); return; }
+      if (!captchaToken) { showCaptchaError(document.getElementById('forgot-captcha'), '请先完成人机验证'); return; }
       setLoading(this, true);
       const result = await apiPost('/api/login', { account, password, captchaToken });
       setLoading(this, false);
@@ -720,38 +907,56 @@
         toast('登录成功', 'success');
         setTimeout(() => {
           window.showHomepage && window.showHomepage(result.user);
+        clearCaptchaError(document.getElementById('login-captcha'));
+        clearCheckboxError(document.getElementById('login-agreement'));
         }, 800);
       } else {
-        toast(result.message || '登录失败', 'error');
+        const code = result.code || '';
+        const msg = result.message || '登录失败';
+        if (code === 'invalid_credentials' || code === 'invalid_account' || /账号|用户名|密码|account|username|password/i.test(msg)) {
+          showFieldError(accEl, msg);
+        } else {
+          toast(msg, 'error');
+        }
       }
     });
 
     // ========== 注册 ==========
     document.getElementById('btn-register').addEventListener('click', async function() {
-      const username = document.getElementById('reg-username').value.trim();
-      const email = document.getElementById('reg-email').value.trim();
-      const password = document.getElementById('reg-password').value;
-      const confirm = document.getElementById('reg-confirm').value;
-
+      clearAllFieldErrors(null);
+      const userEl = document.getElementById('reg-username');
+      const emailEl = document.getElementById('reg-email');
+      const regPwdEl = document.getElementById('reg-password');
+      const confirmEl = document.getElementById('reg-confirm');
+      const username = userEl.value.trim();
+      const email = emailEl.value.trim();
+      const password = regPwdEl.value;
+      const confirm = confirmEl.value;
       const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       const userRe = /^[a-zA-Z0-9_]{6,20}$/;
       const strongPwdRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
-
-      if (!username || !email || !password) { toast('请完整填写所有信息', 'error'); return; }
-      if (!userRe.test(username)) { toast('账号需 6-20 位，仅限字母、数字、下划线', 'error'); return; }
-      if (!emailRe.test(email)) { toast('邮箱格式错误', 'error'); return; }
+      if (!username) { showFieldError(userEl, '请输入账号'); return; }
+      if (!userRe.test(username)) { showFieldError(userEl, '账号需 6-20 位，仅限字母、数字、下划线'); return; }
+      if (!email) { showFieldError(emailEl, '请输入邮箱'); return; }
+      if (!emailRe.test(email)) { showFieldError(emailEl, '邮箱格式错误'); return; }
+      if (!password) { showFieldError(regPwdEl, '请输入密码'); return; }
       const policy = window.ApexPasswordPolicy;
       const pwdCheck = policy
         ? policy.validatePassword(password, username)
         : { valid: strongPwdRe.test(password), message: '密码强度不足' };
-      if (!pwdCheck.valid) { toast(pwdCheck.message || '密码强度不足', 'error'); return; }
-      if (password !== confirm) { toast('两次密码不一致', 'error'); return; }
+      if (!pwdCheck.valid) { showFieldError(regPwdEl, pwdCheck.message || '密码强度不足'); return; }
+      if (password !== confirm) { showFieldError(confirmEl, '两次密码不一致'); return; }
+      if (!document.getElementById('reg-agreement').checked) {
+        showCheckboxError(document.getElementById('reg-agreement'), '请先阅读并同意用户协议与隐私政策');
+        return;
+      }
       if (document.getElementById('reg-captcha').dataset.status !== 'success') {
-        toast('请先完成人机验证', 'error'); return;
+        showCaptchaError(document.getElementById('reg-captcha'), '请先完成人机验证');
+        return;
       }
 
       const captchaToken = document.getElementById('reg-captcha').dataset.token || '';
-      if (!captchaToken) { toast('请先完成人机验证', 'error'); return; }
+      if (!captchaToken) { showCaptchaError(document.getElementById('reg-captcha'), '请先完成人机验证'); return; }
       setLoading(this, true);
       const result = await apiPost('/api/register', { username, email, password, captchaToken });
       setLoading(this, false);
@@ -759,15 +964,27 @@
       if (result.success) {
         showSuccess('注册成功', '欢迎加入 Apex，您的账号已创建成功。');
       } else {
-        toast(result.message || '注册失败', 'error');
+        const code = result.code || '';
+        const msg = result.message || '注册失败';
+        if (code === 'invalid_email' || /邮箱/i.test(msg)) {
+          showFieldError(emailEl, msg);
+        } else if (code === 'weak_password' || /密码/i.test(msg)) {
+          showFieldError(regPwdEl, msg);
+        } else if (code === 'invalid_username' || /账号|用户名/i.test(msg)) {
+          showFieldError(userEl, msg);
+        } else {
+          toast(msg, 'error');
+        }
       }
     });
 
     // ========== 发送验证码 ==========
     document.getElementById('btn-send-code').addEventListener('click', async function() {
-      const email = document.getElementById('forgot-email').value.trim();
+      const forgotEmailEl2 = document.getElementById('forgot-email');
+      const email = forgotEmailEl2.value.trim();
       const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!email || !emailRe.test(email)) { toast('请输入有效邮箱', 'error'); return; }
+      if (!email) { showFieldError(forgotEmailEl2, '请输入邮箱'); return; }
+      if (!emailRe.test(email)) { showFieldError(forgotEmailEl2, '邮箱格式错误'); return; }
 
       setLoading(this, true);
       const result = await apiPost('/api/send-reset-code', { email });
@@ -790,20 +1007,27 @@
 
     // ========== 重置密码 ==========
     document.getElementById('btn-reset').addEventListener('click', async function() {
-      const email = document.getElementById('forgot-email').value.trim();
-      const newPassword = document.getElementById('forgot-newpwd').value;
-      const confirm = document.getElementById('forgot-confirm').value;
+      clearAllFieldErrors(null);
+      const fEmailEl = document.getElementById('forgot-email');
+      const fPwdEl = document.getElementById('forgot-newpwd');
+      const fConfirmEl = document.getElementById('forgot-confirm');
+      const email = fEmailEl.value.trim();
+      const newPassword = fPwdEl.value;
+      const confirm = fConfirmEl.value;
       let code = '';
       document.querySelectorAll('#code-boxes input').forEach(i => code += i.value);
 
-      if (!email || !newPassword || code.length !== 6) { toast('请完整填写邮箱、密码和 6 位验证码', 'error'); return; }
-      if (newPassword !== confirm) { toast('两次密码不一致', 'error'); return; }
+      if (!email) { showFieldError(fEmailEl, '请输入邮箱'); return; }
+      if (!newPassword) { showFieldError(fPwdEl, '请输入新密码'); return; }
+      if (code.length !== 6) { showCodeBoxError(document.getElementById('code-boxes'), '请输入 6 位验证码'); return; }
+      if (newPassword !== confirm) { showFieldError(fConfirmEl, '两次密码不一致'); return; }
       if (document.getElementById('forgot-captcha').dataset.status !== 'success') {
-        toast('请先完成人机验证', 'error'); return;
+        showCaptchaError(document.getElementById('forgot-captcha'), '请先完成人机验证');
+        return;
       }
 
       const captchaToken = document.getElementById('forgot-captcha').dataset.token || '';
-      if (!captchaToken) { toast('请先完成人机验证', 'error'); return; }
+      if (!captchaToken) { showCaptchaError(document.getElementById('login-captcha'), '请先完成人机验证'); return; }
       setLoading(this, true);
       const result = await apiPost('/api/reset-password', { email, code, newPassword, captchaToken });
       setLoading(this, false);
@@ -811,7 +1035,15 @@
       if (result.success) {
         showSuccess('重置成功', '您的密码已成功重置，请使用新密码登录。');
       } else {
-        toast(result.message || '重置失败', 'error');
+        const code2 = result.code || '';
+        const msg = result.message || '重置失败';
+        if (code2 === 'weak_password') {
+          showFieldError(fPwdEl, msg);
+        } else if (code2 === 'invalid_email') {
+          showFieldError(fEmailEl, msg);
+        } else {
+          toast(msg, 'error');
+        }
       }
     });
 
