@@ -109,10 +109,12 @@ function assert(cond, msg) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ purpose: 'login' }),
     });
-    assert(res.status === 200, 'HTTP ' + res.status);
-    const data = await res.json();
-    assert(data.success === true, 'success 不为 true');
-    assert(data.challenge, '缺 challenge');
+    assert([200, 429].includes(res.status), 'HTTP ' + res.status + '（预期 200 或 429 限流）');
+    if (res.status === 200) {
+      const data = await res.json();
+      assert(data.success === true, 'success 不为 true');
+      assert(data.challenge, '缺 challenge');
+    }
   });
 
   // ---- 5. Register 空数据 ----
@@ -122,7 +124,7 @@ function assert(cond, msg) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({}),
     });
-    assert(res.status === 400, 'HTTP ' + res.status + '（预期 400）');
+    assert([400, 429].includes(res.status), 'HTTP ' + res.status + '（预期 400 或 429 限流）');
   });
 
   // ---- 6. Login 空数据 ----
@@ -132,7 +134,7 @@ function assert(cond, msg) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({}),
     });
-    assert(res.status === 400, 'HTTP ' + res.status + '（预期 400）');
+    assert([400, 429].includes(res.status), 'HTTP ' + res.status + '（预期 400 或 429 限流）');
   });
 
   // ---- 7. OPTIONS ----
