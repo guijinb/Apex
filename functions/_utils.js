@@ -1,3 +1,5 @@
+import { verifyToken as _verifyCaptchaToken, hashIP as _hashIP } from './_captcha.js';
+
 // 密码哈希（PBKDF2 + SHA-256，10万次迭代）
 export async function hashPassword(password) {
   const ITERATIONS = 600000;
@@ -136,4 +138,14 @@ export function buildSessionCookie(token, maxAgeSec = 7 * 24 * 60 * 60) {
 // 生成清除 Cookie 的头
 export function buildClearCookie() {
   return 'apex_session=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0';
+}
+
+
+// 校验自研人机验证 Token
+export async function verifyCaptchaTokenV2(env, token, ip) {
+  if (!token) return { valid: false, reason: 'missing_token' };
+  const secret = env.CAPTCHA_SECRET;
+  if (!secret) return { valid: false, reason: 'no_secret' };
+  const ipHash = await _hashIP(ip || '');
+  return await _verifyCaptchaToken(token, secret, ipHash);
 }

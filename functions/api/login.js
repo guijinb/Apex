@@ -1,4 +1,4 @@
-import { verifyPassword, hashPassword, needsRehash, generateToken, sanitize, jsonResponse, checkRateLimit, verifyCaptchaToken, buildSessionCookie } from '../_utils.js';
+import { verifyPassword, hashPassword, needsRehash, generateToken, sanitize, jsonResponse, checkRateLimit, verifyCaptchaTokenV2, buildSessionCookie } from '../_utils.js';
 
 export async function onRequestPost(context) {
   try {
@@ -13,8 +13,8 @@ export async function onRequestPost(context) {
     const password = body.password || '';
     const captchaToken = body.captchaToken || '';
 
-    const captchaOk = await verifyCaptchaToken(env, captchaToken, ip);
-    if (!captchaOk) return jsonResponse({ success: false, message: '人机验证无效或已过期，请重新验证' }, 400);
+    const captchaResult = await verifyCaptchaTokenV2(env, captchaToken, ip);
+    if (!captchaResult.valid) return jsonResponse({ success: false, message: '人机验证无效或已过期，请重新验证' }, 400);
 
     if (!account || !password) return jsonResponse({ success: false, message: '账号和密码不能为空' }, 400);
 
@@ -44,7 +44,6 @@ export async function onRequestPost(context) {
       'INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)'
     ).bind(sessionToken, user.id, expiresAt).run();
 
-    // 关键：通过 Set-Cookie 返回 Session，而不是放在 JSON 里
     return new Response(JSON.stringify({
       success: true,
       message: '登录成功',
