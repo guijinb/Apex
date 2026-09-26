@@ -1,148 +1,168 @@
-import { verifyToken as _verifyCaptchaToken, hashIP as _hashIP } from './_captcha.js';
+// Apex 通用工具
+// 说明：为了向后兼容，这里保留原有导出名称；
+// 但实现已经重写为统一走 _security.js / _response.js / _rateLimit.js。
 
-// 密码哈希（PBKDF2 + SHA-256，10万次迭代）
+import {
+  constantTimeEqual,
+  randomToken,
+  generateNumericCode,
+  hashIP as _hashIP,
+  safeJsonParse,
+} from './_security.js';
+
+import { jsonResponse as _jsonResponse, errorResponse, success as _success } from './_response.js';
+
+import { consumeRateLimit } from './_rateLimit.js';
+
+import { consumeToken as _consumeCaptchaToken } from './_captcha.js';
+
+import { getConfig } from './_config.js';
+
+// ---------- 响应 ----------
+export function jsonResponse(data, status = 200, requestIdOrExtra = null, maybeExtra = null) {
+  let requestId = '';
+  let extra = {};
+  if (typeof requestIdOrExtra === 'string') {
+    requestId = requestIdOrExtra;
+    extra = maybeExtra || {};
+  } else if (requestIdOrExtra && typeof requestIdOrExtra === 'object') {
+    extra = requestIdOrExtra;
+  }
+  return _jsonResponse(data, status, requestId, extra);
+}
+
+export { errorResponse };
+
+// ---------- Token / Code ----------
+export function generateToken() {
+  return randomToken(32);
+}
+
+export function generateCode() {
+  return generateNumericCode(6);
+}
+
+// ---------- 密码 ----------
+const PBKDF2_ITERATIONS = 600000;
+const PBKDF2_LEGACY_ITERATIONS = 100000;
+
+function toHex(buffer) {
+  return Array.from(new Uint8Array(buffer)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
 export async function hashPassword(password) {
-  const ITERATIONS = 600000;
-  const encoder = new TextEncoder();
+  const enc = new TextEncoder();
   const salt = crypto.getRandomValues(new Uint8Array(16));
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']
+  const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits(
+    { name: 'PBKDF2', salt, iterations: PBKDF2_ITERATIONS, hash: 'SHA-256' },
+    keyMaterial,
+    256
   );
-  const hash = await crypto.subtle.deriveBits(
-    { name: 'PBKDF2', salt, iterations: ITERATIONS, hash: 'SHA-256' },
-    keyMaterial, 256
-  );
-  const saltHex = Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join('');
-  const hashHex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-  return `v1:${ITERATIONS}:${saltHex}:${hashHex}`;
+  return `v1:${PBKDF2_ITERATIONS}:${toHex(salt)}:${toHex(bits)}`;
 }
 
 export async function verifyPassword(password, stored) {
-  const encoder = new TextEncoder();
-  let saltHex, hashHex, iterations;
+  if (!stored) return false;
+  const enc = new TextEncoder();
+  let iterations;
+  let saltHex;
+  let hashHex;
 
   if (stored.startsWith('v1:')) {
     const parts = stored.split(':');
-    iterations = parseInt(parts[1]);
+    if (parts.length !== 4) return false;
+    iterations = Number.parseInt(parts[1], 10);
     saltHex = parts[2];
     hashHex = parts[3];
   } else {
-    const [oldSalt, oldHash] = stored.split(':');
-    saltHex = oldSalt;
-    hashHex = oldHash;
-    iterations = 100000;
+    const parts = stored.split(':');
+    if (parts.length !== 2) return false;
+    iterations = PBKDF2_LEGACY_ITERATIONS;
+    saltHex = parts[0];
+    hashHex = parts[1];
   }
 
-  const salt = new Uint8Array(saltHex.match(/.{1,2}/g).map(b => parseInt(b, 16)));
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']
-  );
-  const hash = await crypto.subtle.deriveBits(
+  const salt = new Uint8Array(saltHex.match(/.{1,2}/g).map((b) => Number.parseInt(b, 16)));
+  const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits(
     { name: 'PBKDF2', salt, iterations, hash: 'SHA-256' },
-    keyMaterial, 256
+    keyMaterial,
+    256
   );
-  const newHashHex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-  return newHashHex === hashHex;
+  const newHex = toHex(bits);
+  return constantTimeEqual(newHex, hashHex);
 }
 
 export function needsRehash(stored) {
   if (!stored) return true;
   if (!stored.startsWith('v1:')) return true;
   const parts = stored.split(':');
-  return parseInt(parts[1]) < 600000;
+  const iterations = Number.parseInt(parts[1], 10);
+  return !Number.isFinite(iterations) || iterations < PBKDF2_ITERATIONS;
 }
 
-export function generateToken() {
-  const bytes = crypto.getRandomValues(new Uint8Array(32));
-  return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+// ---------- 输入清理 ----------
+export function sanitize(value, max = 200) {
+  if (typeof value !== 'string') return '';
+  return value.replace(/[<>"'`;\\]/g, '').trim().substring(0, max);
 }
 
-// 生成 6 位数字验证码
-export function generateCode() {
-  return String(Math.floor(100000 + Math.random() * 900000));
-}
-
-// 输入清理（防 XSS / SQL 注入）
-export function sanitize(str) {
-  if (typeof str !== 'string') return '';
-  return str.replace(/[<>"'`;\\]/g, '').trim().substring(0, 200);
-}
-
-// 统一 JSON 响应格式
-export function jsonResponse(data, status = 200) {
-  // 204 No Content / 304 Not Modified 不允许有 body
-  if (status === 204 || status === 304) {
-    return new Response(null, {
-      status,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, X-CSRF-Token',
-      },
-    });
-  }
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, X-CSRF-Token',
-    },
-  });
-}
-
-// 校验函数
 export function validateEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-export function validateUsername(username) {
-  return /^[a-zA-Z0-9_]{6,20}$/.test(username);
-}
-export function validatePassword(pwd) {
-  return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/.test(pwd);
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || '').trim());
 }
 
-// 速率限制检查：同一 IP 在 windowSec 秒内最多允许 maxCount 次请求
-export async function checkRateLimit(env, ip, action, maxCount, windowSec) {
-  const since = new Date(Date.now() - windowSec * 1000).toISOString();
-  const result = await env.apex_db.prepare(
-    'SELECT COUNT(*) as cnt FROM rate_limits WHERE ip = ? AND action = ? AND created_at > ?'
-  ).bind(ip, action, since).first();
-  if (result && result.cnt >= maxCount) {
-    return { allowed: false, remaining: 0 };
-  }
-  await env.apex_db.prepare(
-    'INSERT INTO rate_limits (ip, action) VALUES (?, ?)'
-  ).bind(ip, action).run();
-  return { allowed: true, remaining: maxCount - result.cnt - 1 };
+export function validateUsername(username) {
+  return /^[a-zA-Z0-9_]{6,20}$/.test(String(username || '').trim());
 }
+
+// ---------- Cookie ----------
 export function parseCookies(request) {
-  const cookieHeader = request.headers.get('Cookie') || '';
+  const header = request.headers.get('Cookie') || '';
   const cookies = {};
-  cookieHeader.split(';').forEach(cookie => {
-    const [name, ...rest] = cookie.trim().split('=');
-    if (name) cookies[name] = rest.join('=');
+  header.split(';').forEach((chunk) => {
+    const trimmed = chunk.trim();
+    if (!trimmed) return;
+    const eq = trimmed.indexOf('=');
+    if (eq === -1) return;
+    const name = trimmed.slice(0, eq);
+    const value = trimmed.slice(eq + 1);
+    if (name) cookies[name] = value;
   });
   return cookies;
 }
 
-// 生成 Set-Cookie 头（HttpOnly + Secure + SameSite=Strict）
-export function buildSessionCookie(token, maxAgeSec = 7 * 24 * 60 * 60) {
-  return `apex_session=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${maxAgeSec}`;
+export function buildSessionCookie(token, maxAgeSec = 7 * 24 * 60 * 60, env = {}) {
+  const config = getConfig(env);
+  return `${config.sessionCookie}=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${maxAgeSec}`;
 }
 
-// 生成清除 Cookie 的头
-export function buildClearCookie() {
-  return 'apex_session=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0';
+export function buildClearCookie(env = {}) {
+  const config = getConfig(env);
+  return `${config.sessionCookie}=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0`;
 }
 
+// ---------- Rate Limit（兼容旧接口，内部走新系统） ----------
+export async function checkRateLimit(env, ip, action, maxCount, windowSec) {
+  const result = await consumeRateLimit(env, {
+    key: `ip:${ip || 'unknown'}`,
+    action: String(action),
+    max: Number(maxCount),
+    windowSec: Number(windowSec),
+  });
+  return { allowed: Boolean(result.allowed), remaining: result.remaining || 0 };
+}
 
-// 校验自研人机验证 Token
-export async function verifyCaptchaTokenV2(env, token, ip) {
+// ---------- CAPTCHA Token 校验（兼容旧接口） ----------
+export async function verifyCaptchaTokenV2(env, token, ip, purpose) {
   if (!token) return { valid: false, reason: 'missing_token' };
   const secret = env.CAPTCHA_SECRET;
   if (!secret) return { valid: false, reason: 'no_secret' };
-  const ipHash = await _hashIP(ip || '');
-  return await _verifyCaptchaToken(token, secret, ipHash);
+  const ipHash = await _hashIP(ip || '', env.CAPTCHA_SALT || secret);
+  // purpose 必须传入，用于绑定 CAPTCHA token 与业务动作（防跨用途重放）
+  const result = await _consumeCaptchaToken(env, token, secret, { ipHash, purpose });
+  return result;
 }
+
+// ---------- 其它工具 ----------
+export { _hashIP as hashIP, safeJsonParse };

@@ -1,39 +1,42 @@
-import { hashSessionToken } from '../_session.js';
-import { jsonResponse, parseCookies } from '../_utils.js';
+import { jsonResponse, errorResponse, optionsResponse } from '../_response.js';
+import { getCurrentUser, buildClearAllSessionCookies } from '../_auth.js';
 
 export async function onRequestGet(context) {
+  const { request, env } = context;
+  const requestId = context.data && context.data.requestId ? context.data.requestId : '';
+
   try {
-    const { request, env } = context;
-    const cookies = parseCookies(request);
-    const token = cookies['apex_session'];
-
-    if (!token) {
-      return jsonResponse({ success: false, message: '未登录' }, 401);
-    }
-
-    const tokenHash = await hashSessionToken(token);
-    const session = await env.apex_db.prepare(
-      `SELECT s.id, s.expires_at, u.id as user_id, u.username, u.email
-       FROM sessions s JOIN users u ON s.user_id = u.id
-       WHERE s.id = ?`
-    ).bind(tokenHash).first();
-
-    if (!session || new Date(session.expires_at) < new Date()) {
-      return new Response(JSON.stringify({ success: false, message: '登录已过期' }), {
-        status: 401,
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-          'Set-Cookie': 'apex_session=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0',
-        }
-      });
+    const user = await getCurrentUser(env, request);
+    if (!user) {
+      const headers = new Headers();
+      headers.set('Content-Type', 'application/json; charset=utf-8');
+      if (requestId) headers.set('X-Request-ID', requestId);
+      for (const c of buildClearAllSessionCookies(env)) {
+        headers.append('Set-Cookie', c);
+      }
+      return new Response(JSON.stringify({
+        success: false,
+        message: '未登录',
+        code: 'unauthenticated',
+      }), { status: 401, headers });
     }
 
     return jsonResponse({
       success: true,
-      user: { id: session.user_id, username: session.username, email: session.email },
-    });
-  } catch (err) {
-    return jsonResponse({ success: false, message: '服务器错误：' + err.message }, 500);
+      user: {
+        id: user.userId,
+        username: user.username,
+        email: user.email,
+        emailVerified: user.emailVerified,
+      },
+    }, 200, requestId);
+  } catch (error) {
+    console.error('[Me] failed:', error && error.message ? error.message : error);
+    return errorResponse('服务器内部错误，请稍后重试。', 500, 'internal_error', requestId);
   }
 }
-export async function onRequestOptions() { return jsonResponse({}, 204); }
+
+export async function onRequestOptions(context) {
+  const requestId = context.data && context.data.requestId ? context.data.requestId : '';
+  return optionsResponse(requestId);
+}

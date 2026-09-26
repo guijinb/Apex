@@ -1,27 +1,39 @@
-import { hashSessionToken } from '../_session.js';
-import { jsonResponse, parseCookies, buildClearCookie } from '../_utils.js';
+import { jsonResponse, optionsResponse } from '../_response.js';
+import {
+  destroyCurrentSession,
+  buildClearAllSessionCookies,
+  cleanupExpiredSessions,
+} from '../_auth.js';
+import { writeAudit } from '../_audit.js';
 
 export async function onRequestPost(context) {
+  const { request, env } = context;
+  const requestId = context.data && context.data.requestId ? context.data.requestId : '';
+
   try {
-    const { request, env } = context;
-    const cookies = parseCookies(request);
-    const token = cookies['apex_session'];
-
-    if (token) {
-      const tokenHash = await hashSessionToken(token);
-      await env.apex_db.prepare('DELETE FROM sessions WHERE id = ?').bind(tokenHash).run();
-    }
-
-    return new Response(JSON.stringify({ success: true, message: '已登出' }), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-        'Set-Cookie': buildClearCookie(),
-      }
-    });
-  } catch (err) {
-    return jsonResponse({ success: false, message: '服务器错误：' + err.message }, 500);
+    await destroyCurrentSession(env, request);
+    await writeAudit(env, { action: 'logout' }, request);
+  } catch (error) {
+    console.error('[Logout] failed:', error && error.message ? error.message : error);
   }
+
+  // 顺手清理过期 session（不阻塞主流程，出错也不影响 logout）
+  cleanupExpiredSessions(env);
+
+  const headers = new Headers();
+  headers.set('Content-Type', 'application/json; charset=utf-8');
+  if (requestId) headers.set('X-Request-ID', requestId);
+  for (const c of buildClearAllSessionCookies(env)) {
+    headers.append('Set-Cookie', c);
+  }
+
+  return new Response(JSON.stringify({ success: true, message: '已登出' }), {
+    status: 200,
+    headers,
+  });
 }
 
-export async function onRequestOptions() { return jsonResponse({}, 204); }
+export async function onRequestOptions(context) {
+  const requestId = context.data && context.data.requestId ? context.data.requestId : '';
+  return optionsResponse(requestId);
+}

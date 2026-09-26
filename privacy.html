@@ -18,76 +18,96 @@
 </style>
 </head>
 <body>
-  <div class="container">
-    <h1>隐私政策</h1>
-    <div class="updated">最后更新：2026 年 9 月</div>
+<div class="container">
+<h1>隐私政策</h1>
+<div class="updated">最后更新：2026 年 9 月</div>
 
-    <h2>1. 我们收集的信息</h2>
-    <p>当您使用 Apex Entertainment 平台时，我们可能收集以下信息：</p>
-    <ul>
-      <li>账号信息：用户名、邮箱地址</li>
-      <li>登录凭证：加密后的密码哈希（我们无法读取您的明文密码）</li>
-      <li>技术信息：IP 地址、User-Agent、设备类型</li>
-      <li>行为数据：用于安全验证的鼠标/触摸行为信号</li>
-      <li>日志数据：登录时间、API 请求、错误信息</li>
-    </ul>
+<h2>1. 我们收集的信息</h2>
+<p>当您使用 Apex Entertainment 平台时，我们可能收集以下信息：</p>
+<ul>
+<li>账号信息：用户名、邮箱地址</li>
+<li>登录凭证：加密后的密码哈希（PBKDF2-SHA256，600,000 次迭代；我们无法读取您的明文密码）</li>
+<li>技术信息：IP 地址（仅保存加盐哈希形式）、User-Agent、设备类型</li>
+<li>行为数据：用于人机验证的鼠标 / 触摸行为信号（仅用于判定，原始信号不长期保存）</li>
+<li>日志数据：登录时间、API 请求记录、错误信息、请求 ID</li>
+</ul>
 
-    <h2>2. 信息使用方式</h2>
-    <p>我们收集的信息仅用于：</p>
-    <ul>
-      <li>提供、维护和改进我们的服务</li>
-      <li>验证您的身份并保护账号安全</li>
-      <li>防止欺诈、滥用和机器人攻击</li>
-      <li>遵守法律和监管要求</li>
-    </ul>
+<h2>2. 信息使用方式</h2>
+<p>我们收集的信息仅用于：</p>
+<ul>
+<li>提供、维护和改进我们的服务</li>
+<li>验证您的身份并保护账号安全</li>
+<li>防止欺诈、滥用和机器人攻击</li>
+<li>遵守法律和监管要求</li>
+</ul>
 
-    <h2>3. 信息存储与保护</h2>
-    <p>您的数据存储在 Cloudflare 全球分布式网络（D1 数据库）中，采用以下安全措施：</p>
-    <ul>
-      <li>密码使用 PBKDF2-SHA256 加盐哈希（600,000 次迭代）</li>
-      <li>Session Token 在服务端仅存储哈希值</li>
-      <li>全站 HTTPS 加密传输（HSTS 强制）</li>
-      <li>严格的 CSP、CORS 安全响应头</li>
-    </ul>
+<h2>3. 信息存储与保护</h2>
+<p>您的数据存储在 Cloudflare 全球分布式网络（D1 数据库）中，采用以下安全措施：</p>
+<ul>
+<li>密码使用 PBKDF2-SHA256 加盐哈希（600,000 次迭代）</li>
+<li>Session Token 在服务端仅存储 SHA-256 哈希；原始 Token 只存在于您浏览器的 HttpOnly Cookie 中</li>
+<li>IP 地址在数据库中仅以加盐哈希形式保存，不保存明文</li>
+<li>全站 HTTPS 加密传输（HSTS 强制，includeSubDomains + preload）</li>
+<li>严格的 CSP、CORS 及安全响应头（X-Frame-Options、Permissions-Policy 等）</li>
+<li>CSRF 防护（双重 Cookie 模式，恒定时间比较）</li>
+<li>敏感操作使用 PBKDF2 + 恒定时间比较，防时序攻击</li>
+</ul>
 
-    <h2>4. 信息共享</h2>
-    <p>我们不会出售、交易或出租您的个人信息。仅在以下情况下可能共享：</p>
-    <ul>
-      <li>法律要求或合法请求</li>
-      <li>保护用户或公众的安全</li>
-      <li>与信任的第三方服务商（邮件服务）共享必要信息</li>
-    </ul>
+<h2>4. 信息共享</h2>
+<p>我们不会出售、交易或出租您的个人信息。仅在以下情况下可能共享：</p>
+<ul>
+<li>法律要求或合法请求</li>
+<li>保护用户或公众的安全</li>
+<li>与以下第三方服务商共享必要信息：
+  <ul>
+    <li><strong>Cloudflare</strong>（托管与 D1 数据库）</li>
+    <li><strong>Resend</strong>（主邮件服务，用于发送验证邮件）</li>
+    <li><strong>AgentMail</strong>（备用邮件服务）</li>
+    <li><strong>Google Fonts</strong>（网页字体加载）</li>
+    <li><strong>Unsplash</strong>（首页图片加载）</li>
+  </ul>
+</li>
+</ul>
 
-    <h2>5. 您的权利</h2>
-    <p>您有权：</p>
-    <ul>
-      <li>访问、更正或删除您的个人信息</li>
-      <li>随时删除您的账号（通过安全中心）</li>
-      <li>退出所有登录设备</li>
-      <li>联系我们了解数据使用情况</li>
-    </ul>
+<h2>5. 您的权利</h2>
+<p>您有权：</p>
+<ul>
+<li>访问、更正或删除您的个人信息</li>
+<li>随时删除您的账号（通过安全中心）</li>
+<li>退出所有登录设备</li>
+<li>联系我们了解数据使用情况</li>
+</ul>
 
-    <h2>6. Cookie 使用</h2>
-    <p>我们使用以下 Cookie：</p>
-    <ul>
-      <li><strong>apex_session</strong>：登录状态（HttpOnly + Secure + SameSite）</li>
-      <li><strong>apex_csrf</strong>：CSRF 防护 Token</li>
-    </ul>
-    <p>我们不使用第三方追踪 Cookie。</p>
+<h2>6. Cookie 使用</h2>
+<p>我们使用以下 Cookie：</p>
+<ul>
+<li><strong>__Host-apex_session</strong>：登录状态（HttpOnly + Secure + SameSite=Strict）</li>
+<li><strong>apex_csrf</strong>：CSRF 防护 Token（非 HttpOnly，供前端读取后附加到请求头）</li>
+</ul>
+<p>我们不使用第三方追踪 Cookie。前端 localStorage 仅用于保存界面偏好（如语言选择），不用于认证。</p>
 
-    <h2>7. 数据保留期限</h2>
-    <p>账号数据在您的账号存续期间保留。日志数据保留 30-90 天。删除账号后，相关数据将被永久删除。</p>
+<h2>7. 数据保留期限</h2>
+<ul>
+<li>账号数据：在您的账号存续期间保留；删除账号后立即永久删除。</li>
+<li>登录 Session：最长 7 天（自动过期）；登出或修改密码后立即失效。</li>
+<li>审计日志：90 天。</li>
+<li>客户端错误日志：30 天。</li>
+<li>限流记录：按窗口期自动清理（最长不超过 1 小时）。</li>
+<li>人机验证 Token：5 分钟（一次性使用，服务端只保存哈希）。</li>
+<li>密码重置验证码：10 分钟（一次性使用，服务端只保存 SHA-256 哈希）。</li>
+<li>邮箱验证链接：24 小时（一次性使用）。</li>
+</ul>
 
-    <h2>8. 政策更新</h2>
-    <p>我们可能不时更新本政策。重大变更会通过邮件或站内通知告知您。</p>
+<h2>8. 政策更新</h2>
+<p>我们可能不时更新本政策。重大变更会通过邮件或站内通知告知您。</p>
 
-    <h2>9. 联系我们</h2>
-    <p>如有疑问，请联系：<a href="mailto:privacy@apex-entertainment.com">privacy@apex-entertainment.com</a></p>
+<h2>9. 联系我们</h2>
+<p>如有疑问，请联系：<a href="mailto:privacy@apex-entertainment.com">privacy@apex-entertainment.com</a></p>
 
-    <div class="footer">
-      <a href="/">← 返回首页</a> · <a href="/terms.html">用户协议</a>
-      <br><br>© 2026 Apex Global Entertainment
-    </div>
-  </div>
+<div class="footer">
+<a href="/">← 返回首页</a> · <a href="/terms.html">用户协议</a>
+<br><br>© 2026 Apex Global Entertainment
+</div>
+</div>
 </body>
 </html>

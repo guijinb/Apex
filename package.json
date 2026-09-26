@@ -1,0 +1,30 @@
+{
+  "name": "apex",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Apex Global Entertainment - Production-grade Cloudflare Pages + Functions + D1 project",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "wrangler pages dev . --d1 apex_db=apex-db",
+    "deploy": "wrangler pages deploy . --project-name=apex --branch=main",
+    "migrate:local": "bash scripts/migrate.sh --local",
+    "migrate:remote": "bash scripts/migrate.sh --remote",
+    "backup": "bash scripts/backup.sh",
+    "verify-backup": "bash scripts/verify-backup.sh",
+    "test": "npm run test:security && npm run test:unit",
+    "test:security": "node tests/security-scan.js",
+    "check": "npm run syntax && npm run test",
+    "syntax": "bash scripts/syntax-check.sh",
+    "test:smoke": "node tests/api-smoke.test.js",
+    "test:password": "node tests/password-policy.test.js",
+    "test:csrf": "node tests/csrf-middleware.test.js",
+    "test:headers": "node tests/response-headers.test.js",
+    "test:unit": "npm run test:password && npm run test:csrf && npm run test:headers"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}

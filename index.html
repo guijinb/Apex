@@ -130,6 +130,13 @@
   <link rel="preload" href="/splash-top.webp" as="image" fetchpriority="high">
 <!-- APEX-PRELOAD-END -->
 <!-- APEX-SEO-START -->
+<!--
+  注意：以下域名硬编码是刻意设计，不是遗漏。
+  - 搜索引擎爬虫（Googlebot / Bingbot）不执行 JavaScript
+  - SEO / OG / JSON-LD 元信息必须在 HTML 源码中静态可见
+  - 切换到自定义域名时，请全局替换此区块内的 apex-8rg.pages.dev
+  - 后端逻辑（API / 邮件链接）使用 env.PUBLIC_BASE_URL，不依赖此处
+-->
   <meta name="description" content="Apex Entertainment - 全球娱乐游戏平台。一站式体验，玩法丰富，公平公正，极速存取。">
   <meta name="keywords" content="Apex,娱乐游戏平台,在线娱乐,全球游戏平台,电子游艺,真人娱乐,体育竞猜">
   <meta name="author" content="Apex Global Entertainment">
@@ -167,6 +174,10 @@
   <link rel="apple-touch-icon" href="/logo.png">
 </head>
 <body>
+  <script src="/src/js/apiClient.js"></script>
+  <script src="/src/js/passwordPolicy.js"></script>
+  <script src="/src/js/captcha.js"></script>
+
   <!-- ============ 加载页 ============ -->
   <div id="apex-splash-screen">
     <img src="./splash-top.webp" alt="Splash" class="splash-top-img" fetchpriority="high" loading="eager" decoding="async">
@@ -540,15 +551,17 @@
       const bars = document.querySelectorAll('#reg-strength .bar');
       bars.forEach(b => b.className = 'bar');
       if (!this.value) return clearState(this);
-      let level = 0;
-      if (strongPwdRe.test(this.value)) level = 3;
-      else if (this.value.length >= 8) level = 2;
-      else level = 1;
+      const regUserName = document.getElementById('reg-username');
+      const ident = regUserName ? regUserName.value.trim() : '';
+      const policy = window.ApexPasswordPolicy;
+      const result = policy
+        ? policy.scorePassword(this.value, ident)
+        : { level: strongPwdRe.test(this.value) ? 3 : (this.value.length >= 8 ? 2 : 1), valid: strongPwdRe.test(this.value), message: '需至少 8 位，含大小写字母、数字和特殊字符' };
       bars.forEach((b, i) => {
-        if (i < level) b.classList.add(level === 1 ? 'active-weak' : (level === 2 ? 'active-medium' : 'active-strong'));
+        if (i < result.level) b.classList.add(result.level === 1 ? 'active-weak' : (result.level === 2 ? 'active-medium' : 'active-strong'));
       });
-      if (level === 3) setOk(this);
-      else setErr(this, '需至少 8 位，含大小写字母、数字和特殊字符');
+      if (result.valid) setOk(this);
+      else setErr(this, result.message || '密码强度不足');
     });
 
     // 确认密码
@@ -570,7 +583,12 @@
     const forgotNew = document.getElementById('forgot-newpwd');
     if (forgotNew) forgotNew.addEventListener('input', function() {
       if (!this.value) return clearState(this);
-      strongPwdRe.test(this.value) ? setOk(this) : setErr(this, '需至少 8 位，含大小写字母、数字和特殊字符');
+      const forgotEmailEl = document.getElementById('forgot-email');
+      const ident = forgotEmailEl ? forgotEmailEl.value.trim() : '';
+      const policy = window.ApexPasswordPolicy;
+      const r = policy ? policy.validatePassword(this.value, ident)
+                       : { valid: strongPwdRe.test(this.value), message: '需至少 8 位，含大小写字母、数字和特殊字符' };
+      r.valid ? setOk(this) : setErr(this, r.message || '密码强度不足');
     });
 
     // 忘记密码 - 确认密码
@@ -602,18 +620,72 @@
 
     const { toast, showSuccess } = window.__apex;
 
+    // 首屏预热 CSRF cookie：若首次访问没有 cookie，主动 GET 一次让服务端下发
+    (function warmupCsrf() {
+      if (readApexCookie('apex_csrf')) return;
+      fetch('/api/health', { credentials: 'include', cache: 'no-store' }).catch(function(){});
+    })();
+
     // ========== API 客户端 ==========
-    async function apiPost(url, data) {
+    // ========== 统一 Cookie 读取（仅非 HttpOnly 的 apex_csrf） ==========
+    function readApexCookie(name) {
       try {
-        const res = await fetch(url, {
+        const m = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1') + '=([^;]*)'));
+        return m ? decodeURIComponent(m[1]) : '';
+      } catch (e) {
+        return '';
+      }
+    }
+
+    // ========== 统一 API POST 客户端 ==========
+    //  - 自动 credentials: include
+    //  - 自动附加 X-CSRF-Token（从 apex_csrf cookie 读取）
+    //  - 只解析 application/json
+    //  - 网络/解析错误统一返回 { success:false, message }
+    async function apiPost(url, data, _retryCount) {
+      _retryCount = _retryCount || 0;
+      const headers = { 'Content-Type': 'application/json' };
+      const csrf = readApexCookie('apex_csrf');
+      if (csrf) headers['X-CSRF-Token'] = csrf;
+
+      let res;
+      try {
+        res = await fetch(url, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          headers,
           body: JSON.stringify(data)
         });
-        return await res.json();
       } catch (err) {
-        return { success: false, message: '网络错误：' + err.message };
+        return { success: false, message: '网络异常，请检查连接后重试' };
       }
+
+      const ct = res.headers.get('Content-Type') || '';
+      let payload = null;
+      if (ct.indexOf('application/json') !== -1) {
+        try {
+          payload = await res.json();
+        } catch (e) {
+          payload = null;
+        }
+      }
+      // CSRF 自愈：403 + csrf_invalid 时重试一次（服务端已 Set-Cookie 新 token）
+      if (
+        res.status === 403 &&
+        _retryCount < 1 &&
+        payload && typeof payload === 'object' && payload.code === 'csrf_invalid'
+      ) {
+        return apiPost(url, data, _retryCount + 1);
+      }
+
+      if (!payload || typeof payload !== 'object') {
+        if (res.status === 403) return { success: false, message: 'CSRF 校验失败，请刷新页面后重试' };
+        if (res.status === 429) return { success: false, message: '请求过于频繁，请稍后再试' };
+        if (res.status >= 500) return { success: false, message: '服务器繁忙，请稍后再试' };
+        return { success: false, message: '服务器响应异常' };
+      }
+      if (typeof payload.success !== 'boolean') payload.success = false;
+      return payload;
     }
 
     function setLoading(btn, loading) {
@@ -636,15 +708,18 @@
         toast('请先完成人机验证', 'error'); return;
       }
 
+      const captchaToken = document.getElementById('login-captcha').dataset.token || '';
+      if (!captchaToken) { toast('请先完成人机验证', 'error'); return; }
       setLoading(this, true);
-      const result = await apiPost('/api/login', { account, password });
+      const result = await apiPost('/api/login', { account, password, captchaToken });
       setLoading(this, false);
 
       if (result.success) {
-        localStorage.setItem('apex_user', JSON.stringify(result.user));
+        // 认证状态唯一可信来源：Session Cookie + /api/me
+        // 此处不再写入 localStorage（避免「本地显示已登录，但 Session 已过期」错位）
         toast('登录成功', 'success');
         setTimeout(() => {
-          window.showHomepage && window.showHomepage();
+          window.showHomepage && window.showHomepage(result.user);
         }, 800);
       } else {
         toast(result.message || '登录失败', 'error');
@@ -665,14 +740,20 @@
       if (!username || !email || !password) { toast('请完整填写所有信息', 'error'); return; }
       if (!userRe.test(username)) { toast('账号需 6-20 位，仅限字母、数字、下划线', 'error'); return; }
       if (!emailRe.test(email)) { toast('邮箱格式错误', 'error'); return; }
-      if (!strongPwdRe.test(password)) { toast('密码强度不足', 'error'); return; }
+      const policy = window.ApexPasswordPolicy;
+      const pwdCheck = policy
+        ? policy.validatePassword(password, username)
+        : { valid: strongPwdRe.test(password), message: '密码强度不足' };
+      if (!pwdCheck.valid) { toast(pwdCheck.message || '密码强度不足', 'error'); return; }
       if (password !== confirm) { toast('两次密码不一致', 'error'); return; }
       if (document.getElementById('reg-captcha').dataset.status !== 'success') {
         toast('请先完成人机验证', 'error'); return;
       }
 
+      const captchaToken = document.getElementById('reg-captcha').dataset.token || '';
+      if (!captchaToken) { toast('请先完成人机验证', 'error'); return; }
       setLoading(this, true);
-      const result = await apiPost('/api/register', { username, email, password });
+      const result = await apiPost('/api/register', { username, email, password, captchaToken });
       setLoading(this, false);
 
       if (result.success) {
@@ -693,9 +774,7 @@
       setLoading(this, false);
 
       if (result.success) {
-        let msg = '验证码已发送';
-        if (result.devCode) msg += '（开发模式：' + result.devCode + '）';
-        toast(msg, 'success');
+        toast('验证码已发送', 'success');
         let c = 60;
         this.disabled = true;
         this.textContent = c + '秒后重发';
@@ -723,8 +802,10 @@
         toast('请先完成人机验证', 'error'); return;
       }
 
+      const captchaToken = document.getElementById('forgot-captcha').dataset.token || '';
+      if (!captchaToken) { toast('请先完成人机验证', 'error'); return; }
       setLoading(this, true);
-      const result = await apiPost('/api/reset-password', { email, code, newPassword });
+      const result = await apiPost('/api/reset-password', { email, code, newPassword, captchaToken });
       setLoading(this, false);
 
       if (result.success) {
@@ -923,12 +1004,12 @@
   (function() {
     function report(type, message) {
       try {
-        fetch('/api/log', { credentials: 'include',
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: type, message: message, url: location.href }),
-          keepalive: true
-        }).catch(() => {});
+        if (window.apiClient) {
+          window.apiClient.post('/api/log',
+            { type: type, message: message, url: location.href },
+            { keepalive: true }
+          );
+        }
       } catch (e) {}
     }
     window.addEventListener('error', function(e) {
@@ -970,10 +1051,9 @@
       .then(data => {
         if (data && data.success) {
           console.log('[Apex] 自动登录成功：', data.user.username);
-          window.showHomepage && window.showHomepage();
+          window.showHomepage && window.showHomepage(data.user);
         } else {
           console.log('[Apex] 未登录或登录已过期');
-          localStorage.removeItem('apex_user');
         }
       })
       .catch(() => {});
@@ -1047,131 +1127,14 @@
 
   <script>
   window.apexLogout = function() {
-    fetch('/api/logout', { method: 'POST', credentials: 'include' })
-      .then(() => {
-        localStorage.removeItem('apex_user');
-        location.reload();
-      });
+    window.apiClient.post('/api/logout', {}).then(() => {
+      // 认证状态唯一来源是 Cookie，登出后刷新即可回到登录页
+      location.reload();
+    });
   };
   </script>
   
-  <script id="apex-captcha-real">
-  (function() {
-    // ============ 行为信号采集 ============
-    const signals = {
-      mouseMoves: 0,
-      touches: 0,
-      keypresses: 0,
-      scrolls: 0,
-      startTime: Date.now(),
-    };
-
-    // 采集鼠标移动
-    document.addEventListener('mousemove', () => { signals.mouseMoves++; }, { passive: true });
-    // 采集触摸
-    document.addEventListener('touchmove', () => { signals.touches++; }, { passive: true });
-    // 采集键盘
-    document.addEventListener('keydown', () => { signals.keypresses++; }, { passive: true });
-    // 采集滚动
-    document.addEventListener('scroll', () => { signals.scrolls++; }, { passive: true });
-
-    // 计算环境指纹（一次性）
-    function getFingerprint() {
-      return {
-        webdriver: !!navigator.webdriver,
-        languages: navigator.languages || [],
-        platform: navigator.platform || '',
-        hardwareConcurrency: navigator.hardwareConcurrency || 0,
-        deviceMemory: navigator.deviceMemory || 0,
-        screenWidth: screen.width,
-        screenHeight: screen.height,
-      };
-    }
-
-    // ============ 挑战流程 ============
-    window.startCaptcha = async function(box) {
-      if (box.dataset.status === 'success' || box.dataset.status === 'verifying') return;
-
-      box.dataset.status = 'verifying';
-      box.classList.add('verifying');
-      const percent = box.querySelector('.apex-captcha-percent');
-      percent.textContent = '0%';
-
-      // 进度条动画（视觉反馈）
-      let progress = 0;
-      const progressInterval = setInterval(() => {
-        progress = Math.min(progress + Math.random() * 15 + 5, 90);
-        percent.textContent = Math.floor(progress) + '%';
-      }, 100);
-
-      try {
-        // Step 1: 向后端请求挑战（nonce + 签名）
-        const challengeRes = await fetch('/api/captcha/challenge', {
-          method: 'POST',
-          credentials: 'include',
-        });
-        const challengeData = await challengeRes.json();
-        if (!challengeData.success) throw new Error(challengeData.message || '无法获取验证挑战');
-
-        // Step 2: 汇总所有信号（环境 + 行为 + 停留时间）
-        const payload = {
-          ...getFingerprint(),
-          mouseMoves: signals.mouseMoves,
-          touches: signals.touches,
-          keypresses: signals.keypresses,
-          scrolls: signals.scrolls,
-          dwellTime: Date.now() - signals.startTime,
-        };
-
-        // Step 3: 提交信号给后端评分
-        const verifyRes = await fetch('/api/captcha/verify', {
-          method: 'POST',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            signals: payload,
-            challenge: challengeData.challenge,
-            signature: challengeData.signature,
-          }),
-        });
-        const verifyData = await verifyRes.json();
-
-        clearInterval(progressInterval);
-
-        if (verifyData.success) {
-          // 通过
-          percent.textContent = '100%';
-          setTimeout(() => {
-            box.dataset.token = verifyData.token;
-            box.dataset.status = 'success';
-            box.classList.remove('verifying');
-            box.classList.add('success');
-            percent.textContent = '验证成功';
-          }, 200);
-        } else {
-          // 失败
-          percent.textContent = '验证失败';
-          setTimeout(() => {
-            box.dataset.status = 'idle';
-            box.classList.remove('verifying');
-            box.classList.remove('success');
-            percent.textContent = '0%';
-          }, 1500);
-        }
-      } catch (err) {
-        clearInterval(progressInterval);
-        percent.textContent = '网络错误';
-        setTimeout(() => {
-          box.dataset.status = 'idle';
-          box.classList.remove('verifying');
-          percent.textContent = '0%';
-        }, 1500);
-      }
-    };
-
-    console.log('[Apex] 自研行为验证已启用');
-  })();
-  </script>
+  
 <div id="apex-homepage" style="display:none;">
   <div style="max-width:480px;margin:0 auto;padding:16px;">
 
@@ -1249,8 +1212,9 @@
 
 
   <script id="apex-homepage-logic">
-  window.showHomepage = function() {
-    const user = JSON.parse(localStorage.getItem('apex_user') || '{}');
+  window.showHomepage = function(user) {
+    // user 必须由调用方从 /api/me 或登录接口传入，不再读 localStorage
+    user = user || {};
     // 隐藏所有顶层元素
     document.querySelectorAll('body > div').forEach(el => {
       if (el.id === 'apex-homepage' || el.id === 'apex-toast' || el.id === 'security-modal') return;
@@ -1268,26 +1232,45 @@
     if (e.target.closest('#security-center-link')) {
       e.preventDefault();
       document.getElementById('security-modal').style.display = 'flex';
-      const res = await fetch('/api/sessions', { credentials: 'include' });
-      const data = await res.json();
+      const data = await window.apiClient.get('/api/sessions');
       const list = document.getElementById('session-list');
       if (data.success && data.sessions) {
-        list.innerHTML = data.sessions.map(s =>
-          '<div style="padding:10px;background:#1a1a1a;border-radius:8px;margin-bottom:8px;font-size:11px;">' +
-          '<div style="color:' + (s.isCurrent ? '#4ade80' : '#fff') + ';font-weight:bold;">' + (s.isCurrent ? '当前设备' : '其他设备') + '</div>' +
-          '<div style="color:#666;margin-top:4px;">' + s.createdAt + '</div>' +
-          '</div>'
-        ).join('');
+        // XSS 加固：用 DOM API 构建，禁止 HTML 字符串拼接
+        list.replaceChildren();
+        const frag = document.createDocumentFragment();
+        for (const s of data.sessions) {
+          const card = document.createElement('div');
+          card.style.cssText = 'padding:10px;background:#1a1a1a;border-radius:8px;margin-bottom:8px;font-size:11px;';
+          const title = document.createElement('div');
+          title.style.cssText = 'font-weight:bold;color:' + (s.isCurrent ? '#4ade80' : '#fff') + ';';
+          title.textContent = s.isCurrent ? '当前设备' : '其他设备';
+          card.appendChild(title);
+          const meta = document.createElement('div');
+          meta.style.cssText = 'color:#666;margin-top:4px;';
+          meta.textContent = String(s.createdAt || '');
+          card.appendChild(meta);
+          if (s.device || s.userAgent) {
+            const dev = document.createElement('div');
+            dev.style.cssText = 'color:#888;margin-top:4px;word-break:break-all;';
+            dev.textContent = String(s.device || s.userAgent);
+            card.appendChild(dev);
+          }
+          frag.appendChild(card);
+        }
+        list.appendChild(frag);
       } else {
-        list.innerHTML = '<div style="color:#888;font-size:11px;">无法加载设备列表</div>';
+        list.replaceChildren();
+        const empty = document.createElement('div');
+        empty.style.cssText = 'color:#888;font-size:11px;';
+        empty.textContent = '无法加载设备列表';
+        list.appendChild(empty);
       }
     }
   });
 
   window.revokeAllSessions = async function() {
     if (!confirm('确认撤销所有其他设备？')) return;
-    const res = await fetch('/api/sessions', { method: 'DELETE', credentials: 'include' });
-    const data = await res.json();
+    const data = await window.apiClient.delete('/api/sessions');
     alert(data.message || '操作完成');
     if (data.success) document.getElementById('security-modal').style.display = 'none';
   };

@@ -49,7 +49,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add backups/
+          # backups/ 目录被 .gitignore 忽略（防止污染 main 分支）
+          # 本工作流专门推送到 backups 分支，用 -f 强制添加
+          git add -f backups/
           git commit -m "chore: daily backup $(date +%Y-%m-%d)" || echo "No changes"
           git push origin HEAD:backups || echo "Push failed, retrying..."
           git push origin HEAD:backups

@@ -1,31 +1,58 @@
-import { sanitize, jsonResponse } from '../_utils.js';
+import { jsonResponse, errorResponse, optionsResponse } from '../_response.js';
+import { parseJsonBody } from '../_validation.js';
+import { getClientIP, hashIP, redactSensitive } from '../_security.js';
+import { enforceIpRateLimit } from '../_rateLimit.js';
+
+const TYPE_ALLOWLIST = new Set([
+  'js_error',
+  'promise_rejection',
+  'perf_lcp',
+  'perf_load',
+  'client_info',
+  'unknown',
+]);
+
+const MSG_MAX = 500;
+const URL_MAX = 300;
+const UA_MAX = 200;
 
 export async function onRequestPost(context) {
+  const { request, env } = context;
+  const requestId = context.data && context.data.requestId ? context.data.requestId : '';
+
+  // 客户端日志极易被滥用：每 IP 每分钟最多 60 次
+  const limited = await enforceIpRateLimit(env, request, 'client-log', 60, 60);
+  if (limited) return limited;
+
+  const parsed = await parseJsonBody(request, 4096);
+  if (!parsed.ok) return errorResponse(parsed.message, parsed.status, 'bad_request', requestId);
+
+  const body = parsed.data || {};
+
+  let type = String(body.type || 'unknown').trim().toLowerCase();
+  if (!TYPE_ALLOWLIST.has(type)) type = 'unknown';
+
+  const message = redactSensitive(String(body.message || '')).substring(0, MSG_MAX);
+  const url = String(body.url || '').substring(0, URL_MAX);
+  const ua = String(request.headers.get('User-Agent') || '').substring(0, UA_MAX);
+  const ip = getClientIP(request);
+  const ipHash = await hashIP(ip, env.AUDIT_SALT || env.CAPTCHA_SECRET || '');
+  const environment = env.ENVIRONMENT || 'production';
+
   try {
-    const { request, env } = context;
-    const body = await request.json();
-    const type = sanitize(body.type || 'unknown').substring(0, 20);
-    // 日志脱敏：过滤敏感关键词
-    const rawMessage = String(body.message || '');
-    const message = rawMessage
-      .replace(/password[=:][^\s,}]*/gi, 'password=[REDACTED]')
-      .replace(/token[=:][^\s,}]*/gi, 'token=[REDACTED]')
-      .replace(/Bearer\s+[A-Za-z0-9_\-]+/g, 'Bearer [REDACTED]')
-      .replace(/cookie[=:][^\s,}]*/gi, 'cookie=[REDACTED]')
-      .replace(/am_us_[A-Za-z0-9]+/g, 'am_us_[REDACTED]')
-      .substring(0, 500);
-    const url = sanitize(body.url || '').substring(0, 300);
-    const ua = (request.headers.get('User-Agent') || '').substring(0, 200);
-    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
-
     await env.apex_db.prepare(
-      'INSERT INTO logs (type, message, url, user_agent, ip) VALUES (?, ?, ?, ?, ?)'
-    ).bind(type, message, url, ua, ip).run();
-
-    return jsonResponse({ success: true });
-  } catch (err) {
-    return jsonResponse({ success: false }, 200);
+      `INSERT INTO logs (type, message, url, user_agent, ip, request_id, environment)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`
+    ).bind(type, message, url, ua, ipHash, requestId, environment).run();
+  } catch (error) {
+    console.error('[Log] insert failed:', error.message);
+    return jsonResponse({ success: false }, 200, requestId);
   }
+
+  return jsonResponse({ success: true }, 200, requestId);
 }
 
-export async function onRequestOptions() { return jsonResponse({}, 204); }
+export async function onRequestOptions(context) {
+  const requestId = context.data && context.data.requestId ? context.data.requestId : '';
+  return optionsResponse(requestId);
+}

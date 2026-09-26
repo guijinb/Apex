@@ -3,159 +3,204 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Apex Status · 系统状态</title>
+<title>系统状态 · Apex Global Entertainment</title>
+<meta name="description" content="Apex Entertainment 系统状态页面：网站、API、数据库、邮件服务的实时可用性。">
+<link rel="canonical" href="https://apex-8rg.pages.dev/status.html">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, system-ui, sans-serif; background: #050505; color: #e0e0e0; min-height: 100vh; padding: 24px; }
-  .container { max-width: 720px; margin: 0 auto; }
-  h1 { color: #d4af37; font-size: 24px; letter-spacing: 2px; margin-bottom: 8px; }
-  .subtitle { color: #666; font-size: 13px; margin-bottom: 32px; }
-  .overall { background: #0f0f0f; border: 1px solid #2a2a2a; border-radius: 12px; padding: 20px; margin-bottom: 24px; display: flex; align-items: center; gap: 16px; }
-  .overall .dot { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; }
-  .overall .dot.ok { background: #4ade80; box-shadow: 0 0 12px rgba(74,222,128,0.5); }
-  .overall .dot.warn { background: #f4d03f; box-shadow: 0 0 12px rgba(244,208,63,0.5); }
-  .overall .dot.err { background: #e63946; box-shadow: 0 0 12px rgba(230,57,70,0.5); }
-  .overall .info { flex: 1; }
-  .overall .title { font-size: 15px; font-weight: bold; color: #fff; }
-  .overall .meta { font-size: 12px; color: #888; margin-top: 4px; }
-  .services { display: flex; flex-direction: column; gap: 12px; }
-  .service { background: #0f0f0f; border: 1px solid #2a2a2a; border-radius: 10px; padding: 16px; display: flex; justify-content: space-between; align-items: center; }
-  .service .name { font-size: 14px; color: #fff; }
-  .service .desc { font-size: 11px; color: #666; margin-top: 4px; }
-  .service .status { font-size: 12px; font-weight: bold; padding: 6px 12px; border-radius: 20px; }
-  .service .status.ok { background: rgba(74,222,128,0.1); color: #4ade80; }
-  .service .status.warn { background: rgba(244,208,63,0.1); color: #f4d03f; }
-  .service .status.err { background: rgba(230,57,70,0.1); color: #e63946; }
-  .service .status.loading { background: rgba(136,136,136,0.1); color: #888; }
-  .footer { text-align: center; color: #555; font-size: 11px; margin-top: 32px; padding: 20px 0; }
-  .footer a { color: #d4af37; text-decoration: none; }
-  .refresh { text-align: center; margin: 20px 0; }
-  .refresh button { background: transparent; border: 1px solid #333; color: #888; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 12px; }
-  .refresh button:hover { border-color: #d4af37; color: #d4af37; }
+  :root { --bg:#050505; --card:#0f0f0f; --border:#2a2a2a; --text:#fff; --muted:#888; --ok:#4ade80; --warn:#d4af37; --err:#e63946; --gold:#d4af37; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,system-ui,sans-serif; min-height:100vh; padding:24px; }
+  .container { max-width:520px; margin:0 auto; }
+  .header { text-align:center; margin-bottom:24px; }
+  .header h1 { font-size:20px; letter-spacing:1px; color:var(--gold); margin-bottom:6px; }
+  .header p { font-size:12px; color:var(--muted); }
+  .overall { display:flex; align-items:center; gap:12px; padding:16px; background:var(--card); border:1px solid var(--border); border-radius:12px; margin-bottom:20px; }
+  .dot { width:12px; height:12px; border-radius:50%; background:var(--muted); flex-shrink:0; }
+  .dot.ok { background:var(--ok); box-shadow:0 0 12px var(--ok); }
+  .dot.warn { background:var(--warn); box-shadow:0 0 12px var(--warn); }
+  .dot.err { background:var(--err); box-shadow:0 0 12px var(--err); }
+  .dot.loading { background:#555; }
+  .overall-text { flex:1; }
+  .overall-text .title { font-size:14px; font-weight:bold; }
+  .overall-text .meta { font-size:11px; color:var(--muted); margin-top:2px; }
+  .service { display:flex; align-items:center; gap:12px; padding:14px 16px; background:var(--card); border:1px solid var(--border); border-radius:10px; margin-bottom:10px; }
+  .service .name { font-size:13px; font-weight:bold; }
+  .service .desc { font-size:11px; color:var(--muted); margin-top:2px; }
+  .service .status { margin-left:auto; font-size:11px; padding:4px 10px; border-radius:20px; white-space:nowrap; }
+  .status.ok { background:rgba(74,222,128,0.1); color:var(--ok); }
+  .status.warn { background:rgba(212,175,55,0.1); color:var(--warn); }
+  .status.err { background:rgba(230,57,70,0.1); color:var(--err); }
+  .status.loading { background:rgba(255,255,255,0.05); color:var(--muted); }
+  .refresh { text-align:center; margin-top:16px; }
+  .refresh button { padding:10px 20px; background:transparent; color:var(--gold); border:1px solid var(--gold); border-radius:20px; cursor:pointer; font-size:12px; }
+  .footer { text-align:center; margin-top:24px; padding-top:16px; border-top:1px solid var(--border); font-size:11px; color:var(--muted); }
+  .footer a { color:var(--gold); text-decoration:none; }
 </style>
 </head>
 <body>
-  <div class="container">
-    <h1>⚡ Apex Status</h1>
-    <div class="subtitle">系统实时状态 · 自动刷新</div>
+<div class="container">
+  <div class="header">
+    <h1>APEX 系统状态</h1>
+    <p>实时可用性监控</p>
+  </div>
 
-    <div class="overall">
-      <div class="dot loading" id="overall-dot"></div>
-      <div class="info">
-        <div class="title" id="overall-title">检查中...</div>
-        <div class="meta" id="overall-meta">正在获取系统状态</div>
-      </div>
-    </div>
-
-    <div class="services">
-      <div class="service">
-        <div>
-          <div class="name">Website · 网站</div>
-          <div class="desc">前端静态资源 · CDN 加速</div>
-        </div>
-        <div class="status loading" id="status-website">检查中</div>
-      </div>
-      <div class="service">
-        <div>
-          <div class="name">API · 后端接口</div>
-          <div class="desc">Pages Functions · 边缘计算</div>
-        </div>
-        <div class="status loading" id="status-api">检查中</div>
-      </div>
-      <div class="service">
-        <div>
-          <div class="name">Database · 数据库</div>
-          <div class="desc">D1 · SQLite 边缘存储</div>
-        </div>
-        <div class="status loading" id="status-db">检查中</div>
-      </div>
-      <div class="service">
-        <div>
-          <div class="name">Email · 邮件服务</div>
-          <div class="desc">AgentMail · 验证码发送</div>
-        </div>
-        <div class="status loading" id="status-email">检查中</div>
-      </div>
-    </div>
-
-    <div class="refresh">
-      <button onclick="checkAll()">🔄 刷新状态</button>
-    </div>
-
-    <div class="footer">
-      <a href="/">← 返回首页</a> &nbsp;·&nbsp; © 2026 Apex Global Entertainment
+  <div class="overall">
+    <div class="dot loading" id="overall-dot"></div>
+    <div class="overall-text">
+      <div class="title" id="overall-title">检查中...</div>
+      <div class="meta" id="overall-meta">正在获取系统状态</div>
     </div>
   </div>
 
-  <script>
-    function setStatus(id, state, text) {
-      const el = document.getElementById(id);
-      el.className = 'status ' + state;
-      el.textContent = text;
-    }
-    function setDot(state) {
-      document.getElementById('overall-dot').className = 'dot ' + state;
-    }
-    function setOverall(state, title, meta) {
-      setDot(state);
-      document.getElementById('overall-title').textContent = title;
-      document.getElementById('overall-meta').textContent = meta;
-    }
+  <div class="service">
+    <div>
+      <div class="name">Website · 网站前端</div>
+      <div class="desc">Cloudflare Pages · 静态资源</div>
+    </div>
+    <div class="status loading" id="status-website">检查中</div>
+  </div>
 
-    async function checkAll() {
-      // 重置
-      ['website','api','db','email'].forEach(k => setStatus('status-' + k, 'loading', '检查中'));
-      setOverall('loading', '检查中...', '正在获取系统状态');
+  <div class="service">
+    <div>
+      <div class="name">API · 后端接口</div>
+      <div class="desc">Pages Functions · 边缘计算</div>
+    </div>
+    <div class="status loading" id="status-api">检查中</div>
+  </div>
 
-      let okCount = 0;
-      let errCount = 0;
+  <div class="service">
+    <div>
+      <div class="name">Database · 数据库</div>
+      <div class="desc">D1 · SQLite 边缘存储</div>
+    </div>
+    <div class="status loading" id="status-db">检查中</div>
+  </div>
 
-      // 1. Website
-      try {
-        const t0 = performance.now();
-        const res = await fetch('/', { method: 'HEAD', cache: 'no-store' });
-        const ms = Math.round(performance.now() - t0);
-        if (res.ok) { setStatus('status-website', 'ok', '正常 ' + ms + 'ms'); okCount++; }
-        else { setStatus('status-website', 'err', 'HTTP ' + res.status); errCount++; }
-      } catch { setStatus('status-website', 'err', '不可达'); errCount++; }
+  <div class="service">
+    <div>
+      <div class="name">Email · 邮件服务</div>
+      <div class="desc" id="email-provider-desc">Resend 主 · AgentMail 备</div>
+    </div>
+    <div class="status loading" id="status-email">检查中</div>
+  </div>
 
-      // 2. API + DB
-      try {
-        const t0 = performance.now();
-        const res = await fetch('/api/health', { cache: 'no-store' });
-        const ms = Math.round(performance.now() - t0);
-        const data = await res.json();
-        if (data.success && data.checks && data.checks.api === 'ok') {
-          setStatus('status-api', 'ok', '正常 ' + ms + 'ms'); okCount++;
-        } else { setStatus('status-api', 'warn', '异常'); errCount++; }
+  <div class="refresh">
+    <button onclick="checkAll()">🔄 刷新状态</button>
+  </div>
 
-        if (data.checks && data.checks.db === 'ok') {
-          setStatus('status-db', 'ok', '正常'); okCount++;
-        } else { setStatus('status-db', 'err', '异常'); errCount++; }
-      } catch {
-        setStatus('status-api', 'err', '不可达');
-        setStatus('status-db', 'err', '不可达');
-        errCount += 2;
-      }
+  <div class="footer">
+    <a href="/">← 返回首页</a> &nbsp;·&nbsp; © 2026 Apex Global Entertainment
+  </div>
+</div>
 
-      // 3. Email（用 captcha challenge 判断 API 是否在线）
-      try {
-        const res = await fetch('/api/captcha/challenge', { method: 'POST', cache: 'no-store' });
-        if (res.ok) { setStatus('status-email', 'ok', '正常'); okCount++; }
-        else { setStatus('status-email', 'warn', '异常'); errCount++; }
-      } catch {
-        setStatus('status-email', 'err', '不可达');
+<script>
+(function() {
+  'use strict';
+
+  function setStatus(id, state, text) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.className = 'status ' + state;
+    el.textContent = text;
+  }
+
+  function setOverall(state, title, meta) {
+    var dot = document.getElementById('overall-dot');
+    dot.className = 'dot ' + state;
+    document.getElementById('overall-title').textContent = title;
+    document.getElementById('overall-meta').textContent = meta;
+  }
+
+  function mapState(state) {
+    if (state === 'ok') return 'ok';
+    if (state === 'warn') return 'warn';
+    if (state === 'error') return 'err';
+    return 'loading';
+  }
+
+  function mapLabel(state) {
+    if (state === 'ok') return '正常';
+    if (state === 'warn') return '降级';
+    if (state === 'error') return '异常';
+    return '未知';
+  }
+
+  async function checkAll() {
+    ['website', 'api', 'db', 'email'].forEach(function(k) {
+      setStatus('status-' + k, 'loading', '检查中');
+    });
+    setOverall('loading', '检查中...', '正在获取系统状态');
+
+    var errCount = 0;
+    var warnCount = 0;
+
+    // 1) Website
+    try {
+      var t0 = performance.now();
+      var r = await fetch('/', { method: 'HEAD', cache: 'no-store' });
+      var ms = Math.round(performance.now() - t0);
+      if (r.ok) {
+        setStatus('status-website', 'ok', '正常 ' + ms + 'ms');
+      } else {
+        setStatus('status-website', 'err', 'HTTP ' + r.status);
         errCount++;
       }
-
-      // 整体状态
-      if (errCount === 0) setOverall('ok', '所有系统正常', '最后检查：' + new Date().toLocaleString());
-      else if (errCount < 3) setOverall('warn', '部分服务降级', errCount + ' 项异常');
-      else setOverall('err', '服务不可用', errCount + ' 项异常');
+    } catch (e) {
+      setStatus('status-website', 'err', '不可达');
+      errCount++;
     }
 
-    checkAll();
-    setInterval(checkAll, 60000);
-  </script>
+    // 2) API + DB + Email（统一走 /api/status）
+    try {
+      var t1 = performance.now();
+      var res = await fetch('/api/status', { cache: 'no-store' });
+      var ms2 = Math.round(performance.now() - t1);
+      var data = await res.json();
+
+      var checks = (data && data.checks) || {};
+
+      setStatus('status-api', res.ok ? 'ok' : 'err', '正常 ' + ms2 + 'ms');
+
+      var dbState = checks.db && checks.db.state;
+      setStatus('status-db', mapState(dbState), mapLabel(dbState));
+      if (dbState === 'error') errCount++;
+      else if (dbState === 'warn') warnCount++;
+
+      var email = checks.email || {};
+      var emailState = email.state;
+      var providers = Array.isArray(email.providers) ? email.providers : [];
+      var descEl = document.getElementById('email-provider-desc');
+      if (descEl) {
+        if (providers.length === 0) {
+          descEl.textContent = '未配置';
+        } else if (providers.length === 1) {
+          descEl.textContent = providers[0] + '（单通道）';
+        } else {
+          descEl.textContent = providers[0] + ' 主 · ' + providers.slice(1).join(' / ') + ' 备';
+        }
+      }
+      setStatus('status-email', mapState(emailState), mapLabel(emailState));
+      if (emailState === 'error') errCount++;
+      else if (emailState === 'warn') warnCount++;
+    } catch (e) {
+      setStatus('status-api', 'err', '不可达');
+      setStatus('status-db', 'err', '不可达');
+      setStatus('status-email', 'err', '不可达');
+      errCount += 3;
+    }
+
+    if (errCount === 0 && warnCount === 0) {
+      setOverall('ok', '所有系统正常', '最后检查：' + new Date().toLocaleString());
+    } else if (errCount === 0) {
+      setOverall('warn', '部分服务降级', warnCount + ' 项降级');
+    } else {
+      setOverall('err', '服务不可用', errCount + ' 项异常');
+    }
+  }
+
+  checkAll();
+  setInterval(checkAll, 60000);
+})();
+</script>
 </body>
 </html>

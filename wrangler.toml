@@ -1,6 +1,6 @@
 name = "apex"
 pages_build_output_dir = "."
-compatibility_date = "2024-01-01"
+compatibility_date = "2026-09-01"
 compatibility_flags = ["nodejs_compat"]
 
 [[d1_databases]]
@@ -10,3 +10,4 @@ database_id = "1b144350-08a0-40cb-b4a5-1356ca53fadb"
 
 [vars]
 ENVIRONMENT = "production"
+PUBLIC_BASE_URL = "https://apex-8rg.pages.dev"

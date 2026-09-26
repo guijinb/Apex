@@ -1,64 +1,101 @@
+import { jsonResponse, errorResponse, optionsResponse } from '../_response.js';
+import { parseJsonBody, sanitize } from '../_validation.js';
+import { hashPassword, verifyPassword, needsRehash, generateToken } from '../_utils.js';
+import { getConfig } from '../_config.js';
+import { buildSessionCookie, createUserSession } from '../_auth.js';
+import { enforceIpRateLimit, enforceKeyRateLimit } from '../_rateLimit.js';
+import { verifyCaptchaTokenV2 } from '../_utils.js';
+import { writeAudit } from '../_audit.js';
+import { getClientIP } from '../_security.js';
 import { hashSessionToken } from '../_session.js';
-import { verifyPassword, hashPassword, needsRehash, generateToken, sanitize, jsonResponse, checkRateLimit, verifyCaptchaTokenV2, buildSessionCookie } from '../_utils.js';
 
-export async function onRequestPost(context) {
+async function upgradePasswordHashIfNeeded(env, user, plainPassword) {
   try {
-    const { request, env } = context;
-    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
-
-    const rate = await checkRateLimit(env, ip, 'login', 10, 60);
-    if (!rate.allowed) return jsonResponse({ success: false, message: '请求过于频繁，请稍后再试' }, 429);
-
-    const body = await request.json();
-    const account = sanitize(body.account || '');
-    const password = body.password || '';
-    const captchaToken = body.captchaToken || '';
-
-    const captchaResult = await verifyCaptchaTokenV2(env, captchaToken, ip);
-    if (!captchaResult.valid) return jsonResponse({ success: false, message: '人机验证无效或已过期，请重新验证' }, 400);
-
-    if (!account || !password) return jsonResponse({ success: false, message: '账号和密码不能为空' }, 400);
-
-    const user = await env.apex_db.prepare(
-      'SELECT id, username, email, password_hash FROM users WHERE username = ? OR email = ?'
-    ).bind(account, account).first();
-    if (!user || !(await verifyPassword(password, user.password_hash))) {
-      return jsonResponse({ success: false, message: '账号或密码错误' }, 401);
-    }
-
-    // 自动升级旧密码哈希（用户无感知）
-    if (needsRehash(user.password_hash)) {
-      try {
-        const newHash = await hashPassword(password);
-        await env.apex_db.prepare(
-          'UPDATE users SET password_hash = ? WHERE id = ?'
-        ).bind(newHash, user.id).run();
-        console.log('[Apex] 密码哈希已升级：user_id=' + user.id);
-      } catch (e) {
-        console.error('[Apex] 哈希升级失败：', e.message);
-      }
-    }
-
-    const sessionToken = generateToken();
-    const tokenHash = await hashSessionToken(sessionToken);
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-    await env.apex_db.prepare(
-      'INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)'
-    ).bind(tokenHash, user.id, expiresAt).run();
-
-    return new Response(JSON.stringify({
-      success: true,
-      message: '登录成功',
-      user: { id: user.id, username: user.username, email: user.email }
-    }), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-        'Set-Cookie': buildSessionCookie(sessionToken),
-      }
-    });
-  } catch (err) {
-    return jsonResponse({ success: false, message: '服务器错误：' + err.message }, 500);
+    if (!needsRehash(user.password_hash)) return;
+    const newHash = await hashPassword(plainPassword);
+    await env.apex_db.prepare('UPDATE users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+      .bind(newHash, user.id).run();
+  } catch (error) {
+    console.error('[Login] hash upgrade failed:', error.message);
   }
 }
-export async function onRequestOptions() { return jsonResponse({}, 204); }
+
+export async function onRequestPost(context) {
+  const { request, env } = context;
+  const requestId = context.data && context.data.requestId ? context.data.requestId : '';
+
+  const limited = await enforceIpRateLimit(env, request, 'login-ip', 20, 60);
+  if (limited) return limited;
+
+  const parsed = await parseJsonBody(request, 4096);
+  if (!parsed.ok) return errorResponse(parsed.message, parsed.status, 'bad_request', requestId);
+  const body = parsed.data || {};
+
+  const account = sanitize(body.account, 200);
+  const password = typeof body.password === 'string' ? body.password : '';
+  const captchaToken = typeof body.captchaToken === 'string' ? body.captchaToken : '';
+
+  if (!account || !password) {
+    return errorResponse('账号和密码不能为空', 400, 'missing_fields', requestId);
+  }
+  if (!captchaToken) {
+    return errorResponse('请先完成人机验证', 400, 'captcha_missing', requestId);
+  }
+
+  const captchaIp = getClientIP(request);
+  const captcha = await verifyCaptchaTokenV2(env, captchaToken, captchaIp, 'login');
+  if (!captcha.valid) {
+    return errorResponse('人机验证无效或已过期，请重新验证', 400, 'captcha_invalid', requestId);
+  }
+
+  const accountLimited = await enforceKeyRateLimit(env, 'login-account', `acc:${account.toLowerCase()}`, 10, 300);
+  if (accountLimited) return accountLimited;
+
+  const user = await env.apex_db.prepare(
+    'SELECT id, username, email, password_hash, email_verified, status FROM users WHERE username = ? OR email = ? LIMIT 1'
+  ).bind(account, account).first();
+
+  if (!user) {
+    await writeAudit(env, { action: 'login_failed', metadata: { reason: 'no_user' } }, request);
+    return errorResponse('账号或密码错误', 401, 'invalid_credentials', requestId);
+  }
+  if (user.status && user.status !== 'active') {
+    await writeAudit(env, { action: 'login_blocked', actorId: user.id, actorType: 'user', metadata: { status: user.status } }, request);
+    return errorResponse('账号已被禁用，请联系管理员', 403, 'account_disabled', requestId);
+  }
+
+  const validPassword = await verifyPassword(password, user.password_hash);
+  if (!validPassword) {
+    await writeAudit(env, { action: 'login_failed', actorId: user.id, actorType: 'user', metadata: { reason: 'bad_password' } }, request);
+    return errorResponse('账号或密码错误', 401, 'invalid_credentials', requestId);
+  }
+
+  await upgradePasswordHashIfNeeded(env, user, password);
+
+  const session = await createUserSession(env, user.id, request);
+  const config = getConfig(env);
+
+  await env.apex_db.prepare(
+    'UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE id = ?'
+  ).bind(user.id).run();
+
+  await writeAudit(env, { action: 'login_success', actorId: user.id, actorType: 'user' }, request);
+
+  return jsonResponse({
+    success: true,
+    message: '登录成功',
+    user: {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      emailVerified: Boolean(user.email_verified),
+    },
+  }, 200, requestId, {
+    'Set-Cookie': buildSessionCookie(session.token, config.sessionMaxAge, env),
+  });
+}
+
+export async function onRequestOptions(context) {
+  const requestId = context.data && context.data.requestId ? context.data.requestId : '';
+  return optionsResponse(requestId);
+}

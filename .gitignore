@@ -1,12 +1,20 @@
-# Apex backups
 backups/*.sql
 backups/*.sql.gz
 backups/*.sha256
-
-# Wrangler cache (contains account info)
 .wrangler/
-
-# Test outputs
+.dev.vars
+.env
+.env.local
 tests/.cache/
 coverage/
 *.log
+node_modules/
+*.bak_*
+
+# ===== Apex 项目专属规则 =====
+
+# 源码打包临时文件（本地备份用，不应提交到 git）
+Apex_*.txt
+
+# 显式放行示例环境变量文件（含敏感字段的 .env 已在上面忽略）
+!.env.example

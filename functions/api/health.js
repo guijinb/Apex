@@ -1,6 +1,8 @@
-import { jsonResponse } from '../_utils.js';
+import { jsonResponse, optionsResponse } from '../_response.js';
+import { cleanupOldLogs } from '../_logs.js';
 
 export async function onRequestGet(context) {
+  const requestId = context.data && context.data.requestId ? context.data.requestId : '';
   const checks = {
     api: 'ok',
     db: 'unknown',
@@ -11,12 +13,19 @@ export async function onRequestGet(context) {
   try {
     await context.env.apex_db.prepare('SELECT 1').first();
     checks.db = 'ok';
-  } catch (e) {
+  } catch {
     checks.db = 'error';
   }
 
   const status = checks.db === 'ok' ? 200 : 503;
-  return jsonResponse({ success: checks.db === 'ok', checks }, status);
+  // 顺带清理过期日志（幂等，失败不影响主流程）
+cleanupOldLogs(env).catch(() => {});
+
+
+  return jsonResponse({ success: checks.db === 'ok', checks }, status, requestId);
 }
 
-export async function onRequestOptions() { return jsonResponse({}, 204); }
+export async function onRequestOptions(context) {
+  const requestId = context.data && context.data.requestId ? context.data.requestId : '';
+  return optionsResponse(requestId);
+}
