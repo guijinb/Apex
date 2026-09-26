@@ -30,9 +30,15 @@ function scanFile(filePath) {
     /password_resets/i,
     /password_updated/i,
     /\.password\b/i,
-    /password\s*=/i,  // 变量赋值
+    /password\s*=/i,
     /verifyPassword/i,
     /hashPassword/i,
+    /otpauth:\/\//i,
+    /\?secret=/i,
+    /\+\s*secret\s*\+/i,
+    /secret\s*\+\s*['"]/i,
+    /totp_secret/i,
+    /admin_sessions/i,
   ];
 
   lines.forEach((line, idx) => {
