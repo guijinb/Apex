@@ -1,4 +1,5 @@
-// Pages Functions 中间件：为每个请求生成 Request ID
+import { generateCsrfToken, buildCsrfCookie } from './_csrf.js';
+
 export async function onRequest(context) {
   const requestId = 'apx_' + Date.now().toString(36) + '_' +
     Math.random().toString(36).substring(2, 10);
@@ -11,6 +12,13 @@ export async function onRequest(context) {
     const newHeaders = new Headers(response.headers);
     newHeaders.set('X-Request-ID', requestId);
     newHeaders.set('X-Content-Type-Options', 'nosniff');
+
+    // 如果没有 CSRF Cookie，下发一个
+    const cookieHeader = context.request.headers.get('Cookie') || '';
+    if (!cookieHeader.includes('apex_csrf=')) {
+      newHeaders.append('Set-Cookie', buildCsrfCookie(generateCsrfToken()));
+    }
+
     return new Response(response.body, {
       status: response.status,
       statusText: response.statusText,
